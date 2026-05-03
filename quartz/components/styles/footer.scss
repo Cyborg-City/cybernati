@@ -10,6 +10,15 @@ footer {
     display: flex;
     flex-direction: row;
     gap: 1rem;
-    margin-top: -1rem;
+    margin-top: 1rem;
+  }
+
+  & a {
+    color: var(--darkgray);
+    transition: color 0.2s ease;
+    
+    &:hover {
+      color: var(--secondary);
+    }
   }
 }

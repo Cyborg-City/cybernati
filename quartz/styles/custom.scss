@@ -1,3 +1,41 @@
 @use "./base.scss";
 
 // put your custom CSS here!
+
+body {
+  // Add a subtle paper texture if you want, but for now just clean
+  -webkit-font-smoothing: antialiased;
+}
+
+// Redacted text styling
+.redacted {
+  background-color: var(--dark);
+  color: var(--dark);
+  cursor: default;
+  padding: 0 2px;
+  border-radius: 2px;
+  user-select: none;
+}
+
+// Highlighting links as if with a marker
+a.internal {
+  text-decoration: none;
+  background-image: linear-gradient(transparent 70%, var(--highlight) 70%);
+  transition: background-image 0.2s ease;
+
+  &:hover {
+    background-image: linear-gradient(transparent 40%, var(--highlight) 40%);
+  }
+}
+
+
+
+// Ensure code blocks are clean
+pre {
+  background-color: transparent !important;
+  border: 1px solid var(--lightgray);
+  
+  & code {
+    background-color: transparent !important;
+  }
+}

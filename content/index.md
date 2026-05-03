@@ -15,11 +15,3 @@ another test
 ```
 
 
-```cardlink
-url: https://github.com/Cyborg-City
-title: "Cyborg City"
-description: "Cyborg City has one repository available. Follow their code on GitHub."
-host: github.com
-favicon: https://github.githubassets.com/favicons/favicon.svg
-image: https://avatars.githubusercontent.com/u/280511480?s=280&v=4
-```

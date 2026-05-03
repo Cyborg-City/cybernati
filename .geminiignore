@@ -1,0 +1,12 @@
+# Gemini CLI Ignore Rules
+# Use ! to explicitly include directories even if they are in .gitignore
+
+!Clippings/
+!private/
+!content/
+
+# Keep standard noise ignored
+node_modules/
+.git/
+.quartz-cache/
+public/

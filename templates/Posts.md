@@ -1,6 +1,6 @@
 ---
 title: "{{title}}"
-draft: false
+draft: true
 tags:
   - example-tag
 ---

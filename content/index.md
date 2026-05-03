@@ -13,5 +13,11 @@ Use the terminal prompt in the sidebar to query the database.
 
 ---
 
+### HIGH PRIORITY FILES
+*   [[Project-MK-Ultra-Redacted|CLASSIFIED: Project MK-Ultra Intelligence]]
+*   [[Case-File-UFO-77|UFO-77: The Rendlesham Incident]]
+
+---
+
 > [!WARNING]
 > Access to this data is restricted. Unauthorized dissemination of these materials is a federal offense.

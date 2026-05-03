@@ -21,5 +21,8 @@ At 14:15 hours, we encountered a large, bipedal hominid moving through the dense
 1.  **Gigantopithecus survival**: A remnant population of extinct apes.
 2.  **Interdimensional Traveler**: Appearing and disappearing through ||natural portals|| in the Cascades.
 
+## Connections
+- Patterns of radiation detected during this sighting match the readings in [[Case-File-UFO-77|UFO-77]].
+
 ---
 *Verified by: ||The Director||*

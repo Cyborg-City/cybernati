@@ -26,4 +26,7 @@ On the night of July 4th, a craft of unknown origin crashed into a ranch owned b
 - ||Walter Haut||: Signed an affidavit before his death confirming the recovery of ||alien bodies||.
 
 ---
+## Related Cases
+- [[Pacific-Northwest-Sighting|INCIDENT REPORT: Pacific Northwest Sighting]]
+
 *End of Document*

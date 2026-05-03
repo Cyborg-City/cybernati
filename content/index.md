@@ -1,17 +1,17 @@
 ---
-title: Welcome to Quartz
+title: Cybernati Vault
 draft: false
+description: "Classified Conspiracy Archive & Database. LEVEL 4 ACCESS REQUIRED."
 ---
 
-This is a blank Quartz installation.
-See the [documentation](https://quartz.jzhao.xyz) for how to get started.
 ![[vault-hero.png]]
 
-```
-test copy to clipboard
+Welcome to the **Cybernati Vault**. This archive contains digitized evidence, case files, and leaked intelligence regarding ongoing investigations into the unknown.
 
+### [SEARCH THE ARCHIVE](.)
+Use the terminal prompt in the sidebar to query the database.
 
-another test
-```
+---
 
-
+> [!WARNING]
+> Access to this data is restricted. Unauthorized dissemination of these materials is a federal offense.

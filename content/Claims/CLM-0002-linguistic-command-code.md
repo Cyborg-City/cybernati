@@ -14,8 +14,8 @@ clearance: Board Observer
 confidence: Medium
 mechanism: Technological Anomaly
 primary_beneficiary: Office of Continuity
-created: 2026-05-04
-modified: 2026-05-04T14:18:06-05:00
+created: "2026-05-04"
+modified: "2026-05-04"
 narrative_volatility: Volatile
 source_provenance: Clipping
 description: The theory that "Croatoan" is a systemic "purge command" used to de-index entities from the primary timeline.

@@ -2,7 +2,7 @@
 title: "The Assimilation & Migration Pattern"
 aliases:
   - Survival Strategy
-draft: true
+draft: false
 tags:
   - patterns
   - roanoke

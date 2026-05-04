@@ -2,7 +2,7 @@
 title: "John White"
 aliases:
   - Governor White
-draft: true
+draft: false
 tags:
   - people
   - roanoke

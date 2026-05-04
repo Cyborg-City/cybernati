@@ -14,8 +14,8 @@ clearance: Records Associate
 confidence: Medium
 mechanism: Administrative Suppression
 primary_beneficiary: Unknown
-created: 2026-05-04
-modified: 2026-05-04
+created: "2026-05-04"
+modified: "2026-05-04"
 narrative_volatility: Drifting
 source_provenance: Clipping
 description: The established ground truth regarding the 1587-1590 disappearance of the Roanoke settlers.

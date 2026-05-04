@@ -2,7 +2,7 @@
 title: The Linguistic Command Code Theory
 aliases:
   - Croatoan Trigger
-draft: true
+draft: false
 tags:
   - claims
   - systemic

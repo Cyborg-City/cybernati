@@ -2,7 +2,7 @@
 title: The Walsingham Sabotage Claim
 aliases:
   - Raleigh Sabotage
-draft: true
+draft: false
 tags:
   - claims
   - roanoke
@@ -14,8 +14,8 @@ clearance: Board Observer
 confidence: Low
 mechanism: Administrative Suppression
 primary_beneficiary: Sir Francis Walsingham
-created: "2026-05-04"
-modified: "2026-05-04T14:16:19-05:00"
+created: 2026-05-04
+modified: 2026-05-04T14:16:19-05:00
 narrative_volatility: Stable
 source_provenance: Clipping
 description: Theoretical plot by Sir Francis Walsingham to sabotage Sir Walter Raleigh’s colonization attempts.

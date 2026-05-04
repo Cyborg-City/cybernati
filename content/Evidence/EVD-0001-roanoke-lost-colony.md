@@ -1,8 +1,8 @@
 ---
-title: "The Disappearance of the Roanoke Colony"
+title: The Disappearance of the Roanoke Colony
 aliases:
   - Lost Colony
-draft: true
+draft: false
 tags:
   - clippings
   - roanoke
@@ -11,14 +11,14 @@ ID: EVD-0001-roanoke-lost-colony
 type: Evidence
 status: Active Review
 clearance: Records Associate
-confidence: "Medium"
-mechanism: "Administrative Suppression"
-primary_beneficiary: "Unknown"
-created: "2026-05-04"
-modified: "2026-05-04"
-narrative_volatility: "Drifting"
-source_provenance: "Clipping"
-description: "The established ground truth regarding the 1587-1590 disappearance of the Roanoke settlers."
+confidence: Medium
+mechanism: Administrative Suppression
+primary_beneficiary: Unknown
+created: 2026-05-04
+modified: 2026-05-04
+narrative_volatility: Drifting
+source_provenance: Clipping
+description: The established ground truth regarding the 1587-1590 disappearance of the Roanoke settlers.
 related:
   - "[[PER-0001-john-white]]"
   - "[[PAT-0001-assimilation-survival]]"

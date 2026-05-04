@@ -9,9 +9,10 @@
 2. **Sequence Check**: 
    - Scan the `content/` directories (Evidence, People, Orgs, etc.) to determine the absolute next ID for each category (e.g., if `EVD-0001` exists, the next is `EVD-0002`).
 3. **The Precision Merge**:
-   - **Move**: Transfer all drafted `.md` files from the staging folder to their permanent `content/` sub-directories.
-   - **Identity**: Rename each file from `TEMP` to its final `ID-####-kebab-case.md` name.
-   - **Refactor**: Update the internal `ID:` property and all `[[Wikilinks]]` within the files to use the new, finalized IDs.
+    - **Move**: Transfer all drafted `.md` files from the staging folder to their permanent `content/` sub-directories.
+    - **Identity**: Ensure every file has its final `ID-####-kebab-case.md` name and matching `ID:` property.
+    - **Publish**: **MANDATORY**: Use the Obsidian CLI (`obsidian property:set name=draft value=false`) to set the draft status to false for all merged files.
+    - **Refactor**: Verify all internal `[[Wikilinks]]` within the files use the finalized IDs.
 4. **Log & Audit**: 
    - Append the final mapping (Draft Name -> Final ID) to `agent-notes/agent-log.md`.
 5. **Sanitization**: 

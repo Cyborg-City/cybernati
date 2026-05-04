@@ -1,17 +1,13 @@
-# /ingest
+# /ingest [source_path]
 
-Analyzes a new intelligence source and prepares a Signal Assessment for tactical discussion.
+**Phase 1: Forensic Extraction**
 
 ## Instructions
-1. **Initialize Log**: Append an entry to `agent-notes/agent-log.md` noting the start of an ingestion and the source path.
-2. **Read Source**: Access the provided source (URL, clipping, or file path).
-3. **Signal Assessment**: Perform analysis based on `private/Ingestion Protocol.md`:
-   - **Entity Extraction**: List People, Organizations, Places, and Events.
-   - **The Glue (Synthesis)**: Identify connections to existing Cybernati™ lore.
-   - **Conflict Detection**: Note contradictions or narrative gaps.
-   - **Vault Impact**: Predict updates for the 9 categories.
-4. **Presentation**: Present using the **Analytical Lenses** (Structural, Operational, Forensic, Aesthetic).
-5. **STOP**: Wait for User 'Green Light' before any compilation.
+1. **Log**: Record the start in `agent-notes/agent-log.md`.
+2. **Stage**: Create directory: `Clippings/INGEST-[YYYYMMDD]-[NAME]/`.
+3. **Draft Atomic Notes**: Extract "Serious" data into draft files. **MANDATORY**: Use the `obsidian template:read name=TMP-0000-vault-property-schema resolve` command to ensure every note adheres to the vault property schema.
+4. **Report**: Generate `report.md` using the Three Mechanical Lenses.
+5. **Navigate**: Alert the User that the Forensic Packet is ready. **MANDATORY**: Ask: "Are you ready to run `/research` to verify claims and add citations, or shall we discuss the signal further?"
 
 ## Example
-`/ingest Clippings/new-intel.md`
+`/ingest Clippings/roanoke/`

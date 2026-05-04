@@ -4,19 +4,19 @@ aliases:
 draft: true
 tags:
   - example-tag
-ID: # [Serious]
-type: # [Serious]
-status: # [Serious]
-clearance: # [Flavor]
-confidence: # [Serious]
-mechanism: # [Serious]
-primary_beneficiary: # [Serious]
-created: # [Serious]
-updated: # [Serious]
-narrative_volatility: # [Serious]
-source_provenance: # [Serious]
-description: # [Serious]
-related: # [Serious]
+ID:
+type:
+status:
+clearance:
+confidence:
+mechanism:
+primary_beneficiary:
+created:
+modified:
+narrative_volatility:
+source_provenance:
+description:
+related:
 ---
 
 # Identification System

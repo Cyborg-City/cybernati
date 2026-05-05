@@ -14,7 +14,7 @@ confidence: High
 mechanism: Technological Anomaly
 primary_beneficiary: Cybernati Archive
 created: "2026-05-04"
-modified: "2026-05-04"
+modified: "2026-05-05"
 narrative_volatility: Drifting
 source_provenance: Signal Capture
 description: Comprehensive synthesis of the Roanoke "Lost Colony" sequence through factual and systemic lenses.
@@ -26,14 +26,16 @@ related:
 # DOSSIER: The Roanoke De-indexing Event
 
 ## 1. WHY: The Necessity of Removal
-The Roanoke Colony (1587) represents a failed initialization in the North American sector. When the colony became "politically unstable" due to the Anglo-Spanish War and "too visible" in the local administrative records, the **Office of Continuity** intervened. The mystery of the "Lost Colony" is not a failure of history, but a success of the System's sanitization protocols.
+The Roanoke Colony (1587) represents a failed initialization in the North American sector. When the colony became "politically unstable" due to the Anglo-Spanish War and "too visible" in the local administrative records, the **Office of Continuity**[^6] intervened. The mystery of the "Lost Colony" is not a failure of history, but a success of the System's sanitization protocols.
 
 ## 2. WHAT: The Forensic Signal
 In 1590, Governor John White returned to a settlement that was not destroyed, but dismantled. The presence of 115 missing persons was resolved by a single linguistic artifact: **CROATOAN**.
 
 ### Key Evidence
 - **The "La Virginia Pars" Map**: A hidden fort symbol, masked by a paper patch, indicating the colony's intended relocation was known to the architects but suppressed from the public record.
-- **Archaeological Fingerprints**: English Border Ware at "Site X" and "Site Y" confirms that the entities survived physical removal, though they were functionally de-indexed from the primary timeline.
+[[0e30fdeb17e71f7334069b35ae32443a_MD5.webp|La Virginia Pars]]
+![[0e30fdeb17e71f7334069b35ae32443a_MD5.webp]]
+- **Archaeological Fingerprints**: The discovery of **Surrey-Hampshire Border Ware** at **Site X (Salmon Creek)** and **Site Y (Mettaquem)** in Bertie County confirms that the entities survived physical removal. These ceramics, which pre-date the 1607 Jamestown settlement, indicate a sustained presence 50 miles inland from the original fort. [^7]
 - **Genetic Persistence**: The biological data of the "refugees" (e.g., the Brown family markers) proves that while the metadata was scrubbed, the physical components were assimilated into the local indigenous infrastructure.
 
 ## 3. HOW: The Croatoan Trigger

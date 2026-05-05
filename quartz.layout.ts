@@ -44,12 +44,12 @@ export const defaultContentPageLayout: PageLayout = {
       ],
     }),
     Component.Explorer(),
+    Component.RecentNotes({ title: "Recent Updates", limit: 3, showTags: false }),
   ],
   right: [
-    Component.Graph(),
     Component.DesktopOnly(Component.TableOfContents()),
+    Component.Graph(),
     Component.Backlinks(),
-    Component.RecentNotes({ title: "Recent Updates", limit: 3, showTags: false }),
   ],
 }
 
@@ -69,6 +69,7 @@ export const defaultListPageLayout: PageLayout = {
       ],
     }),
     Component.Explorer(),
+    Component.RecentNotes({ title: "Recent Updates", limit: 3, showTags: false }),
   ],
-  right: [],
+  right: [Component.DesktopOnly(Component.TableOfContents())],
 }

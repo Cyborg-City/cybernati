@@ -39,9 +39,11 @@ pre {
     background-color: transparent !important;
   }
 }
-// High-density Recent Updates styling for the sidebar
-.recent-notes {
+// High-density Recent Updates styling ONLY for the left sidebar
+.left .recent-notes {
   margin-top: 1.5rem;
+  width: 100%;
+  overflow: hidden;
 
   & > h3 {
     font-size: 0.8rem;
@@ -57,26 +59,37 @@ pre {
     list-style: none;
     padding: 0;
     margin: 0;
+    width: 100%;
 
     & li.recent-li {
       margin-bottom: 0.4rem;
       padding: 0;
       line-height: 1.2;
+      width: 100%;
 
       & .section {
-        & .desc > h3 {
-          margin: 0;
-          padding: 0;
-          font-size: 0.85rem;
-          font-weight: 600;
-          white-space: nowrap;
+        width: 100%;
+        overflow: hidden;
+
+        & .desc {
+          width: 100%;
           overflow: hidden;
-          text-overflow: ellipsis;
-          max-width: 100%;
-          
-          & a {
-            font-size: inherit;
-            font-weight: inherit;
+
+          & > h3 {
+            margin: 0;
+            padding: 0;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: block;
+            width: 100%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            
+            & a {
+              font-size: inherit;
+              font-weight: inherit;
+            }
           }
         }
         

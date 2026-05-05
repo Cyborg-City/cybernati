@@ -1,0 +1,6 @@
+{
+  "excludeMode": "Full",
+  "obsidianIgnoreContent": "node_modules/",
+  "shouldIgnoreExcludedFiles": true,
+  "shouldIncludeGitIgnorePatterns": false
+}

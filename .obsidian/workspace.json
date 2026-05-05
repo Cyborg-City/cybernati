@@ -37,7 +37,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "private/Vault Structure.md",
+                "file": "templates/TMP-0000-vault-property-schema-key.md",
                 "mode": "source",
                 "source": false,
                 "backlinks": true,
@@ -52,7 +52,19 @@
                 }
               },
               "icon": "lucide-file",
-              "title": "Vault Structure"
+              "title": "TMP-0000-vault-property-schema-key"
+            }
+          },
+          {
+            "id": "a556d8bff311dbfa",
+            "type": "leaf",
+            "state": {
+              "type": "image",
+              "state": {
+                "file": "private/23d457748293264836ec21737e2d1daf_MD5.webp"
+              },
+              "icon": "lucide-image",
+              "title": "23d457748293264836ec21737e2d1daf_MD5"
             }
           }
         ],
@@ -192,13 +204,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "private/Vault Structure.md",
+                "file": "templates/TMP-0000-vault-property-schema-key.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Outline of Vault Structure"
+              "title": "Outline of TMP-0000-vault-property-schema-key"
             }
           },
           {
@@ -227,7 +239,7 @@
             "state": {
               "type": "localgraph",
               "state": {
-                "file": "private/Vault Structure.md",
+                "file": "templates/TMP-0000-vault-property-schema-key.md",
                 "options": {
                   "collapse-filter": false,
                   "search": "",
@@ -255,7 +267,7 @@
                 }
               },
               "icon": "lucide-git-fork",
-              "title": "Graph of Vault Structure"
+              "title": "Graph of TMP-0000-vault-property-schema-key"
             }
           }
         ]
@@ -281,17 +293,14 @@
   },
   "active": "950be5ccd8863e2d",
   "lastOpenFiles": [
-    "content/Timelines/New Text Document.txt",
-    "content/Timelines",
-    "content/New folder",
-    "content/Events",
-    "content/Places",
-    "content/Place",
-    "AGENT.md",
+    "private/Start Here.md",
     "private/23d457748293264836ec21737e2d1daf_MD5.webp",
     "agent-notes/agent-log.md",
-    "content/index.md",
+    "private/vault-schema.md",
+    "private/Vault Structure.md",
+    "content/Timelines",
     "content/Project-MK-Ultra-Redacted.md",
+    "content/Places",
     "content/People/PER-0001-john-white.md",
     "content/People",
     "content/Patterns/PAT-0001-assimilation-survival.md",
@@ -300,15 +309,20 @@
     "content/Internal Coms/MEM-0001-observability-mandate.md",
     "content/Internal Coms/COM-0001-coms-reestablished.md",
     "content/Internal Coms",
+    "content/index.md",
     "content/Evidence/EVD-0001-roanoke-lost-colony.md",
     "content/Evidence",
+    "content/Events",
     "content/Dossiers/DOS-0001-roanoke-de-indexing.md",
     "content/Dossiers/350f6367e7f8f6e5273eb1c069dd17fb_MD5.webp",
     "content/Dossiers",
     "content/Claims/CLM-0002-linguistic-command-code.md",
     "content/Claims/CLM-0001-walsingham-sabotage.md",
+    "content/Claims",
     "content/Case-File-UFO-77.md",
     "content/364805f72021e1a1372ece0effaabe7b_MD5.png",
+    "content",
+    "AGENT.md",
     "private/Cybernati-Lore.md",
     "README.md",
     "CODE_OF_CONDUCT.md",
@@ -323,9 +337,6 @@
     "public/Project-MK-Ultra-Redacted-og-image.webp",
     "public/Pacific-Northwest-Sighting-og-image.webp",
     "node_modules/vfile/node_modules/@types/unist/README.md",
-    "node_modules/vfile-location/node_modules/@types/unist/README.md",
-    "node_modules/unist-util-visit-parents/node_modules/@types/unist/README.md",
-    "node_modules/unist-util-visit-children/node_modules/@types/unist/README.md",
-    "node_modules/unist-util-remove-position/node_modules/@types/unist/README.md"
+    "node_modules/vfile-location/node_modules/@types/unist/README.md"
   ]
 }

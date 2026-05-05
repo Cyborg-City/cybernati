@@ -11,10 +11,24 @@
             "id": "2c2d07481c356048",
             "type": "leaf",
             "state": {
-              "type": "empty",
-              "state": {},
+              "type": "markdown",
+              "state": {
+                "file": "agent-notes/agent-log.md",
+                "mode": "source",
+                "source": false,
+                "backlinks": true,
+                "backlinkOpts": {
+                  "collapseAll": false,
+                  "extraContext": false,
+                  "sortOrder": "alphabetical",
+                  "showSearch": false,
+                  "searchQuery": "",
+                  "backlinkCollapsed": false,
+                  "unlinkedCollapsed": true
+                }
+              },
               "icon": "lucide-file",
-              "title": "New tab"
+              "title": "agent-log"
             }
           }
         ]
@@ -153,12 +167,13 @@
             "state": {
               "type": "outline",
               "state": {
+                "file": "agent-notes/agent-log.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Outline"
+              "title": "Outline of agent-log"
             }
           },
           {
@@ -187,6 +202,7 @@
             "state": {
               "type": "localgraph",
               "state": {
+                "file": "agent-notes/agent-log.md",
                 "options": {
                   "collapse-filter": false,
                   "search": "",
@@ -214,7 +230,7 @@
                 }
               },
               "icon": "lucide-git-fork",
-              "title": "Graph view"
+              "title": "Graph of agent-log"
             }
           }
         ]
@@ -240,20 +256,36 @@
   },
   "active": "2c2d07481c356048",
   "lastOpenFiles": [
+    "content/index.md",
+    "content/Project-MK-Ultra-Redacted.md",
+    "content/People/PER-0001-john-white.md",
+    "content/People",
+    "content/Patterns/PAT-0001-assimilation-survival.md",
+    "content/Patterns",
+    "content/Pacific-Northwest-Sighting.md",
+    "content/Internal Coms/MEM-0001-observability-mandate.md",
+    "content/Internal Coms/COM-0001-coms-reestablished.md",
+    "content/Internal Coms",
+    "content/Evidence/EVD-0001-roanoke-lost-colony.md",
+    "content/Evidence",
+    "content/Dossiers/DOS-0001-roanoke-de-indexing.md",
+    "content/Dossiers/350f6367e7f8f6e5273eb1c069dd17fb_MD5.webp",
+    "content/Dossiers",
+    "content/Claims/CLM-0002-linguistic-command-code.md",
+    "content/Claims/CLM-0001-walsingham-sabotage.md",
+    "content/Claims",
+    "content/Case-File-UFO-77.md",
+    "content/364805f72021e1a1372ece0effaabe7b_MD5.png",
+    "content",
+    "private/Cybernati-Lore.md",
+    "README.md",
+    "CODE_OF_CONDUCT.md",
     "Clippings/shared",
     "Clippings/The Colony of Roanoke’s Mysterious Disappearance  The UnXplained (Season 3)  History.md",
     "Clippings/Scientists Finally Solved The Roanoke Colony Mystery - After 400 Years.md",
     "Clippings/7 Theories About the Mysterious Vanishing Of Roanoke Colony 1.md",
     "public/static/giscus/light.css",
     "public/static/giscus/dark.css",
-    "public/tags/forest-service.html",
-    "public/tags/ufo.html",
-    "public/tags/index.html",
-    "public/tags/experiments.html",
-    "public/tags/example-tag.html",
-    "public/tags/cryptid.html",
-    "public/tags/classified.html",
-    "public/tags/cia.html",
     "public/static/og-image.png",
     "public/static/icon.png",
     "public/static/favicon.svg",
@@ -262,7 +294,6 @@
     "public/Project-MK-Ultra-Redacted-og-image.webp",
     "public/Pacific-Northwest-Sighting-og-image.webp",
     "public/index-og-image.webp",
-    "public/Case-File-UFO-77-og-image.webp",
     "node_modules/vfile/node_modules/@types/unist/README.md",
     "node_modules/vfile-location/node_modules/@types/unist/README.md",
     "node_modules/unist-util-visit-parents/node_modules/@types/unist/README.md",
@@ -270,21 +301,6 @@
     "node_modules/unist-util-remove-position/node_modules/@types/unist/README.md",
     "node_modules/unist-util-visit/node_modules/@types/unist/README.md",
     "node_modules/unist-util-find-after/node_modules/@types/unist/README.md",
-    "node_modules/unist-util-position/node_modules/@types/unist/README.md",
-    "node_modules/unified/node_modules/@types/unist/README.md",
-    "node_modules/unist-util-modify-children/node_modules/@types/unist/README.md",
-    "node_modules/unist-util-is/node_modules/@types/unist/README.md",
-    "node_modules/parse-latin/node_modules/@types/unist/README.md",
-    "node_modules/mdast-util-to-markdown/node_modules/@types/unist/README.md",
-    "node_modules/mdast-util-mdx-jsx/node_modules/@types/unist/README.md",
-    "node_modules/mdast-util-from-markdown/node_modules/@types/unist/README.md",
-    "node_modules/hast-util-to-text/node_modules/@types/unist/README.md",
-    "node_modules/hast-util-raw/node_modules/@types/unist/README.md",
-    "node_modules/hast-util-to-html/node_modules/@types/unist/README.md",
-    "node_modules/hast-util-from-html/node_modules/@types/unist/README.md",
-    "node_modules/hast-util-to-jsx-runtime/node_modules/@types/unist/README.md",
-    "node_modules/hast-util-from-parse5/node_modules/@types/unist/README.md",
-    "node_modules/@parcel/watcher/node_modules/picomatch/README.md",
-    "node_modules/speech-rule-engine/node_modules/commander/6d82d64f89fec9d845db03540f4b114f_MD5.svg"
+    "node_modules/unist-util-position/node_modules/@types/unist/README.md"
   ]
 }

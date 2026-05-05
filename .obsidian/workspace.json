@@ -4,16 +4,16 @@
     "type": "split",
     "children": [
       {
-        "id": "b900fadb3aaa69d9",
+        "id": "40a60c7bbc3c15a5",
         "type": "tabs",
         "children": [
           {
-            "id": "2c2d07481c356048",
+            "id": "04aaa064ac96a36c",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "agent-notes/agent-log.md",
+                "file": "AGENT.md",
                 "mode": "source",
                 "source": false,
                 "backlinks": true,
@@ -28,10 +28,35 @@
                 }
               },
               "icon": "lucide-file",
-              "title": "agent-log"
+              "title": "AGENT"
+            }
+          },
+          {
+            "id": "950be5ccd8863e2d",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "private/Vault Structure.md",
+                "mode": "source",
+                "source": false,
+                "backlinks": true,
+                "backlinkOpts": {
+                  "collapseAll": false,
+                  "extraContext": false,
+                  "sortOrder": "alphabetical",
+                  "showSearch": false,
+                  "searchQuery": "",
+                  "backlinkCollapsed": false,
+                  "unlinkedCollapsed": true
+                }
+              },
+              "icon": "lucide-file",
+              "title": "Vault Structure"
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -167,13 +192,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "agent-notes/agent-log.md",
+                "file": "private/Vault Structure.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Outline of agent-log"
+              "title": "Outline of Vault Structure"
             }
           },
           {
@@ -202,7 +227,7 @@
             "state": {
               "type": "localgraph",
               "state": {
-                "file": "agent-notes/agent-log.md",
+                "file": "private/Vault Structure.md",
                 "options": {
                   "collapse-filter": false,
                   "search": "",
@@ -230,7 +255,7 @@
                 }
               },
               "icon": "lucide-git-fork",
-              "title": "Graph of agent-log"
+              "title": "Graph of Vault Structure"
             }
           }
         ]
@@ -254,8 +279,17 @@
       "obsidian42-brat:BRAT": false
     }
   },
-  "active": "2c2d07481c356048",
+  "active": "950be5ccd8863e2d",
   "lastOpenFiles": [
+    "content/Timelines/New Text Document.txt",
+    "content/Timelines",
+    "content/New folder",
+    "content/Events",
+    "content/Places",
+    "content/Place",
+    "AGENT.md",
+    "private/23d457748293264836ec21737e2d1daf_MD5.webp",
+    "agent-notes/agent-log.md",
     "content/index.md",
     "content/Project-MK-Ultra-Redacted.md",
     "content/People/PER-0001-john-white.md",
@@ -273,19 +307,14 @@
     "content/Dossiers",
     "content/Claims/CLM-0002-linguistic-command-code.md",
     "content/Claims/CLM-0001-walsingham-sabotage.md",
-    "content/Claims",
     "content/Case-File-UFO-77.md",
     "content/364805f72021e1a1372ece0effaabe7b_MD5.png",
-    "content",
     "private/Cybernati-Lore.md",
     "README.md",
     "CODE_OF_CONDUCT.md",
-    "Clippings/shared",
     "Clippings/The Colony of Roanoke’s Mysterious Disappearance  The UnXplained (Season 3)  History.md",
     "Clippings/Scientists Finally Solved The Roanoke Colony Mystery - After 400 Years.md",
     "Clippings/7 Theories About the Mysterious Vanishing Of Roanoke Colony 1.md",
-    "public/static/giscus/light.css",
-    "public/static/giscus/dark.css",
     "public/static/og-image.png",
     "public/static/icon.png",
     "public/static/favicon.svg",
@@ -293,14 +322,10 @@
     "public/vault-hero.png",
     "public/Project-MK-Ultra-Redacted-og-image.webp",
     "public/Pacific-Northwest-Sighting-og-image.webp",
-    "public/index-og-image.webp",
     "node_modules/vfile/node_modules/@types/unist/README.md",
     "node_modules/vfile-location/node_modules/@types/unist/README.md",
     "node_modules/unist-util-visit-parents/node_modules/@types/unist/README.md",
     "node_modules/unist-util-visit-children/node_modules/@types/unist/README.md",
-    "node_modules/unist-util-remove-position/node_modules/@types/unist/README.md",
-    "node_modules/unist-util-visit/node_modules/@types/unist/README.md",
-    "node_modules/unist-util-find-after/node_modules/@types/unist/README.md",
-    "node_modules/unist-util-position/node_modules/@types/unist/README.md"
+    "node_modules/unist-util-remove-position/node_modules/@types/unist/README.md"
   ]
 }

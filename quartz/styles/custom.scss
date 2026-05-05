@@ -39,3 +39,52 @@ pre {
     background-color: transparent !important;
   }
 }
+// High-density Recent Updates styling for the sidebar
+.recent-notes {
+  margin-top: 1.5rem;
+
+  & > h3 {
+    font-size: 0.8rem;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1rem;
+    color: var(--gray);
+    border-bottom: 1px solid var(--lightgray);
+    padding-bottom: 0.2rem;
+  }
+
+  & ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+
+    & li {
+      margin-bottom: 0.4rem;
+      padding: 0;
+      line-height: 1.2;
+
+      & .section-li {
+        & .desc {
+          display: block;
+          
+          & a {
+            font-size: 0.85rem;
+            font-weight: 600;
+          }
+        }
+        
+        & .meta {
+          font-size: 0.7rem;
+          color: var(--gray);
+          display: block;
+          margin-top: 0.1rem;
+        }
+      }
+    }
+  }
+}
+
+// Adjust Explorer to allow for more room
+.explorer {
+  margin-bottom: 1rem;
+}

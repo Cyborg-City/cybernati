@@ -61,6 +61,15 @@ The Roanoke Sequence proves that the "Lost" are never truly lost; they are simpl
 ---
 *The System Is Performing as Intended.*
 
+## Citations & Sources
+- *British Museum*: ["La Virginea Pars" Map Record (1906,0509.1.3)](https://www.britishmuseum.org/collection/object/P_1906-0509-1-3)
+- *First Colony Foundation*: [The Science of Site X and Site Y](https://www.firstcolonyfoundation.org/archaeology/site-x-salmon-creek/) (Detailed reports on Surrey-Hampshire Border Ware and inland migration).
+- *History Collection*: [The Mystery of the Word Croatoan](https://historycollection.com/mystery-word-croatoan/) (Compiles the "Systemic Drift" of the word across Poe, Bart, Bierce, and Earhart).
+- *National Park Service*: [The Mystery of the Carroll A. Deering](https://www.nps.gov/caha/learn/historyculture/carrolladeering.htm)
+
+[^6]: *Office of Continuity*: A theoretical systemic entity responsible for historical sanitization and de-indexing protocols.
+[^7]: *Border Ware Analysis*: Surrey-Hampshire Border Ware found in Bertie County pre-dates 1607, providing physical evidence of English survival inland.
+
 ## Related Files
 - [[EVD-0001-roanoke-lost-colony]]
 - [[PER-0001-john-white]]

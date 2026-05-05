@@ -29,9 +29,11 @@ Your mission is to compile raw data into a structured, interlinked wiki.
 - **Links**: Always use Wikilinks `[[ID-####-name]]` in properties and body text.
 
 ## 5. Property Protocol
+- **Documentation**: `TMP-0000-vault-property-schema.md` defines the meaning and permissible values of every property. Reference this to understand the metadata intent.
+- **Implementation**: `TMP-0000-vault-property-schema-key.md` is the functional template. Use this exclusively for note creation.
 - **Data Types**: Do not change the data types of properties defined in templates.
-- **Timestamps**: Treat `created` and `modified` as **text** fields. Do not format them as YAML dates; Obsidian will handle the native timestamp indexing.
-- **Strict Adherence**: Every property in `TMP-0000-vault-property-schema` must be present, even if left blank.
+- **Timestamps**: Treat `created` and `modified` as **text** fields (quoted strings). Do not format them as YAML dates; Obsidian will handle the native timestamp indexing.
+- **Strict Adherence**: Every property in the `-key` template must be present, even if left blank.
 
 ## 6. Working Memory (The Clerk's Log)
 Maintain `agent-notes/agent-log.md`. Record every stage of the lifecycle.

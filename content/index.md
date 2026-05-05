@@ -1,13 +1,17 @@
 ---
 title: Cybernati Vault
 draft: false
-description: "Classified Conspiracy Archive & Database. LEVEL 4 ACCESS REQUIRED."
+description: Classified Conspiracy Archive & Database. LEVEL 4 ACCESS REQUIRED.
+modified: 2026-05-05T01:54:49-05:00
 ---
 
 ![[vault-hero.png]]
 
 Welcome to the **Cybernati Vault**. This archive contains digitized evidence, case files, and leaked intelligence regarding ongoing investigations into the unknown.
 
+**Cybernati** is an internal observability consortium tasked with documenting systemic outcomes and public anomalies since 1984.
+
+It’s a creative research project mixing real references, speculative claims, and fictional presentation.
 ### [SEARCH THE ARCHIVE](.)
 Use the terminal prompt in the sidebar to query the database.
 
@@ -20,6 +24,6 @@ Use the terminal prompt in the sidebar to query the database.
 ---
 
 > [!WARNING]
-> Access to this data is restricted. Unauthorized dissemination of these materials is a federal offense.
+> Access to this data is restricted. Unauthorized dissemination of these materials could possibly open your mind to alternative possibilities.
 
 

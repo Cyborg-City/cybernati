@@ -53,28 +53,30 @@ pre {
     padding-bottom: 0.2rem;
   }
 
-  & ul {
+  & ul.recent-ul {
     list-style: none;
     padding: 0;
     margin: 0;
 
-    & li {
+    & li.recent-li {
       margin-bottom: 0.4rem;
       padding: 0;
       line-height: 1.2;
 
-      & .section-li {
-        & .desc {
-          display: block;
+      & .section {
+        & .desc > h3 {
+          margin: 0;
+          padding: 0;
+          font-size: 0.85rem;
+          font-weight: 600;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          max-width: 100%;
           
           & a {
-            font-size: 0.85rem;
-            font-weight: 600;
-            display: block;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            max-width: 100%;
+            font-size: inherit;
+            font-weight: inherit;
           }
         }
         
@@ -83,6 +85,7 @@ pre {
           color: var(--gray);
           display: block;
           margin-top: 0.1rem;
+          margin-bottom: 0;
         }
       }
     }

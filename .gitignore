@@ -4,9 +4,13 @@ node_modules
 public
 prof
 tsconfig.tsbuildinfo
-.obsidian
 .quartz-cache
-private/
+Clippings/*
+!Clippings/shared/
+!Clippings/shared/**
 .replit
 replit.nix
-Clippings/
+
+# Personal AI (Pi) - LoFi Monk -
+.pi/
+AGENT.md

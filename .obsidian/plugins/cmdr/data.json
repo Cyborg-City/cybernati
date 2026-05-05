@@ -1,0 +1,45 @@
+{
+  "confirmDeletion": true,
+  "showAddCommand": true,
+  "debug": false,
+  "editorMenu": [],
+  "fileMenu": [],
+  "leftRibbon": [],
+  "rightRibbon": [],
+  "titleBar": [],
+  "statusBar": [
+    {
+      "id": "obsidian-shellcommands:shell-command-gymkmtyohu",
+      "icon": "lucide-github",
+      "name": "Shell commands: Execute: npx quartz sync",
+      "mode": "any"
+    }
+  ],
+  "pageHeader": [
+    {
+      "id": "theme:toggle-light-dark",
+      "icon": "lucide-sun-moon",
+      "name": "Toggle light/dark mode",
+      "mode": "any"
+    }
+  ],
+  "macros": [],
+  "explorer": [],
+  "hide": {
+    "statusbar": [
+      "sync"
+    ],
+    "leftRibbon": []
+  },
+  "spacing": 8,
+  "advancedToolbar": {
+    "rowHeight": 48,
+    "rowCount": 1,
+    "spacing": 0,
+    "buttonWidth": 48,
+    "columnLayout": false,
+    "mappedIcons": [],
+    "tooltips": false,
+    "heightOffset": 0
+  }
+}

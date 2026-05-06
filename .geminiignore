@@ -7,6 +7,5 @@
 
 # Keep standard noise ignored
 node_modules/
-.git/
 .quartz-cache/
 public/

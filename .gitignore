@@ -11,9 +11,10 @@ Clippings/*
 .replit
 replit.nix
 
+
 # Personal AI (Pi) - LoFi Monk -
 .pi/
 AGENT.md
 
-# Obsidian Workspace is the only part of obsidian we want to ignore.
-obsidian/workspace.json
+# Obsidian stuff that i want to ignore. ask lofi before changing this.
+.obsidian/workspace.json

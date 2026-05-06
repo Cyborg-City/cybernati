@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "AGENT.md",
+                "file": "Clippings/Post by @truthstreamnews on X.md",
                 "mode": "source",
                 "source": false,
                 "backlinks": true,
@@ -28,47 +28,10 @@
                 }
               },
               "icon": "lucide-file",
-              "title": "AGENT"
-            }
-          },
-          {
-            "id": "950be5ccd8863e2d",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "templates/TMP-0000-vault-property-schema-key.md",
-                "mode": "source",
-                "source": false,
-                "backlinks": true,
-                "backlinkOpts": {
-                  "collapseAll": false,
-                  "extraContext": false,
-                  "sortOrder": "alphabetical",
-                  "showSearch": false,
-                  "searchQuery": "",
-                  "backlinkCollapsed": false,
-                  "unlinkedCollapsed": true
-                }
-              },
-              "icon": "lucide-file",
-              "title": "TMP-0000-vault-property-schema-key"
-            }
-          },
-          {
-            "id": "a556d8bff311dbfa",
-            "type": "leaf",
-            "state": {
-              "type": "image",
-              "state": {
-                "file": "private/23d457748293264836ec21737e2d1daf_MD5.webp"
-              },
-              "icon": "lucide-image",
-              "title": "23d457748293264836ec21737e2d1daf_MD5"
+              "title": "Post by @truthstreamnews on X"
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -204,13 +167,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "templates/TMP-0000-vault-property-schema-key.md",
+                "file": "Clippings/Post by @truthstreamnews on X.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Outline of TMP-0000-vault-property-schema-key"
+              "title": "Outline of Post by @truthstreamnews on X"
             }
           },
           {
@@ -239,7 +202,7 @@
             "state": {
               "type": "localgraph",
               "state": {
-                "file": "templates/TMP-0000-vault-property-schema-key.md",
+                "file": "Clippings/Post by @truthstreamnews on X.md",
                 "options": {
                   "collapse-filter": false,
                   "search": "",
@@ -267,7 +230,7 @@
                 }
               },
               "icon": "lucide-git-fork",
-              "title": "Graph of TMP-0000-vault-property-schema-key"
+              "title": "Graph of Post by @truthstreamnews on X"
             }
           }
         ]
@@ -291,8 +254,11 @@
       "obsidian42-brat:BRAT": false
     }
   },
-  "active": "c45908095075f638",
+  "active": "04aaa064ac96a36c",
   "lastOpenFiles": [
+    "Clippings/a2592d1ef388f26622e59e9c111b405b_MD5.jpg",
+    "AGENT.md",
+    "Clippings/Post by @truthstreamnews on X.md",
     "content/Timelines",
     "content/Project-MK-Ultra-Redacted.md",
     "content/Places",
@@ -308,8 +274,8 @@
     "content/Evidence/EVD-0001-roanoke-lost-colony.md",
     "content/Evidence",
     "content/Events",
-    "content/Dossiers/DOS-0001-roanoke-de-indexing.md",
     "content/Dossiers/350f6367e7f8f6e5273eb1c069dd17fb_MD5.webp",
+    "content/Dossiers/DOS-0001-roanoke-de-indexing.md",
     "content/Dossiers",
     "content/Claims/CLM-0002-linguistic-command-code.md",
     "content/Claims/CLM-0001-walsingham-sabotage.md",
@@ -322,7 +288,6 @@
     "agent-notes/agent-log.md",
     "private/vault-schema.md",
     "private/Vault Structure.md",
-    "AGENT.md",
     "private/Cybernati-Lore.md",
     "README.md",
     "CODE_OF_CONDUCT.md",
@@ -336,7 +301,6 @@
     "public/vault-hero.png",
     "public/Project-MK-Ultra-Redacted-og-image.webp",
     "public/Pacific-Northwest-Sighting-og-image.webp",
-    "node_modules/vfile/node_modules/@types/unist/README.md",
-    "node_modules/vfile-location/node_modules/@types/unist/README.md"
+    "node_modules/vfile/node_modules/@types/unist/README.md"
   ]
 }

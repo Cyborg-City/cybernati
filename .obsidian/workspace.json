@@ -30,8 +30,29 @@
               "icon": "lucide-file",
               "title": "7 Theories About the Mysterious Vanishing Of Roanoke Colony 1"
             }
+          },
+          {
+            "id": "e5c9d5dc1797714f",
+            "type": "leaf",
+            "state": {
+              "type": "smart-release-notes-view",
+              "state": {},
+              "icon": "file-text",
+              "title": "Release Notes"
+            }
+          },
+          {
+            "id": "b9df8e943d2f518b",
+            "type": "leaf",
+            "state": {
+              "type": "smart-lookup-release-notes-view",
+              "state": {},
+              "icon": "file-text",
+              "title": "Release Notes"
+            }
           }
-        ]
+        ],
+        "currentTab": 2
       }
     ],
     "direction": "vertical"
@@ -187,9 +208,19 @@
               "icon": "lucide-info",
               "title": "File properties for agent-log"
             }
+          },
+          {
+            "id": "66f58c9e7236ef70",
+            "type": "leaf",
+            "state": {
+              "type": "smart-connections-view",
+              "state": {},
+              "icon": "smart-connections",
+              "title": "Connections"
+            }
           }
         ],
-        "currentTab": 4
+        "currentTab": 6
       },
       {
         "id": "0a37f1eb73d403cd",
@@ -202,7 +233,6 @@
             "state": {
               "type": "localgraph",
               "state": {
-                "file": "video_archive/7 Theories About the Mysterious Vanishing Of Roanoke Colony 1.md",
                 "options": {
                   "collapse-filter": false,
                   "search": "",
@@ -230,7 +260,7 @@
                 }
               },
               "icon": "lucide-git-fork",
-              "title": "Graph of 7 Theories About the Mysterious Vanishing Of Roanoke Colony 1"
+              "title": "Graph view"
             }
           }
         ]
@@ -251,16 +281,16 @@
       "obsidian-shellcommands:Shell commands: Custom variables": false,
       "obsidian-local-images-plus:Local Images Plus  0.16.4\r\nLocalize attachments (plugin folder)": false,
       "obsidian-git:Open Git source control": false,
-      "obsidian42-brat:BRAT": false
+      "obsidian42-brat:BRAT": false,
+      "smart-connections:Smart Connections: Open connections view": false,
+      "smart-connections:Toggle Footer Connections": false,
+      "smart-connections:Smart Connections: Open random connection": false,
+      "smart-lookup:Smart Lookup: Open lookup view": false
     }
   },
-  "active": "04aaa064ac96a36c",
+  "active": "b9df8e943d2f518b",
   "lastOpenFiles": [
-    "Clippings/ALIEN INCURSION—U.F.O. FILES TRUMP & ULTIMATE DISCLOSURE IMMINENT… (LIVE) PROPHETIC INTEL BRIEFING!.md",
-    "video_archive/Scientists Finally Solved The Roanoke Colony Mystery - After 400 Years.md",
-    "video_archive/7 Theories About the Mysterious Vanishing Of Roanoke Colony 1.md",
-    "video_archive/The Colony of Roanoke’s Mysterious Disappearance  The UnXplained (Season 3)  History.md",
-    "private/Ingestion Protocol.md",
+    "AGENTS.md",
     "content/Timelines/TIM-0001-main.md",
     "content/Timelines",
     "content/Project-MK-Ultra-Redacted.md",
@@ -270,22 +300,27 @@
     "content/Patterns/PAT-0001-assimilation-survival.md",
     "content/Patterns",
     "content/Pacific-Northwest-Sighting.md",
-    "content/Internal Coms/MEM-0001-observability-mandate.md",
     "content/Internal Coms/COM-0001-coms-reestablished.md",
+    "content/Internal Coms/MEM-0001-observability-mandate.md",
     "content/Internal Coms",
     "content/index.md",
     "content/Evidence/EVD-0001-roanoke-lost-colony.md",
     "content/Evidence",
     "content/Events",
-    "content/Dossiers/DOS-0001-roanoke-de-indexing.md",
     "content/Dossiers/350f6367e7f8f6e5273eb1c069dd17fb_MD5.webp",
+    "content/Dossiers/DOS-0001-roanoke-de-indexing.md",
     "content/Dossiers",
-    "content/Claims/CLM-0001-walsingham-sabotage.md",
     "content/Claims/CLM-0002-linguistic-command-code.md",
+    "content/Claims/CLM-0001-walsingham-sabotage.md",
     "content/Claims",
     "content/Case-File-UFO-77.md",
     "content/364805f72021e1a1372ece0effaabe7b_MD5.png",
     "content",
+    "Clippings/ALIEN INCURSION—U.F.O. FILES TRUMP & ULTIMATE DISCLOSURE IMMINENT… (LIVE) PROPHETIC INTEL BRIEFING!.md",
+    "video_archive/Scientists Finally Solved The Roanoke Colony Mystery - After 400 Years.md",
+    "video_archive/7 Theories About the Mysterious Vanishing Of Roanoke Colony 1.md",
+    "video_archive/The Colony of Roanoke’s Mysterious Disappearance  The UnXplained (Season 3)  History.md",
+    "private/Ingestion Protocol.md",
     "private/vault-schema.md",
     "private/Start Here.md",
     "private/Vault Structure.md",
@@ -294,7 +329,6 @@
     "Clippings/2026-05-05 X UAPDr.md",
     "Clippings/a2592d1ef388f26622e59e9c111b405b_MD5.jpg",
     "00 Inbox/Clippings/2026-05-05 X UAPDr.md",
-    "Clippings/There's A Grid Around Earth Catching Souls - Jason Jorjani.md",
     "private/23d457748293264836ec21737e2d1daf_MD5.webp",
     "public/static/og-image.png",
     "public/static/icon.png",

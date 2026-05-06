@@ -14,7 +14,13 @@ replit.nix
 
 # Personal AI (Pi) - LoFi Monk -
 .pi/
-AGENT.md
+AGENTS.md
 
 # Obsidian stuff that i want to ignore. ask lofi before changing this.
 .obsidian/workspace.json
+
+
+
+
+# Ignore Smart Environment folder
+.smart-env

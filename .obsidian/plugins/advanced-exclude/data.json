@@ -1,6 +1,6 @@
 {
   "excludeMode": "Full",
-  "obsidianIgnoreContent": "node_modules/",
+  "obsidianIgnoreContent": "node_modules/\r\npublic/\r\nquartz/",
   "shouldIgnoreExcludedFiles": true,
   "shouldIncludeGitIgnorePatterns": false
 }

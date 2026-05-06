@@ -8,6 +8,12 @@
     },
     {
       "type": "file",
+      "ctime": 1778103897985,
+      "path": "private/vault-schema.md",
+      "title": "Vault Schema"
+    },
+    {
+      "type": "file",
       "ctime": 1778017424099,
       "path": "agent-notes/agent-log.md",
       "title": "Agent Log"

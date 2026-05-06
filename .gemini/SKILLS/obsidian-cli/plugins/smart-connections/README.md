@@ -14,9 +14,9 @@ All scripts are opaque tools — invoke them, don't read them.
 
 | Script | Usage | Description |
 |--------|-------|-------------|
-| `sc-vector.sh` | `bash sc-vector.sh "your query" [k]` | Semantic vector search. Returns scored results at block-level precision. Default k=5. |
-| `sc-keyword.sh` | `bash sc-keyword.sh word1 word2 word3` | Keyword search across file content. Fast, no embeddings. |
-| `sc-status.sh` | `bash sc-status.sh` | Check if SC is loaded, source count, and model info. |
+| `sc-vector.sh` | `bash sc-vector.sh [vault=name] "your query" [k]` | Semantic vector search. Returns scored results at block-level precision. Default k=5, vault=cybernati. |
+| `sc-keyword.sh` | `bash sc-keyword.sh [vault=name] word1 word2 word3` | Keyword search across file content. Fast, no embeddings. Default vault=cybernati. |
+| `sc-status.sh` | `bash sc-status.sh [vault=name]` | Check if SC is loaded, source count, and model info. Default vault=cybernati. |
 
 Scripts live in: `plugins/smart-connections/scripts/` (relative to the obsidian-cli skill root)
 

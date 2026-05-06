@@ -1,6 +1,6 @@
 {
   "excludeMode": "Full",
-  "obsidianIgnoreContent": "node_modules/\r\npublic/\r\nquartz/",
+  "obsidianIgnoreContent": "node_modules/\npublic/\nquartz/\nCODE_OF_CONDUCT.md\nREADME.md",
   "shouldIgnoreExcludedFiles": true,
   "shouldIncludeGitIgnorePatterns": false
 }

@@ -57,7 +57,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "content/CH-0000.md",
+                "file": "private/Cybernati-Lore.md",
                 "mode": "source",
                 "source": false,
                 "backlinks": true,
@@ -72,7 +72,7 @@
                 }
               },
               "icon": "lucide-file",
-              "title": "CH-0000"
+              "title": "Cybernati-Lore"
             }
           }
         ],
@@ -257,7 +257,7 @@
             "state": {
               "type": "localgraph",
               "state": {
-                "file": "content/CH-0000.md",
+                "file": "private/Cybernati-Lore.md",
                 "options": {
                   "collapse-filter": false,
                   "search": "",
@@ -285,7 +285,7 @@
                 }
               },
               "icon": "lucide-git-fork",
-              "title": "Graph of CH-0000"
+              "title": "Graph of Cybernati-Lore"
             }
           }
         ]
@@ -315,10 +315,19 @@
   },
   "active": "0753323ac5eadc87",
   "lastOpenFiles": [
-    "private/Cybernati-Lore.md",
-    "content/Timelines/TIM-0001-main.md",
-    "content/Timelines",
-    "content/Project-MK-Ultra-Redacted.md",
+    "content/Places",
+    "content/People/PER-0001-john-white.md",
+    "content/People",
+    "content/Patterns/PAT-0001-assimilation-survival.md",
+    "content/Patterns",
+    "content/Pacific-Northwest-Sighting.md",
+    "content/Internal Coms/MEM-0001-observability-mandate.md",
+    "content/Internal Coms/COM-0001-coms-reestablished.md",
+    "content/Internal Coms",
+    "content/index.md",
+    "content/Evidence/EVD-0001-roanoke-lost-colony.md",
+    "content/Evidence",
+    "content/Events",
     "content/Dossiers/DOS-0001-roanoke-de-indexing.md",
     "content/Dossiers/350f6367e7f8f6e5273eb1c069dd17fb_MD5.webp",
     "content/Dossiers",
@@ -329,25 +338,17 @@
     "content/Case-File-UFO-77.md",
     "content/364805f72021e1a1372ece0effaabe7b_MD5.png",
     "content",
+    "private/Cybernati-Lore.md",
+    "content/Timelines/TIM-0001-main.md",
+    "content/Timelines",
+    "content/Project-MK-Ultra-Redacted.md",
     "scripts/generate-playlist.mjs",
-    "scripts",
-    "video_archive/interstitials",
     "Clippings/ALIEN INCURSION—U.F.O. FILES TRUMP & ULTIMATE DISCLOSURE IMMINENT… (LIVE) PROPHETIC INTEL BRIEFING!.md",
     "Clippings/d553332cc0ea923238caad136483490c_MD5.webp",
     "Clippings/Post by @truthstreamnews on X.md",
     "Clippings/e3a44f714504aadf03a376f89f6bdf27_MD5.jpg",
     "Clippings/2026-05-05 X UAPDr.md",
     "Clippings/2022-06-11 X Divinsity.md",
-    "content/Places",
-    "content/People/PER-0001-john-white.md",
-    "content/People",
-    "content/Patterns/PAT-0001-assimilation-survival.md",
-    "content/Patterns",
-    "content/Pacific-Northwest-Sighting.md",
-    "content/Internal Coms/MEM-0001-observability-mandate.md",
-    "content/Internal Coms/COM-0001-coms-reestablished.md",
-    "content/index.md",
-    "content/Evidence/EVD-0001-roanoke-lost-colony.md",
     "Clippings/93ecf8d8996c288bd671965b7bbdfa2c_MD5.jpg",
     "video_archive/7 Theories About the Mysterious Vanishing Of Roanoke Colony 1.md",
     "private/Start Here.md",

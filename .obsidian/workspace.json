@@ -57,7 +57,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "private/Cybernati-Lore.md",
+                "file": "content/CH-0000.md",
                 "mode": "source",
                 "source": false,
                 "backlinks": true,
@@ -72,7 +72,7 @@
                 }
               },
               "icon": "lucide-file",
-              "title": "Cybernati-Lore"
+              "title": "CH-0000"
             }
           }
         ],
@@ -257,7 +257,7 @@
             "state": {
               "type": "localgraph",
               "state": {
-                "file": "private/Cybernati-Lore.md",
+                "file": "content/CH-0000.md",
                 "options": {
                   "collapse-filter": false,
                   "search": "",
@@ -285,7 +285,7 @@
                 }
               },
               "icon": "lucide-git-fork",
-              "title": "Graph of Cybernati-Lore"
+              "title": "Graph of CH-0000"
             }
           }
         ]
@@ -315,20 +315,29 @@
   },
   "active": "0753323ac5eadc87",
   "lastOpenFiles": [
+    "private/Cybernati-Lore.md",
+    "content/Timelines/TIM-0001-main.md",
+    "content/Timelines",
+    "content/Project-MK-Ultra-Redacted.md",
+    "content/Dossiers/DOS-0001-roanoke-de-indexing.md",
+    "content/Dossiers/350f6367e7f8f6e5273eb1c069dd17fb_MD5.webp",
+    "content/Dossiers",
+    "content/Claims/CLM-0002-linguistic-command-code.md",
+    "content/Claims/CLM-0001-walsingham-sabotage.md",
+    "content/Claims",
     "content/CH-0000.md",
+    "content/Case-File-UFO-77.md",
+    "content/364805f72021e1a1372ece0effaabe7b_MD5.png",
+    "content",
     "scripts/generate-playlist.mjs",
     "scripts",
     "video_archive/interstitials",
-    "private/Cybernati-Lore.md",
     "Clippings/ALIEN INCURSION—U.F.O. FILES TRUMP & ULTIMATE DISCLOSURE IMMINENT… (LIVE) PROPHETIC INTEL BRIEFING!.md",
     "Clippings/d553332cc0ea923238caad136483490c_MD5.webp",
     "Clippings/Post by @truthstreamnews on X.md",
     "Clippings/e3a44f714504aadf03a376f89f6bdf27_MD5.jpg",
     "Clippings/2026-05-05 X UAPDr.md",
     "Clippings/2022-06-11 X Divinsity.md",
-    "content/Timelines/TIM-0001-main.md",
-    "content/Timelines",
-    "content/Project-MK-Ultra-Redacted.md",
     "content/Places",
     "content/People/PER-0001-john-white.md",
     "content/People",
@@ -337,17 +346,8 @@
     "content/Pacific-Northwest-Sighting.md",
     "content/Internal Coms/MEM-0001-observability-mandate.md",
     "content/Internal Coms/COM-0001-coms-reestablished.md",
-    "content/Internal Coms",
     "content/index.md",
     "content/Evidence/EVD-0001-roanoke-lost-colony.md",
-    "content/Evidence",
-    "content/Events",
-    "content/Dossiers/DOS-0001-roanoke-de-indexing.md",
-    "content/Dossiers/350f6367e7f8f6e5273eb1c069dd17fb_MD5.webp",
-    "content/Claims/CLM-0002-linguistic-command-code.md",
-    "content/Claims/CLM-0001-walsingham-sabotage.md",
-    "content/Case-File-UFO-77.md",
-    "content/364805f72021e1a1372ece0effaabe7b_MD5.png",
     "Clippings/93ecf8d8996c288bd671965b7bbdfa2c_MD5.jpg",
     "video_archive/7 Theories About the Mysterious Vanishing Of Roanoke Colony 1.md",
     "private/Start Here.md",

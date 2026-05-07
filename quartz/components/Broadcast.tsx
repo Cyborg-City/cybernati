@@ -10,34 +10,35 @@ export default (() => {
         </div>
         
         <div id="terminal-screen" class="terminal-screen">
-            {/* INITIAL HANDSHAKE OVERLAY */}
-            <div id="handshake-overlay" class="handshake-overlay">
-                <div class="handshake-content">
-                    <div class="glitch-text">SIGNAL ENCRYPTED</div>
-                    <button id="connect-btn" class="handshake-btn">CONNECT TO FEED</button>
-                </div>
-            </div>
-
             <div id="player-mount" class="player-mount">
-                <div class="signal-initializing">WAITING FOR HANDSHAKE...</div>
+                <div class="signal-initializing">SCANNING FOR SIGNAL...</div>
             </div>
         </div>
 
         <div class="terminal-footer">
             <div class="footer-left">
-                <div id="program-info">OFFLINE</div>
+                <div id="program-info">WAITING FOR DATA...</div>
             </div>
             <div class="footer-right">
-                <span class="volume-label">VOL:</span>
-                <input type="range" id="volume-control" min="0" max="100" value="50" />
+                <button id="mute-toggle" class="mute-btn" title="Toggle Mute">
+                    <svg id="speaker-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-volume-x">
+                        <path d="M11 5L6 9H2v6h4l5 4V5z"></path>
+                        <line x1="23" y1="9" x2="17" y2="15"></line>
+                        <line x1="17" y1="9" x2="23" y2="15"></line>
+                    </svg>
+                </button>
+                <input type="range" id="volume-control" min="0" max="100" value="0" />
             </div>
         </div>
         
         <script dangerouslySetInnerHTML={{ __html: `
             let player;
-            let currentVolume = 50;
+            let currentVolume = 0;
+            let isMuted = true;
             let currentVideoId = null;
-            let isConnected = false;
+
+            const iconMute = '<path d="M11 5L6 9H2v6h4l5 4V5z"></path><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line>';
+            const iconVol = '<path d="M11 5L6 9H2v6h4l5 4V5z"></path><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>';
 
             // Load YouTube API
             const tag = document.createElement('script');
@@ -46,15 +47,11 @@ export default (() => {
             firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
             async function startTerminal() {
-                if (isConnected) return;
-                isConnected = true;
-                
-                // Hide overlay
-                document.getElementById('handshake-overlay').style.display = 'none';
-                
                 const mount = document.getElementById('player-mount');
                 const info = document.getElementById('program-info');
                 const volSlider = document.getElementById('volume-control');
+                const muteBtn = document.getElementById('mute-toggle');
+                const speakerIcon = document.getElementById('speaker-icon');
                 const syncGauge = document.getElementById('sync-gauge');
                 
                 try {
@@ -109,10 +106,12 @@ export default (() => {
                                 mount.innerHTML = \`<video 
                                     src="\${intFile}" 
                                     autoplay 
+                                    muted
                                     loop
                                     style="width:100%; height:100%; background:black; object-fit: cover;">
                                 </video>\`;
                                 const v = mount.querySelector('video');
+                                v.muted = isMuted;
                                 v.volume = currentVolume / 100;
                             }
                         } else {
@@ -128,6 +127,7 @@ export default (() => {
                                     videoId: program.id,
                                     playerVars: {
                                         autoplay: 1,
+                                        mute: 1, // Start muted for autoplay
                                         controls: 0,
                                         disablekb: 1,
                                         modestbranding: 1,
@@ -136,7 +136,10 @@ export default (() => {
                                     },
                                     events: {
                                         onReady: (event) => {
-                                            event.target.setVolume(currentVolume);
+                                            if (!isMuted) {
+                                                event.target.unMute();
+                                                event.target.setVolume(currentVolume);
+                                            }
                                         }
                                     }
                                 });
@@ -144,15 +147,53 @@ export default (() => {
                         }
                     };
 
+                    const updateAudioUI = () => {
+                        speakerIcon.innerHTML = isMuted ? iconMute : iconVol;
+                        volSlider.value = currentVolume;
+                    };
+
                     volSlider.addEventListener('input', (e) => {
                         currentVolume = e.target.value;
-                        if (player && player.setVolume) player.setVolume(currentVolume);
+                        if (currentVolume > 0 && isMuted) {
+                            isMuted = false;
+                        } else if (currentVolume == 0 && !isMuted) {
+                            isMuted = true;
+                        }
+                        
+                        if (player) {
+                            if (isMuted) player.mute(); else { player.unMute(); player.setVolume(currentVolume); }
+                        }
                         const video = mount.querySelector('video');
-                        if (video) video.volume = currentVolume / 100;
+                        if (video) {
+                            video.muted = isMuted;
+                            video.volume = currentVolume / 100;
+                        }
+                        updateAudioUI();
                     });
 
-                    updateTerminal();
-                    setInterval(updateTerminal, 1000);
+                    muteBtn.addEventListener('click', () => {
+                        isMuted = !isMuted;
+                        if (isMuted) {
+                            if (player) player.mute();
+                            const video = mount.querySelector('video');
+                            if (video) video.muted = true;
+                        } else {
+                            if (currentVolume === 0) currentVolume = 50;
+                            if (player) { player.unMute(); player.setVolume(currentVolume); }
+                            const video = mount.querySelector('video');
+                            if (video) { video.muted = false; video.volume = currentVolume / 100; }
+                        }
+                        updateAudioUI();
+                    });
+
+                    // Start loop
+                    const checkAPI = setInterval(() => {
+                        if (window.YT && window.YT.Player) {
+                            clearInterval(checkAPI);
+                            updateTerminal();
+                            setInterval(updateTerminal, 1000);
+                        }
+                    }, 500);
 
                 } catch (e) {
                     console.error("Terminal Error:", e);
@@ -160,19 +201,7 @@ export default (() => {
                 }
             }
             
-            document.getElementById('connect-btn').addEventListener('click', () => {
-                // Ensure YT API is ready before starting
-                if (window.YT && window.YT.Player) {
-                    startTerminal();
-                } else {
-                    const checkAPI = setInterval(() => {
-                        if (window.YT && window.YT.Player) {
-                            clearInterval(checkAPI);
-                            startTerminal();
-                        }
-                    }, 100);
-                }
-            });
+            window.addEventListener('load', startTerminal);
         `}} />
       </div>
     )
@@ -222,49 +251,6 @@ export default (() => {
     border: 1px solid #222;
   }
 
-  /* HANDSHAKE OVERLAY */
-  .handshake-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: #000;
-    z-index: 1000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-  }
-
-  .handshake-content {
-    color: #0f0;
-  }
-
-  .glitch-text {
-    font-weight: bold;
-    margin-bottom: 1.5rem;
-    letter-spacing: 0.2rem;
-    animation: blink 2s infinite steps(1);
-  }
-
-  .handshake-btn {
-    background: transparent;
-    border: 1px solid #0f0;
-    color: #0f0;
-    padding: 0.8rem 1.5rem;
-    cursor: pointer;
-    font-family: inherit;
-    text-transform: uppercase;
-    transition: all 0.2s ease;
-  }
-
-  .handshake-btn:hover {
-    background: #0f0;
-    color: #000;
-    box-shadow: 0 0 15px #0f0;
-  }
-
   .player-mount {
     width: 100%;
     height: 100%;
@@ -281,8 +267,29 @@ export default (() => {
     font-size: 0.8rem;
   }
 
+  .footer-right {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .mute-btn {
+    background: transparent;
+    border: none;
+    color: #0f0;
+    cursor: pointer;
+    padding: 2px;
+    display: flex;
+    align-items: center;
+    transition: transform 0.1s ease;
+  }
+
+  .mute-btn:hover {
+    transform: scale(1.1);
+  }
+
   #volume-control {
-    width: 100px;
+    width: 80px;
     accent-color: #0f0;
     cursor: pointer;
     background: transparent;
@@ -300,12 +307,6 @@ export default (() => {
   @keyframes pulse {
     0% { opacity: 1; }
     50% { opacity: 0.4; }
-    100% { opacity: 1; }
-  }
-
-  @keyframes blink {
-    0% { opacity: 1; }
-    50% { opacity: 0.2; }
     100% { opacity: 1; }
   }
   `

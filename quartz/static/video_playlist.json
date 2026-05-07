@@ -1,0 +1,24 @@
+{
+  "schedule": [
+    {
+      "id": "UDdt_ZHGcUA",
+      "duration": 603,
+      "title": "7 Theories About the Mysterious Vanishing Of Roanoke Colony 1"
+    },
+    {
+      "id": "cUc3uz9RmCA",
+      "duration": 527,
+      "title": "Scientists Finally Solved The Roanoke Colony Mystery - After 400 Years"
+    },
+    {
+      "id": "sckzQiXapk8",
+      "duration": 451,
+      "title": "The Colony of Roanoke’s Mysterious Disappearance  The UnXplained (Season 3)  History"
+    }
+  ],
+  "interstitials": [
+    "/static/interstitials/int-01.mp4",
+    "/static/interstitials/int-02.mp4",
+    "/static/interstitials/int-03.mp4"
+  ]
+}

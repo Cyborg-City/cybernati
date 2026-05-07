@@ -50,33 +50,9 @@
               "icon": "file-text",
               "title": "Release Notes"
             }
-          },
-          {
-            "id": "5c8ba98fbf6cd79d",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "content/index.md",
-                "mode": "source",
-                "source": false,
-                "backlinks": true,
-                "backlinkOpts": {
-                  "collapseAll": false,
-                  "extraContext": false,
-                  "sortOrder": "alphabetical",
-                  "showSearch": false,
-                  "searchQuery": "",
-                  "backlinkCollapsed": false,
-                  "unlinkedCollapsed": true
-                }
-              },
-              "icon": "lucide-file",
-              "title": "index"
-            }
           }
         ],
-        "currentTab": 3
+        "currentTab": 2
       }
     ],
     "direction": "vertical"
@@ -227,10 +203,10 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "content/index.md"
+                "file": "video_archive/7 Theories About the Mysterious Vanishing Of Roanoke Colony 1.md"
               },
               "icon": "lucide-info",
-              "title": "File properties for index"
+              "title": "File properties for 7 Theories About the Mysterious Vanishing Of Roanoke Colony 1"
             }
           },
           {
@@ -257,7 +233,6 @@
             "state": {
               "type": "localgraph",
               "state": {
-                "file": "content/index.md",
                 "options": {
                   "collapse-filter": false,
                   "search": "",
@@ -285,7 +260,7 @@
                 }
               },
               "icon": "lucide-git-fork",
-              "title": "Graph of index"
+              "title": "Graph view"
             }
           }
         ]
@@ -313,52 +288,52 @@
       "smart-lookup:Smart Lookup: Open lookup view": false
     }
   },
-  "active": "66f58c9e7236ef70",
+  "active": "b9df8e943d2f518b",
   "lastOpenFiles": [
-    "content/Pacific-Northwest-Sighting.md",
+    "content/Internal Coms/COM-0001-coms-reestablished.md",
+    "content/Internal Coms/MEM-0001-observability-mandate.md",
+    "content/People/PER-0001-john-white.md",
+    "content/Patterns/PAT-0001-assimilation-survival.md",
+    "content/Evidence/EVD-0001-roanoke-lost-colony.md",
+    "content/Dossiers/DOS-0001-roanoke-de-indexing.md",
+    "Clippings/2022-06-11 X Divinsity.md",
+    "Clippings/d553332cc0ea923238caad136483490c_MD5.webp",
+    "Clippings/93ecf8d8996c288bd671965b7bbdfa2c_MD5.jpg",
+    "Clippings/e3a44f714504aadf03a376f89f6bdf27_MD5.jpg",
+    "video_archive/7 Theories About the Mysterious Vanishing Of Roanoke Colony 1.md",
     "content/index.md",
-    "private/Start Here.md",
     "content/Timelines/TIM-0001-main.md",
     "content/Timelines",
     "content/Project-MK-Ultra-Redacted.md",
     "content/Places",
-    "content/People/PER-0001-john-white.md",
     "content/People",
-    "content/Patterns/PAT-0001-assimilation-survival.md",
     "content/Patterns",
-    "content/Internal Coms/COM-0001-coms-reestablished.md",
-    "content/Internal Coms/MEM-0001-observability-mandate.md",
+    "content/Pacific-Northwest-Sighting.md",
     "content/Internal Coms",
-    "content/Evidence/EVD-0001-roanoke-lost-colony.md",
     "content/Evidence",
     "content/Events",
-    "content/Dossiers/DOS-0001-roanoke-de-indexing.md",
     "content/Dossiers/350f6367e7f8f6e5273eb1c069dd17fb_MD5.webp",
     "content/Dossiers",
-    "content/Claims/CLM-0001-walsingham-sabotage.md",
     "content/Claims/CLM-0002-linguistic-command-code.md",
+    "content/Claims/CLM-0001-walsingham-sabotage.md",
     "content/Claims",
     "content/Case-File-UFO-77.md",
     "content/364805f72021e1a1372ece0effaabe7b_MD5.png",
     "content",
+    "private/Start Here.md",
     "AGENTS.md",
     "Clippings/ALIEN INCURSION—U.F.O. FILES TRUMP & ULTIMATE DISCLOSURE IMMINENT… (LIVE) PROPHETIC INTEL BRIEFING!.md",
     "video_archive/Scientists Finally Solved The Roanoke Colony Mystery - After 400 Years.md",
-    "video_archive/7 Theories About the Mysterious Vanishing Of Roanoke Colony 1.md",
     "video_archive/The Colony of Roanoke’s Mysterious Disappearance  The UnXplained (Season 3)  History.md",
     "private/Ingestion Protocol.md",
     "private/vault-schema.md",
     "private/Vault Structure.md",
     "Clippings/Post by @truthstreamnews on X.md",
     "Clippings/2026-05-05 X UAPDr 1.md",
-    "Clippings/2026-05-05 X UAPDr.md",
     "Clippings/a2592d1ef388f26622e59e9c111b405b_MD5.jpg",
     "private/23d457748293264836ec21737e2d1daf_MD5.webp",
     "public/static/og-image.png",
     "public/static/icon.png",
-    "public/static/favicon.svg",
-    "public/Events/this-happened-today-og-image.webp",
-    "public/vault-hero.png",
-    "public/Project-MK-Ultra-Redacted-og-image.webp"
+    "public/static/favicon.svg"
   ]
 }

@@ -43,7 +43,18 @@ export default (() => {
                 const syncGauge = document.getElementById('sync-gauge');
                 
                 try {
-                    const response = await fetch('/static/video_playlist.json');
+                    // ROBUST PATH RESOLUTION for GitHub Pages / subdirectories
+                    // We look for the base URL from the current window location
+                    const pathSegments = window.location.pathname.split('/');
+                    const isSubdir = pathSegments.length > 2;
+                    const base = isSubdir ? '/' + pathSegments[1] + '/' : '/';
+                    
+                    const response = await fetch(base + 'static/video_playlist.json');
+                    
+                    if (!response.ok) {
+                        throw new Error(\`HTTP error! status: \${response.status}\`);
+                    }
+
                     const data = await response.json();
                     const { schedule, interstitials } = data;
                     
@@ -89,7 +100,8 @@ export default (() => {
                             }
 
                             const intIndex = Math.floor(now / totalSlotLength) % interstitials.length;
-                            const intFile = interstitials[intIndex];
+                            // Fix interstitial path for subdirs
+                            const intFile = base + interstitials[intIndex].replace(/^\\//, '');
                             
                             info.innerHTML = isIntelligenceTime ? "STATUS: SIGNAL DEGRADED // FILLING GAP" : "STATUS: STANDBY // NEXT SIGNAL PENDING";
                             
@@ -149,6 +161,7 @@ export default (() => {
                     }, 500);
 
                 } catch (e) {
+                    console.error("Terminal Error:", e);
                     mount.innerHTML = '<div class="signal-lost">TERMINAL ERROR: SIGNAL INTERRUPTED</div>';
                 }
             }

@@ -10,14 +10,22 @@ export default (() => {
         </div>
         
         <div id="terminal-screen" class="terminal-screen">
+            {/* INITIAL HANDSHAKE OVERLAY */}
+            <div id="handshake-overlay" class="handshake-overlay">
+                <div class="handshake-content">
+                    <div class="glitch-text">SIGNAL ENCRYPTED</div>
+                    <button id="connect-btn" class="handshake-btn">CONNECT TO FEED</button>
+                </div>
+            </div>
+
             <div id="player-mount" class="player-mount">
-                <div class="signal-initializing">SCANNING FOR SIGNAL...</div>
+                <div class="signal-initializing">WAITING FOR HANDSHAKE...</div>
             </div>
         </div>
 
         <div class="terminal-footer">
             <div class="footer-left">
-                <div id="program-info">WAITING FOR DATA...</div>
+                <div id="program-info">OFFLINE</div>
             </div>
             <div class="footer-right">
                 <span class="volume-label">VOL:</span>
@@ -29,6 +37,7 @@ export default (() => {
             let player;
             let currentVolume = 50;
             let currentVideoId = null;
+            let isConnected = false;
 
             // Load YouTube API
             const tag = document.createElement('script');
@@ -37,34 +46,28 @@ export default (() => {
             firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
             async function startTerminal() {
+                if (isConnected) return;
+                isConnected = true;
+                
+                // Hide overlay
+                document.getElementById('handshake-overlay').style.display = 'none';
+                
                 const mount = document.getElementById('player-mount');
                 const info = document.getElementById('program-info');
                 const volSlider = document.getElementById('volume-control');
                 const syncGauge = document.getElementById('sync-gauge');
                 
                 try {
-                    // ROBUST PATH RESOLUTION for GitHub Pages / subdirectories
-                    // We look for the base URL from the current window location
                     const pathSegments = window.location.pathname.split('/');
                     const isSubdir = pathSegments.length > 2;
                     const base = isSubdir ? '/' + pathSegments[1] + '/' : '/';
                     
                     const response = await fetch(base + 'static/video_playlist.json');
-                    
-                    if (!response.ok) {
-                        throw new Error(\`HTTP error! status: \${response.status}\`);
-                    }
-
                     const data = await response.json();
                     const { schedule, interstitials } = data;
                     
-                    if (!schedule.length) {
-                        mount.innerHTML = '<div class="signal-lost">NO SIGNAL DETECTED</div>';
-                        return;
-                    }
-
-                    const intelLength = 300; // 5 minutes
-                    const interLength = 60;  // 1 minute
+                    const intelLength = 300;
+                    const interLength = 60;
                     const totalSlotLength = intelLength + interLength; 
                     
                     const updateTerminal = () => {
@@ -79,7 +82,6 @@ export default (() => {
                             const progress = timeInSlot / intelLength;
                             const jitter = (Math.random() * 1.5) - 0.75;
                             const lockVal = Math.max(0.1, (99.9 * (1 - progress)) + jitter).toFixed(1);
-                            
                             syncGauge.innerHTML = \`SYNC_LOCK: \${lockVal}%\`;
                             syncGauge.classList.remove('searching');
                         } else {
@@ -88,7 +90,6 @@ export default (() => {
                             syncGauge.classList.add('searching');
                         }
 
-                        // PLAYBACK LOGIC
                         const isDeadAir = !isIntelligenceTime || timeInSlot >= program.duration;
 
                         if (isDeadAir) {
@@ -100,7 +101,6 @@ export default (() => {
                             }
 
                             const intIndex = Math.floor(now / totalSlotLength) % interstitials.length;
-                            // Fix interstitial path for subdirs
                             const intFile = base + interstitials[intIndex].replace(/^\\//, '');
                             
                             info.innerHTML = isIntelligenceTime ? "STATUS: SIGNAL DEGRADED // FILLING GAP" : "STATUS: STANDBY // NEXT SIGNAL PENDING";
@@ -109,7 +109,6 @@ export default (() => {
                                 mount.innerHTML = \`<video 
                                     src="\${intFile}" 
                                     autoplay 
-                                    muted
                                     loop
                                     style="width:100%; height:100%; background:black; object-fit: cover;">
                                 </video>\`;
@@ -152,13 +151,8 @@ export default (() => {
                         if (video) video.volume = currentVolume / 100;
                     });
 
-                    const checkAPI = setInterval(() => {
-                        if (window.YT && window.YT.Player) {
-                            clearInterval(checkAPI);
-                            updateTerminal();
-                            setInterval(updateTerminal, 1000);
-                        }
-                    }, 500);
+                    updateTerminal();
+                    setInterval(updateTerminal, 1000);
 
                 } catch (e) {
                     console.error("Terminal Error:", e);
@@ -166,7 +160,19 @@ export default (() => {
                 }
             }
             
-            window.addEventListener('load', startTerminal);
+            document.getElementById('connect-btn').addEventListener('click', () => {
+                // Ensure YT API is ready before starting
+                if (window.YT && window.YT.Player) {
+                    startTerminal();
+                } else {
+                    const checkAPI = setInterval(() => {
+                        if (window.YT && window.YT.Player) {
+                            clearInterval(checkAPI);
+                            startTerminal();
+                        }
+                    }, 100);
+                }
+            });
         `}} />
       </div>
     )
@@ -216,6 +222,49 @@ export default (() => {
     border: 1px solid #222;
   }
 
+  /* HANDSHAKE OVERLAY */
+  .handshake-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .handshake-content {
+    color: #0f0;
+  }
+
+  .glitch-text {
+    font-weight: bold;
+    margin-bottom: 1.5rem;
+    letter-spacing: 0.2rem;
+    animation: blink 2s infinite steps(1);
+  }
+
+  .handshake-btn {
+    background: transparent;
+    border: 1px solid #0f0;
+    color: #0f0;
+    padding: 0.8rem 1.5rem;
+    cursor: pointer;
+    font-family: inherit;
+    text-transform: uppercase;
+    transition: all 0.2s ease;
+  }
+
+  .handshake-btn:hover {
+    background: #0f0;
+    color: #000;
+    box-shadow: 0 0 15px #0f0;
+  }
+
   .player-mount {
     width: 100%;
     height: 100%;
@@ -251,6 +300,12 @@ export default (() => {
   @keyframes pulse {
     0% { opacity: 1; }
     50% { opacity: 0.4; }
+    100% { opacity: 1; }
+  }
+
+  @keyframes blink {
+    0% { opacity: 1; }
+    50% { opacity: 0.2; }
     100% { opacity: 1; }
   }
   `

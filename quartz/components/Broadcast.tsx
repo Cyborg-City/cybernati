@@ -17,7 +17,7 @@ export default (() => {
 
         <div class="terminal-footer">
             <div class="footer-left">
-                <div id="program-info">WAITING FOR DATA...</div>
+                <div id="program-info">OFFLINE</div>
             </div>
             <div class="footer-right">
                 <button id="mute-toggle" class="mute-btn" title="Toggle Mute">
@@ -36,6 +36,7 @@ export default (() => {
             let currentVolume = 0;
             let isMuted = true;
             let currentVideoId = null;
+            let handshakeEstablished = false;
 
             const iconMute = '<path d="M11 5L6 9H2v6h4l5 4V5z"></path><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line>';
             const iconVol = '<path d="M11 5L6 9H2v6h4l5 4V5z"></path><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>';
@@ -63,8 +64,8 @@ export default (() => {
                     const data = await response.json();
                     const { schedule, interstitials } = data;
                     
-                    const intelLength = 300;
-                    const interLength = 30;
+                    const intelLength = 300; // 5 min
+                    const interLength = 30;  // 30 sec
                     const totalSlotLength = intelLength + interLength; 
                     
                     const updateTerminal = () => {
@@ -75,6 +76,7 @@ export default (() => {
                         const isIntelligenceTime = timeInSlot < intelLength;
                         const program = schedule[slotIndex];
                         
+                        // SYNC GAUGE
                         if (isIntelligenceTime) {
                             const progress = timeInSlot / intelLength;
                             const jitter = (Math.random() * 1.5) - 0.75;
@@ -87,6 +89,7 @@ export default (() => {
                             syncGauge.classList.add('searching');
                         }
 
+                        // PLAYBACK
                         const isDeadAir = !isIntelligenceTime || timeInSlot >= program.duration;
 
                         if (isDeadAir) {
@@ -110,7 +113,6 @@ export default (() => {
                                     loop
                                     style="width:100%; height:100%; background:black; object-fit: cover;">
                                 </video>\`;
-                                // Interstitials are ALWAYS forced silent
                                 const v = mount.querySelector('video');
                                 v.muted = true;
                                 v.volume = 0;
@@ -128,7 +130,7 @@ export default (() => {
                                     videoId: program.id,
                                     playerVars: {
                                         autoplay: 1,
-                                        mute: 1, // Start muted for autoplay
+                                        mute: 1,
                                         controls: 0,
                                         disablekb: 1,
                                         modestbranding: 1,
@@ -153,18 +155,29 @@ export default (() => {
                         volSlider.value = currentVolume;
                     };
 
+                    const establishHandshake = () => {
+                        if (handshakeEstablished) return;
+                        handshakeEstablished = true;
+                        isMuted = false;
+                        currentVolume = 25;
+                        if (player && player.unMute) {
+                            player.unMute();
+                            player.setVolume(currentVolume);
+                        }
+                        updateAudioUI();
+                        window.removeEventListener('click', establishHandshake);
+                        window.removeEventListener('keydown', establishHandshake);
+                    };
+
+                    window.addEventListener('click', establishHandshake);
+                    window.addEventListener('keydown', establishHandshake);
+
                     volSlider.addEventListener('input', (e) => {
                         currentVolume = e.target.value;
-                        if (currentVolume > 0 && isMuted) {
-                            isMuted = false;
-                        } else if (currentVolume == 0 && !isMuted) {
-                            isMuted = true;
-                        }
-                        
+                        isMuted = currentVolume == 0;
                         if (player) {
                             if (isMuted) player.mute(); else { player.unMute(); player.setVolume(currentVolume); }
                         }
-                        // Note: We skip updating local <video> tags because interstitials must stay silent
                         updateAudioUI();
                     });
 
@@ -176,44 +189,24 @@ export default (() => {
                             if (currentVolume === 0) currentVolume = 50;
                             if (player) { player.unMute(); player.setVolume(currentVolume); }
                         }
-                        // Note: We skip updating local <video> tags because interstitials must stay silent
                         updateAudioUI();
                     });
 
-                    // Start loop
-                    const checkAPI = setInterval(() => {
-                        if (window.YT && window.YT.Player) {
-                            clearInterval(checkAPI);
-                            updateTerminal();
-                            setInterval(updateTerminal, 1000);
-
-                            // INVISIBLE HANDSHAKE: Unmute on first interaction anywhere on page
-                            const establishHandshake = () => {
-                                if (isMuted) {
-                                    isMuted = false;
-                                    currentVolume = 25; // Default to 25% on handshake
-                                    if (player && player.unMute) {
-                                        player.unMute();
-                                        player.setVolume(currentVolume);
-                                    }
-                                    updateAudioUI();
-                                }
-                                window.removeEventListener('click', establishHandshake);
-                                window.removeEventListener('keydown', establishHandshake);
-                            };
-                            window.addEventListener('click', establishHandshake);
-                            window.addEventListener('keydown', establishHandshake);
-
-                            } catch (e) {
-
+                    updateTerminal();
+                    setInterval(updateTerminal, 1000);
 
                 } catch (e) {
                     console.error("Terminal Error:", e);
                     mount.innerHTML = '<div class="signal-lost">TERMINAL ERROR: SIGNAL INTERRUPTED</div>';
                 }
             }
-            
-            window.addEventListener('load', startTerminal);
+
+            const checkAPI = setInterval(() => {
+                if (window.YT && window.YT.Player) {
+                    clearInterval(checkAPI);
+                    startTerminal();
+                }
+            }, 500);
         `}} />
       </div>
     )
@@ -293,11 +286,6 @@ export default (() => {
     padding: 2px;
     display: flex;
     align-items: center;
-    transition: transform 0.1s ease;
-  }
-
-  .mute-btn:hover {
-    transform: scale(1.1);
   }
 
   #volume-control {

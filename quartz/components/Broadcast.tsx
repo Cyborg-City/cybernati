@@ -64,7 +64,7 @@ export default (() => {
                     const { schedule, interstitials } = data;
                     
                     const intelLength = 300;
-                    const interLength = 60;
+                    const interLength = 30;
                     const totalSlotLength = intelLength + interLength; 
                     
                     const updateTerminal = () => {
@@ -110,9 +110,10 @@ export default (() => {
                                     loop
                                     style="width:100%; height:100%; background:black; object-fit: cover;">
                                 </video>\`;
+                                // Interstitials are ALWAYS forced silent
                                 const v = mount.querySelector('video');
-                                v.muted = isMuted;
-                                v.volume = currentVolume / 100;
+                                v.muted = true;
+                                v.volume = 0;
                             }
                         } else {
                             info.innerHTML = \`DECODING: \${program.title.toUpperCase()}\`;
@@ -163,11 +164,7 @@ export default (() => {
                         if (player) {
                             if (isMuted) player.mute(); else { player.unMute(); player.setVolume(currentVolume); }
                         }
-                        const video = mount.querySelector('video');
-                        if (video) {
-                            video.muted = isMuted;
-                            video.volume = currentVolume / 100;
-                        }
+                        // Note: We skip updating local <video> tags because interstitials must stay silent
                         updateAudioUI();
                     });
 
@@ -175,14 +172,11 @@ export default (() => {
                         isMuted = !isMuted;
                         if (isMuted) {
                             if (player) player.mute();
-                            const video = mount.querySelector('video');
-                            if (video) video.muted = true;
                         } else {
                             if (currentVolume === 0) currentVolume = 50;
                             if (player) { player.unMute(); player.setVolume(currentVolume); }
-                            const video = mount.querySelector('video');
-                            if (video) { video.muted = false; video.volume = currentVolume / 100; }
                         }
+                        // Note: We skip updating local <video> tags because interstitials must stay silent
                         updateAudioUI();
                     });
 
@@ -192,8 +186,26 @@ export default (() => {
                             clearInterval(checkAPI);
                             updateTerminal();
                             setInterval(updateTerminal, 1000);
-                        }
-                    }, 500);
+
+                            // INVISIBLE HANDSHAKE: Unmute on first interaction anywhere on page
+                            const establishHandshake = () => {
+                                if (isMuted) {
+                                    isMuted = false;
+                                    currentVolume = 25; // Default to 25% on handshake
+                                    if (player && player.unMute) {
+                                        player.unMute();
+                                        player.setVolume(currentVolume);
+                                    }
+                                    updateAudioUI();
+                                }
+                                window.removeEventListener('click', establishHandshake);
+                                window.removeEventListener('keydown', establishHandshake);
+                            };
+                            window.addEventListener('click', establishHandshake);
+                            window.addEventListener('keydown', establishHandshake);
+
+                            } catch (e) {
+
 
                 } catch (e) {
                     console.error("Terminal Error:", e);

@@ -9,6 +9,10 @@ description:
 tags:
   - clippings
 updated: 2026-05-03T15:34:14-05:00
+related:
+  - "[[PAT-0001-assimilation-survival]]"
+  - "[[EVD-0001-roanoke-lost-colony]]"
+modified: 2026-05-09T22:01:27-05:00
 ---
 ![](https://www.youtube.com/watch?v=cUc3uz9RmCA)
 

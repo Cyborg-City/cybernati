@@ -129,10 +129,8 @@ export default (() => {
                             
                             // Render Related Links
                             if (program.related && program.related.length > 0) {
-                                const linksHtml = program.related.map(name => {
-                                    // Quartz URLs are slugs, so we kebab-case the name
-                                    const slug = name.toLowerCase().replace(/ /g, '-');
-                                    return \`<a href="\${base}\${slug}" class="vault-link">\${name}</a>\`;
+                                const linksHtml = program.related.map(linkObj => {
+                                    return \`<a href="\${base}\${linkObj.slug}" class="vault-link">\${linkObj.name}</a>\`;
                                 }).join(' ');
                                 if (linksEl.innerHTML !== linksHtml) linksEl.innerHTML = "LINKS: " + linksHtml;
                             } else {

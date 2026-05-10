@@ -5,7 +5,10 @@
       "duration": 2213,
       "title": "What Science Found at the Edge of Death  The Third Man",
       "related": [
-        "Case-File-UFO-77"
+        {
+          "name": "Case-File-UFO-77",
+          "slug": "Case-File-UFO-77"
+        }
       ]
     },
     {
@@ -13,8 +16,14 @@
       "duration": 527,
       "title": "Scientists Finally Solved The Roanoke Colony Mystery - After 400 Years",
       "related": [
-        "PAT-0001-assimilation-survival",
-        "EVD-0001-roanoke-lost-colony"
+        {
+          "name": "PAT-0001-assimilation-survival",
+          "slug": "Patterns/PAT-0001-assimilation-survival"
+        },
+        {
+          "name": "EVD-0001-roanoke-lost-colony",
+          "slug": "Evidence/EVD-0001-roanoke-lost-colony"
+        }
       ]
     },
     {
@@ -22,9 +31,18 @@
       "duration": 451,
       "title": "The Colony of Roanoke’s Mysterious Disappearance  The UnXplained (Season 3)  History",
       "related": [
-        "CLM-0001-walsingham-sabotage",
-        "EVD-0001-roanoke-lost-colony",
-        "PAT-0001-assimilation-survival"
+        {
+          "name": "CLM-0001-walsingham-sabotage",
+          "slug": "Claims/CLM-0001-walsingham-sabotage"
+        },
+        {
+          "name": "EVD-0001-roanoke-lost-colony",
+          "slug": "Evidence/EVD-0001-roanoke-lost-colony"
+        },
+        {
+          "name": "PAT-0001-assimilation-survival",
+          "slug": "Patterns/PAT-0001-assimilation-survival"
+        }
       ]
     },
     {
@@ -32,8 +50,14 @@
       "duration": 603,
       "title": "7 Theories About the Mysterious Vanishing Of Roanoke Colony 1",
       "related": [
-        "DOS-0001-roanoke-de-indexing",
-        "CLM-0002-linguistic-command-code"
+        {
+          "name": "DOS-0001-roanoke-de-indexing",
+          "slug": "Dossiers/DOS-0001-roanoke-de-indexing"
+        },
+        {
+          "name": "CLM-0002-linguistic-command-code",
+          "slug": "Claims/CLM-0002-linguistic-command-code"
+        }
       ]
     },
     {
@@ -41,7 +65,10 @@
       "duration": 3952,
       "title": "ALL Government UFO Videos Explained",
       "related": [
-        "Case-File-UFO-77"
+        {
+          "name": "Case-File-UFO-77",
+          "slug": "Case-File-UFO-77"
+        }
       ]
     },
     {
@@ -49,7 +76,10 @@
       "duration": 3459,
       "title": "ALIEN INCURSION—U.F.O. FILES TRUMP & ULTIMATE DISCLOSURE IMMINENT… (LIVE) PROPHETIC INTEL BRIEFING!",
       "related": [
-        "Case-File-UFO-77"
+        {
+          "name": "Case-File-UFO-77",
+          "slug": "Case-File-UFO-77"
+        }
       ]
     }
   ],

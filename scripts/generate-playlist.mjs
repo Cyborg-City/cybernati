@@ -39,15 +39,17 @@ async function scrapeDuration(id) {
 }
 
 async function generatePlaylist() {
-  console.log('--- CYBERNATI™ STATION MANAGER (SYNC_MODE) ---')
+  console.log('--- CYBERNATI™ STATION MANAGER (PATH_RESOLVE_MODE) ---')
   
-  // 1. Query the Base (Implicitly respects the visual sort order)
+  // 1. Pre-fetch all vault files for precise lookup
+  console.log("Indexing vault for path resolution...")
+  const allFilesRaw = obsidian(`files total`) // Get all files
+  const vaultIndex = obsidian(`files`).split('\n').map(p => p.trim()).filter(p => p.endsWith('.md'))
+
+  // 2. Query the Base
   console.log(`Pulling visual order from: ${BASE_FILE}...`)
   const queryResult = obsidian(`base:query path="${BASE_FILE}" view="Table" format=json`)
-  if (!queryResult) {
-    console.error("Critical Failure: Could not query the Base.")
-    return
-  }
+  if (!queryResult) return
   
   const filesData = JSON.parse(queryResult)
   const playlist = []
@@ -63,7 +65,7 @@ async function generatePlaylist() {
 
     process.stdout.write(`Processing: ${fileName.substring(0, 40)}... `)
 
-    // 2. Duration Logic
+    // Duration Logic
     let duration = item.duration ? parseInt(item.duration) : null
     if (!duration || duration === 0) {
       process.stdout.write(`(Scraping) `)
@@ -71,18 +73,32 @@ async function generatePlaylist() {
       obsidian(`property:set name=duration value=${duration} path="${filePath}" type=number`)
     }
 
-    // 3. Process related notes (Clean [[ ]] and | aliases at the source)
+    // Related Notes Resolution
     let related = []
     if (item.related) {
       const rawRelated = typeof item.related === 'string' 
         ? item.related.split(',').map(s => s.trim()) 
         : (Array.isArray(item.related) ? item.related : [])
 
-      related = rawRelated.map(link => {
-        return link.replace(/[\[\]]/g, '').split('|')[0].trim()
-      })
-    }
+      for (const link of rawRelated) {
+        const cleanName = link.replace(/[\[\]]/g, '').split('|')[0].trim()
+        
+        // Find exact match in our pre-fetched index
+        const actualPath = vaultIndex.find(p => {
+            const nameOnly = p.split('/').pop().replace('.md', '')
+            return nameOnly === cleanName
+        })
 
+        if (actualPath) {
+          // Quartz Slug: Remove 'content/' prefix, remove '.md', handle spaces
+          const slug = actualPath.replace(/^content\//, '').replace(/\.md$/, '').replace(/ /g, '-')
+          related.push({ name: cleanName, slug })
+        } else {
+          // Fallback to simple name
+          related.push({ name: cleanName, slug: cleanName.replace(/ /g, '-') })
+        }
+      }
+    }
 
     playlist.push({ id, duration, title: fileName, related })
     console.log(`[OK]`)
@@ -97,14 +113,8 @@ async function generatePlaylist() {
     ]
   }
 
-  // 4. Atomic Force-Write
   try {
-    const outputDir = path.dirname(OUTPUT_FILE)
-    if (!fs.existsSync(outputDir)) fs.mkdirSync(outputDir, { recursive: true })
-    
-    // Explicitly delete if exists to bypass locks/caching
     if (fs.existsSync(OUTPUT_FILE)) fs.unlinkSync(OUTPUT_FILE)
-    
     fs.writeFileSync(OUTPUT_FILE, JSON.stringify(data, null, 2))
   } catch (e) {
     console.error(`File System Error: ${e.message}`)
@@ -114,7 +124,6 @@ async function generatePlaylist() {
   console.log(`\n==============================================`)
   console.log(`📡 BROADCAST TERMINAL: SYNCHRONIZATION COMPLETE`)
   console.log(`==============================================`)
-  console.log(`Active Signal: ${playlist[0]?.title || 'NONE'}`)
   console.log(`Total Loop: ${playlist.length} signals`)
   console.log(`==============================================\n`)
 }

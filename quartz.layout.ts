@@ -30,10 +30,6 @@ export const defaultContentPageLayout: PageLayout = {
     Component.ArticleTitle(),
     Component.ContentMeta(),
     Component.TagList(),
-    Component.ConditionalRender({
-      component: Component.Broadcast(),
-      condition: (page) => page.fileData.slug === "CH-0000",
-    }),
   ],
   left: [
     Component.PageTitle(),
@@ -54,6 +50,12 @@ export const defaultContentPageLayout: PageLayout = {
     Component.Graph(),
     Component.DesktopOnly(Component.TableOfContents()),
     Component.Backlinks(),
+  ],
+  afterBody: [
+    Component.ConditionalRender({
+      component: Component.Broadcast(),
+      condition: (page) => page.fileData.slug?.toLowerCase() === "ch-0000",
+    }),
   ],
 }
 

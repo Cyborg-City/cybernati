@@ -77,10 +77,42 @@ export default (() => {
             if (window.location.search.includes('embed=true')) {
                 const style = document.createElement('style');
                 style.innerHTML = \`
-                    header, footer, .left, .right, .backlinks, .toc, .recent-notes { display: none !important; }
-                    .center { width: 100% !important; max-width: 100% !important; padding: 0 !important; }
-                    .broadcast-terminal { margin: 0 !important; border: none !important; border-radius: 0 !important; height: 100vh !important; }
-                    body { background: black !important; }
+                    /* Hide EVERYTHING by default */
+                    header, footer, .sidebar, .left, .right, .backlinks, .toc, .recent-notes, .page-header, .page-footer, .breadcrumb-container, article, hr { 
+                        display: none !important; 
+                    }
+                    
+                    /* Force the terminal and its direct path to be visible */
+                    body, #quartz-root, #quartz-body, .center, .page, .page-footer { 
+                        display: block !important; 
+                        margin: 0 !important; 
+                        padding: 0 !important; 
+                        width: 100vw !important; 
+                        height: 100vh !important; 
+                        background: black !important;
+                        overflow: hidden !important;
+                    }
+
+                    .broadcast-terminal { 
+                        display: flex !important;
+                        position: fixed !important;
+                        top: 0 !important;
+                        left: 0 !important;
+                        right: 0 !important;
+                        bottom: 0 !important;
+                        width: auto !important;
+                        height: auto !important;
+                        z-index: 999999 !important;
+                        margin: 0 !important;
+                        border: none !important;
+                        background: #000 !important;
+                        padding: 12px !important;
+                        flex-direction: column !important;
+                        box-sizing: border-box !important;
+                    }
+                    
+                    .terminal-screen { flex-grow: 1 !important; height: auto !important; }
+                    #yt-player, .player-mount video { height: 100% !important; }
                 \`;
                 document.head.appendChild(style);
             }
@@ -304,9 +336,12 @@ export default (() => {
   .modal-content {
     background: #050505;
     border: 1px solid #0f0;
-    padding: 1rem;
-    width: 100%;
+    padding: 1.5rem;
+    width: 90%;
+    max-width: 500px;
     color: #0f0;
+    box-shadow: 0 0 40px rgba(0,255,0,0.2);
+    box-sizing: border-box;
   }
 
   .modal-header {

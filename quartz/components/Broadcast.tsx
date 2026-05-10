@@ -5,7 +5,7 @@ export default (() => {
     return (
       <div class="broadcast-terminal">
         <div class="terminal-header">
-            <div id="video-title" class="terminal-id">TERMINAL://INIT_SIGNAL</div>
+            <div id="video-title" class="terminal-id">TERMINAL://BOOTING_...</div>
             <div id="sync-gauge" class="sync-gauge">SYNC_LOCK: --.-%</div>
         </div>
         
@@ -63,106 +63,90 @@ export default (() => {
                     const isSubdir = pathSegments.length > 2;
                     const base = isSubdir ? '/' + pathSegments[1] + '/' : '/';
                     
-                    const response = await fetch(base + 'static/video_playlist.json');
+                    console.log("Terminal: Loading playlist from " + base + 'static/video_playlist.json');
+                    const response = await fetch(base + 'static/video_playlist.json?v=' + Date.now()); // Bypass cache
                     const data = await response.json();
-                    const { schedule, interstitials } = data;
+                    const { totalLoopDuration, schedule, interstitials } = data;
                     
-                    const intelLength = 60;  // 1 min for testing
-                    const interLength = 30;  // 30 sec for testing
-                    const totalSlotLength = intelLength + interLength; 
+                    console.log("Terminal: Loop Initialized. Duration: " + totalLoopDuration + "s. Items: " + schedule.length);
 
-                    
                     const updateTerminal = () => {
                         const now = Math.floor(Date.now() / 1000);
-                        const slotIndex = Math.floor(now / totalSlotLength) % schedule.length;
-                        const timeInSlot = now % totalSlotLength;
+                        const currentPos = now % totalLoopDuration;
                         
-                        const isIntelligenceTime = timeInSlot < intelLength;
-                        const program = schedule[slotIndex];
-                        
-                        // SYNC GAUGE
-                        if (isIntelligenceTime) {
-                            const progress = timeInSlot / intelLength;
-                            const jitter = (Math.random() * 1.5) - 0.75;
-                            const lockVal = Math.max(0.1, (99.9 * (1 - progress)) + jitter).toFixed(1);
-                            syncGauge.innerHTML = \`SYNC_LOCK: \${lockVal}%\`;
-                            syncGauge.classList.remove('searching');
-                            titleEl.innerHTML = \`DECODING://\${program.title.toUpperCase()}\`;
-                        } else {
-                            const countdown = interLength - (timeInSlot - intelLength);
-                            syncGauge.innerHTML = \`ALIGNING: T-minus \${countdown}s\`;
-                            syncGauge.classList.add('searching');
-                            titleEl.innerHTML = "TERMINAL://SEARCHING_SIGNAL";
+                        let activeProgram = null;
+                        let isStandby = true;
+                        let timeUntilNext = 0;
+                        let offset = 0;
+
+                        // Precise Timeline Match
+                        for (let i = 0; i < schedule.length; i++) {
+                            const prog = schedule[i];
+                            if (currentPos >= prog.start && currentPos < prog.end) {
+                                activeProgram = prog;
+                                isStandby = false;
+                                offset = currentPos - prog.start;
+                                break;
+                            }
+                            // Check if we are in the gap after this program
+                            if (currentPos >= prog.end && (i === schedule.length - 1 || currentPos < schedule[i+1].start)) {
+                                isStandby = true;
+                                timeUntilNext = (i === schedule.length - 1) 
+                                    ? (totalLoopDuration - currentPos) 
+                                    : (schedule[i+1].start - currentPos);
+                                break;
+                            }
                         }
 
-                        // PLAYBACK
-                        const isDeadAir = !isIntelligenceTime || timeInSlot >= program.duration;
+                        if (!isStandby && activeProgram) {
+                            const progress = offset / activeProgram.duration;
+                            const lockVal = Math.max(0.1, (99.9 * (1 - progress))).toFixed(1);
+                            
+                            syncGauge.innerHTML = \`SYNC_LOCK: \${lockVal}%\`;
+                            syncGauge.classList.remove('searching');
+                            titleEl.innerHTML = \`DECODING://\${activeProgram.title.toUpperCase()}\`;
+                            info.innerHTML = "STATUS: SIGNAL LOCKED";
+                            
+                            if (activeProgram.related && activeProgram.related.length > 0) {
+                                const linksHtml = activeProgram.related.map(link => \`<a href="\${base}\${link.slug}" class="vault-link">[\${link.name}]</a>\`).join(' ');
+                                linksEl.innerHTML = "LINKS: " + linksHtml;
+                            } else {
+                                linksEl.innerHTML = "";
+                            }
 
-                        if (isDeadAir) {
-                            if (player && player.destroy) {
-                                player.destroy();
+                            if (currentVideoId !== activeProgram.id) {
+                                console.log("Terminal: Locking new signal: " + activeProgram.id + " at offset " + offset);
+                                currentVideoId = activeProgram.id;
+                                mount.innerHTML = '<div id="yt-player"></div>';
+                                player = new YT.Player('yt-player', {
+                                    height: '100%',
+                                    width: '100%',
+                                    videoId: activeProgram.id,
+                                    playerVars: { autoplay: 1, mute: 1, controls: 0, disablekb: 1, modestbranding: 1, rel: 0, start: Math.floor(offset) },
+                                    events: { onReady: (e) => { if (!isMuted) { e.target.unMute(); e.target.setVolume(currentVolume); } } }
+                                });
+                            }
+                        } else {
+                            // STANDBY MODE
+                            syncGauge.innerHTML = \`ALIGNING: T-minus \${timeUntilNext}s\`;
+                            syncGauge.classList.add('searching');
+                            titleEl.innerHTML = "TERMINAL://SEARCHING_SIGNAL";
+                            info.innerHTML = "STATUS: STANDBY // NEXT SIGNAL PENDING";
+                            linksEl.innerHTML = "";
+
+                            if (player) {
+                                console.log("Terminal: Dropping signal. Entering Standby.");
+                                if (player.destroy) player.destroy();
                                 player = null;
                                 currentVideoId = null;
                                 mount.innerHTML = '';
                             }
 
-                            const intIndex = Math.floor(now / totalSlotLength) % interstitials.length;
+                            const intIndex = Math.floor(now / 10) % interstitials.length;
                             const intFile = base + interstitials[intIndex].replace(/^\\//, '');
                             
-                            info.innerHTML = isIntelligenceTime ? "STATUS: SIGNAL DEGRADED // FILLING GAP" : "STATUS: STANDBY // NEXT SIGNAL PENDING";
-                            linksEl.innerHTML = ""; // Clear links during standby
-                            
                             if (!mount.querySelector('video') || !mount.querySelector('video').src.includes(intFile)) {
-                                mount.innerHTML = \`<video 
-                                    src="\${intFile}" 
-                                    autoplay 
-                                    muted
-                                    loop
-                                    style="width:100%; height:100%; background:black; object-fit: cover;">
-                                </video>\`;
-                                const v = mount.querySelector('video');
-                                v.muted = true;
-                                v.volume = 0;
-                            }
-                        } else {
-                            info.innerHTML = "STATUS: SIGNAL LOCKED";
-                            
-                            // Render Related Links
-                            if (program.related && program.related.length > 0) {
-                                const linksHtml = program.related.map(linkObj => {
-                                    return \`<a href="\${base}\${linkObj.slug}" class="vault-link">\${linkObj.name}</a>\`;
-                                }).join(' ');
-                                if (linksEl.innerHTML !== linksHtml) linksEl.innerHTML = "LINKS: " + linksHtml;
-                            } else {
-                                linksEl.innerHTML = "";
-                            }
-                            
-                            if (currentVideoId !== program.id) {
-                                currentVideoId = program.id;
-                                mount.innerHTML = '<div id="yt-player"></div>';
-                                
-                                player = new YT.Player('yt-player', {
-                                    height: '100%',
-                                    width: '100%',
-                                    videoId: program.id,
-                                    playerVars: {
-                                        autoplay: 1,
-                                        mute: 1,
-                                        controls: 0,
-                                        disablekb: 1,
-                                        modestbranding: 1,
-                                        rel: 0,
-                                        start: timeInSlot
-                                    },
-                                    events: {
-                                        onReady: (event) => {
-                                            if (!isMuted) {
-                                                event.target.unMute();
-                                                event.target.setVolume(currentVolume);
-                                            }
-                                        }
-                                    }
-                                });
+                                mount.innerHTML = \`<video src="\${intFile}" autoplay muted loop style="width:100%; height:100%; background:black; object-fit: cover;"></video>\`;
                             }
                         }
                     };
@@ -177,40 +161,29 @@ export default (() => {
                         handshakeEstablished = true;
                         isMuted = false;
                         currentVolume = 25;
-                        if (player && player.unMute) {
-                            player.unMute();
-                            player.setVolume(currentVolume);
-                        }
+                        if (player && player.unMute) { player.unMute(); player.setVolume(currentVolume); }
                         updateAudioUI();
                         window.removeEventListener('click', establishHandshake);
-                        window.removeEventListener('keydown', establishHandshake);
                     };
 
                     window.addEventListener('click', establishHandshake);
-                    window.addEventListener('keydown', establishHandshake);
 
                     volSlider.addEventListener('input', (e) => {
                         currentVolume = e.target.value;
                         isMuted = currentVolume == 0;
-                        if (player) {
-                            if (isMuted) player.mute(); else { player.unMute(); player.setVolume(currentVolume); }
-                        }
+                        if (player) { if (isMuted) player.mute(); else { player.unMute(); player.setVolume(currentVolume); } }
                         updateAudioUI();
                     });
 
                     muteBtn.addEventListener('click', () => {
                         isMuted = !isMuted;
-                        if (isMuted) {
-                            if (player) player.mute();
-                        } else {
-                            if (currentVolume === 0) currentVolume = 50;
-                            if (player) { player.unMute(); player.setVolume(currentVolume); }
-                        }
+                        if (isMuted) { if (player) player.mute(); } 
+                        else { if (currentVolume === 0) currentVolume = 50; if (player) { player.unMute(); player.setVolume(currentVolume); } }
                         updateAudioUI();
                     });
 
                     updateTerminal();
-                    setInterval(updateTerminal, 1000);
+                    setInterval(updateTerminal, 2000); // Check every 2s for stability
 
                 } catch (e) {
                     console.error("Terminal Error:", e);
@@ -255,7 +228,7 @@ export default (() => {
   .sync-gauge {
     color: #0f0;
     font-weight: bold;
-    min-width: 180px;
+    min-width: 200px;
     text-align: right;
   }
 

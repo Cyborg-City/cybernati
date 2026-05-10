@@ -1,9 +1,20 @@
 {
+  "totalLoopDuration": 12897,
   "schedule": [
     {
+      "id": "Z1V-aCva49M",
+      "title": "The Missing Scientists Case Is So Much Worse Than You Think",
+      "duration": 1482,
+      "start": 0,
+      "end": 1482,
+      "related": []
+    },
+    {
       "id": "xVJ7QASPMio",
-      "duration": 2213,
       "title": "What Science Found at the Edge of Death  The Third Man",
+      "duration": 2213,
+      "start": 1512,
+      "end": 3725,
       "related": [
         {
           "name": "Case-File-UFO-77",
@@ -13,57 +24,65 @@
     },
     {
       "id": "cUc3uz9RmCA",
-      "duration": 527,
       "title": "Scientists Finally Solved The Roanoke Colony Mystery - After 400 Years",
+      "duration": 527,
+      "start": 3755,
+      "end": 4282,
       "related": [
         {
           "name": "PAT-0001-assimilation-survival",
-          "slug": "Patterns/PAT-0001-assimilation-survival"
+          "slug": "PAT-0001-assimilation-survival"
         },
         {
           "name": "EVD-0001-roanoke-lost-colony",
-          "slug": "Evidence/EVD-0001-roanoke-lost-colony"
+          "slug": "EVD-0001-roanoke-lost-colony"
         }
       ]
     },
     {
       "id": "sckzQiXapk8",
-      "duration": 451,
       "title": "The Colony of Roanoke’s Mysterious Disappearance  The UnXplained (Season 3)  History",
+      "duration": 451,
+      "start": 4312,
+      "end": 4763,
       "related": [
         {
           "name": "CLM-0001-walsingham-sabotage",
-          "slug": "Claims/CLM-0001-walsingham-sabotage"
+          "slug": "CLM-0001-walsingham-sabotage"
         },
         {
           "name": "EVD-0001-roanoke-lost-colony",
-          "slug": "Evidence/EVD-0001-roanoke-lost-colony"
+          "slug": "EVD-0001-roanoke-lost-colony"
         },
         {
           "name": "PAT-0001-assimilation-survival",
-          "slug": "Patterns/PAT-0001-assimilation-survival"
+          "slug": "PAT-0001-assimilation-survival"
         }
       ]
     },
     {
       "id": "UDdt_ZHGcUA",
-      "duration": 603,
       "title": "7 Theories About the Mysterious Vanishing Of Roanoke Colony 1",
+      "duration": 603,
+      "start": 4793,
+      "end": 5396,
       "related": [
         {
           "name": "DOS-0001-roanoke-de-indexing",
-          "slug": "Dossiers/DOS-0001-roanoke-de-indexing"
+          "slug": "DOS-0001-roanoke-de-indexing"
         },
         {
           "name": "CLM-0002-linguistic-command-code",
-          "slug": "Claims/CLM-0002-linguistic-command-code"
+          "slug": "CLM-0002-linguistic-command-code"
         }
       ]
     },
     {
       "id": "54vJW1wSZ-w",
-      "duration": 3952,
       "title": "ALL Government UFO Videos Explained",
+      "duration": 3952,
+      "start": 5426,
+      "end": 9378,
       "related": [
         {
           "name": "Case-File-UFO-77",
@@ -73,8 +92,10 @@
     },
     {
       "id": "J_r5fibpKVc",
-      "duration": 3459,
       "title": "ALIEN INCURSION—U.F.O. FILES TRUMP & ULTIMATE DISCLOSURE IMMINENT… (LIVE) PROPHETIC INTEL BRIEFING!",
+      "duration": 3459,
+      "start": 9408,
+      "end": 12867,
       "related": [
         {
           "name": "Case-File-UFO-77",

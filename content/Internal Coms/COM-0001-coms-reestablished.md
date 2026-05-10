@@ -16,12 +16,13 @@ confidence: High
 mechanism: Hidden Archive
 primary_beneficiary: Cybernati Operatives
 created: 2026-05-05
-modified: 2026-05-05T01:44:37-05:00
+modified: 2026-05-10T12:01:59-05:00
 narrative_volatility: Stable
 source_provenance: Intercepted PGP Message
 description: Secure transmission regarding the re-establishment of communication and the tactical use of public wikis for archive maintenance.
 related:
   - "[[MEM-0001-observability-mandate]]"
+  - "[[CLM-0002-linguistic-command-code]]"
 ---
 
 **TO**: Operative ||Simply PWNED||
@@ -42,6 +43,7 @@ Welcome back to the loop. If you run into any friction or need a sanity check on
 **Current Outcomes Align With Intended Design.**
 
 ```
-reverof ylruoh segnahc taht sciremunahpla rehto dna
+.naotaorC
+.reverof ylruoh segnahc taht sciremunahpla rehto dna
 srettel dna srebmun modnar fo tes a si eman tsrif yM
 ```

@@ -1,0 +1,24 @@
+views:
+  - type: table
+    name: Table
+    filters:
+      and:
+        - file.hasTag("clippings")
+        - file.inFolder("video_archive")
+    order:
+      - file.name
+      - created
+      - modified
+      - source
+      - duration
+      - related
+    sort:
+      - property: modified
+        direction: DESC
+      - property: file.name
+        direction: ASC
+      - property: updated
+        direction: DESC
+    columnSize:
+      file.name: 364
+      note.created: 139

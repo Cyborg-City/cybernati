@@ -9,6 +9,9 @@ description: "**You activate heaven’s army when you pray**. Join Joseph Z, All
 tags:
   - clippings
 modified: 2026-05-06T16:21:21-05:00
+duration: 3459
+related:
+  - "[[Case-File-UFO-77]]"
 ---
 ![](https://www.youtube.com/watch?v=J_r5fibpKVc)
 

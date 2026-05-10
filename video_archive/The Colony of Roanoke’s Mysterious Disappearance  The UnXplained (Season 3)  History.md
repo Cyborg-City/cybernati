@@ -14,6 +14,7 @@ related:
   - "[[EVD-0001-roanoke-lost-colony]]"
   - "[[PAT-0001-assimilation-survival]]"
 modified: 2026-05-09T21:58:04-05:00
+duration: 451
 ---
 ![](https://www.youtube.com/watch?v=sckzQiXapk8)
 

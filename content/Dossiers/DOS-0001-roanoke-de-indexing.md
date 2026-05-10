@@ -35,6 +35,7 @@ In 1590, Governor John White returned to a settlement that was not destroyed, bu
 - **The "La Virginia Pars" Map**: A hidden fort symbol, masked by a paper patch, indicating the colony's intended relocation was known to the architects but suppressed from the public record.
 [[0e30fdeb17e71f7334069b35ae32443a_MD5.webp|La Virginia Pars]]
 [[350f6367e7f8f6e5273eb1c069dd17fb_MD5.webp|Open: 0e30fdeb17e71f7334069b35ae32443a_MD5.webp]]
+[[350f6367e7f8f6e5273eb1c069dd17fb_MD5.webp|Open: 350f6367e7f8f6e5273eb1c069dd17fb_MD5.webp]]
 ![[350f6367e7f8f6e5273eb1c069dd17fb_MD5.webp]]
 - **Archaeological Fingerprints**: The discovery of **Surrey-Hampshire Border Ware** at **Site X (Salmon Creek)** and **Site Y (Mettaquem)** in Bertie County confirms that the entities survived physical removal. These ceramics, which pre-date the 1607 Jamestown settlement, indicate a sustained presence 50 miles inland from the original fort. [^7]
 - **Genetic Persistence**: The biological data of the "refugees" (e.g., the Brown family markers) proves that while the metadata was scrubbed, the physical components were assimilated into the local indigenous infrastructure.

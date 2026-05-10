@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "video_archive/7 Theories About the Mysterious Vanishing Of Roanoke Colony 1.md",
+                "file": "content/index.md",
                 "mode": "source",
                 "source": false,
                 "backlinks": true,
@@ -28,27 +28,7 @@
                 }
               },
               "icon": "lucide-file",
-              "title": "7 Theories About the Mysterious Vanishing Of Roanoke Colony 1"
-            }
-          },
-          {
-            "id": "e5c9d5dc1797714f",
-            "type": "leaf",
-            "state": {
-              "type": "smart-release-notes-view",
-              "state": {},
-              "icon": "file-text",
-              "title": "Release Notes"
-            }
-          },
-          {
-            "id": "b9df8e943d2f518b",
-            "type": "leaf",
-            "state": {
-              "type": "smart-lookup-release-notes-view",
-              "state": {},
-              "icon": "file-text",
-              "title": "Release Notes"
+              "title": "index"
             }
           },
           {
@@ -57,7 +37,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "video_archive/ALIEN INCURSION—U.F.O. FILES TRUMP & ULTIMATE DISCLOSURE IMMINENT… (LIVE) PROPHETIC INTEL BRIEFING!.md",
+                "file": "content/About.md",
                 "mode": "source",
                 "source": false,
                 "backlinks": true,
@@ -72,11 +52,10 @@
                 }
               },
               "icon": "lucide-file",
-              "title": "ALIEN INCURSION—U.F.O. FILES TRUMP & ULTIMATE DISCLOSURE IMMINENT… (LIVE) PROPHETIC INTEL BRIEFING!"
+              "title": "About"
             }
           }
-        ],
-        "currentTab": 3
+        ]
       }
     ],
     "direction": "vertical"
@@ -257,7 +236,7 @@
             "state": {
               "type": "localgraph",
               "state": {
-                "file": "video_archive/ALIEN INCURSION—U.F.O. FILES TRUMP & ULTIMATE DISCLOSURE IMMINENT… (LIVE) PROPHETIC INTEL BRIEFING!.md",
+                "file": "content/index.md",
                 "options": {
                   "collapse-filter": false,
                   "search": "",
@@ -285,7 +264,7 @@
                 }
               },
               "icon": "lucide-git-fork",
-              "title": "Graph of ALIEN INCURSION—U.F.O. FILES TRUMP & ULTIMATE DISCLOSURE IMMINENT… (LIVE) PROPHETIC INTEL BRIEFING!"
+              "title": "Graph of index"
             }
           }
         ]
@@ -313,43 +292,44 @@
       "smart-lookup:Smart Lookup: Open lookup view": false
     }
   },
-  "active": "c45908095075f638",
+  "active": "04aaa064ac96a36c",
   "lastOpenFiles": [
-    "video_archive/Scientists Finally Solved The Roanoke Colony Mystery - After 400 Years.md",
+    "content/About.md",
+    "content/index.md",
     "video_archive/7 Theories About the Mysterious Vanishing Of Roanoke Colony 1.md",
-    "content/Case-File-UFO-77.md",
-    "content/364805f72021e1a1372ece0effaabe7b_MD5.png",
-    "video_archive/The Colony of Roanoke’s Mysterious Disappearance  The UnXplained (Season 3)  History.md",
-    "content/Patterns/PAT-0001-assimilation-survival.md",
-    "content/Claims/CLM-0002-linguistic-command-code.md",
-    "content/Dossiers/DOS-0001-roanoke-de-indexing.md",
-    "video_archive/ALL Government UFO Videos Explained.md",
+    "video_archive/ALIEN INCURSION—U.F.O. FILES TRUMP & ULTIMATE DISCLOSURE IMMINENT… (LIVE) PROPHETIC INTEL BRIEFING!.md",
     "content/Timelines/TIM-0001-main.md",
     "content/Timelines",
     "content/Project-MK-Ultra-Redacted.md",
     "content/Places",
     "content/People/PER-0001-john-white.md",
     "content/People",
+    "content/Patterns/PAT-0001-assimilation-survival.md",
     "content/Patterns",
     "content/Pacific-Northwest-Sighting.md",
     "content/Internal Coms/MEM-0001-observability-mandate.md",
     "content/Internal Coms/COM-0001-coms-reestablished.md",
     "content/Internal Coms",
-    "content/index.md",
     "content/Evidence/EVD-0001-roanoke-lost-colony.md",
     "content/Evidence",
     "content/Events",
+    "content/Dossiers/DOS-0001-roanoke-de-indexing.md",
     "content/Dossiers/350f6367e7f8f6e5273eb1c069dd17fb_MD5.webp",
     "content/Dossiers",
+    "content/Claims/CLM-0002-linguistic-command-code.md",
     "content/Claims/CLM-0001-walsingham-sabotage.md",
     "content/Claims",
     "content/CH-0000.md",
+    "content/Case-File-UFO-77.md",
+    "content/364805f72021e1a1372ece0effaabe7b_MD5.png",
     "content",
+    "video_archive/Scientists Finally Solved The Roanoke Colony Mystery - After 400 Years.md",
+    "video_archive/The Colony of Roanoke’s Mysterious Disappearance  The UnXplained (Season 3)  History.md",
+    "video_archive/ALL Government UFO Videos Explained.md",
     "Clippings/2026-05-08 X MyLordBebo.md",
     "Clippings/GIMBAL - UAP.md",
     "Clippings/d70a3924cedd8cc5c6085c8fa55604a4_MD5.webp",
     "Clippings/bfc9bc6ca82333d4bc9a1480f2f4d067_MD5.webp",
-    "video_archive/ALIEN INCURSION—U.F.O. FILES TRUMP & ULTIMATE DISCLOSURE IMMINENT… (LIVE) PROPHETIC INTEL BRIEFING!.md",
     "Clippings/2022-06-11 X Divinsity.md",
     "Clippings/a2592d1ef388f26622e59e9c111b405b_MD5.jpg",
     "Clippings/93ecf8d8996c288bd671965b7bbdfa2c_MD5.jpg",

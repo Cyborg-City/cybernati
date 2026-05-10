@@ -11,48 +11,10 @@
             "id": "04aaa064ac96a36c",
             "type": "leaf",
             "state": {
-              "type": "markdown",
-              "state": {
-                "file": "content/index.md",
-                "mode": "source",
-                "source": false,
-                "backlinks": true,
-                "backlinkOpts": {
-                  "collapseAll": false,
-                  "extraContext": false,
-                  "sortOrder": "alphabetical",
-                  "showSearch": false,
-                  "searchQuery": "",
-                  "backlinkCollapsed": false,
-                  "unlinkedCollapsed": true
-                }
-              },
+              "type": "empty",
+              "state": {},
               "icon": "lucide-file",
-              "title": "index"
-            }
-          },
-          {
-            "id": "955ac2a51fc8bbec",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "content/About.md",
-                "mode": "source",
-                "source": false,
-                "backlinks": true,
-                "backlinkOpts": {
-                  "collapseAll": false,
-                  "extraContext": false,
-                  "sortOrder": "alphabetical",
-                  "showSearch": false,
-                  "searchQuery": "",
-                  "backlinkCollapsed": false,
-                  "unlinkedCollapsed": true
-                }
-              },
-              "icon": "lucide-file",
-              "title": "About"
+              "title": "New tab"
             }
           }
         ]
@@ -236,7 +198,6 @@
             "state": {
               "type": "localgraph",
               "state": {
-                "file": "content/index.md",
                 "options": {
                   "collapse-filter": false,
                   "search": "",
@@ -264,7 +225,7 @@
                 }
               },
               "icon": "lucide-git-fork",
-              "title": "Graph of index"
+              "title": "Graph view"
             }
           }
         ]
@@ -294,10 +255,6 @@
   },
   "active": "04aaa064ac96a36c",
   "lastOpenFiles": [
-    "content/About.md",
-    "content/index.md",
-    "video_archive/7 Theories About the Mysterious Vanishing Of Roanoke Colony 1.md",
-    "video_archive/ALIEN INCURSION—U.F.O. FILES TRUMP & ULTIMATE DISCLOSURE IMMINENT… (LIVE) PROPHETIC INTEL BRIEFING!.md",
     "content/Timelines/TIM-0001-main.md",
     "content/Timelines",
     "content/Project-MK-Ultra-Redacted.md",
@@ -310,6 +267,7 @@
     "content/Internal Coms/MEM-0001-observability-mandate.md",
     "content/Internal Coms/COM-0001-coms-reestablished.md",
     "content/Internal Coms",
+    "content/index.md",
     "content/Evidence/EVD-0001-roanoke-lost-colony.md",
     "content/Evidence",
     "content/Events",
@@ -321,8 +279,11 @@
     "content/Claims",
     "content/CH-0000.md",
     "content/Case-File-UFO-77.md",
+    "content/About.md",
     "content/364805f72021e1a1372ece0effaabe7b_MD5.png",
     "content",
+    "video_archive/7 Theories About the Mysterious Vanishing Of Roanoke Colony 1.md",
+    "video_archive/ALIEN INCURSION—U.F.O. FILES TRUMP & ULTIMATE DISCLOSURE IMMINENT… (LIVE) PROPHETIC INTEL BRIEFING!.md",
     "video_archive/Scientists Finally Solved The Roanoke Colony Mystery - After 400 Years.md",
     "video_archive/The Colony of Roanoke’s Mysterious Disappearance  The UnXplained (Season 3)  History.md",
     "video_archive/ALL Government UFO Videos Explained.md",
@@ -338,7 +299,6 @@
     "Clippings/Post by @UAPDr on X.md",
     "Clippings/Pasted image 20260508145852.png",
     "Clippings/Untitled.md",
-    "private/Cybernati-Lore.md",
     "Clippings/e3a44f714504aadf03a376f89f6bdf27_MD5.jpg"
   ]
 }

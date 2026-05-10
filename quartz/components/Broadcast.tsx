@@ -5,7 +5,7 @@ export default (() => {
     return (
       <div class="broadcast-terminal">
         <div class="terminal-header">
-            <div class="terminal-id">TERMINAL://CH-0000</div>
+            <div id="video-title" class="terminal-id">TERMINAL://INIT_SIGNAL</div>
             <div id="sync-gauge" class="sync-gauge">SYNC_LOCK: --.-%</div>
         </div>
         
@@ -18,6 +18,7 @@ export default (() => {
         <div class="terminal-footer">
             <div class="footer-left">
                 <div id="program-info">OFFLINE</div>
+                <div id="related-links" class="related-links"></div>
             </div>
             <div class="footer-right">
                 <button id="mute-toggle" class="mute-btn" title="Toggle Mute">
@@ -50,6 +51,8 @@ export default (() => {
             async function startTerminal() {
                 const mount = document.getElementById('player-mount');
                 const info = document.getElementById('program-info');
+                const titleEl = document.getElementById('video-title');
+                const linksEl = document.getElementById('related-links');
                 const volSlider = document.getElementById('volume-control');
                 const muteBtn = document.getElementById('mute-toggle');
                 const speakerIcon = document.getElementById('speaker-icon');
@@ -64,9 +67,10 @@ export default (() => {
                     const data = await response.json();
                     const { schedule, interstitials } = data;
                     
-                    const intelLength = 300; // 5 min
-                    const interLength = 30;  // 30 sec
+                    const intelLength = 60;  // 1 min for testing
+                    const interLength = 30;  // 30 sec for testing
                     const totalSlotLength = intelLength + interLength; 
+
                     
                     const updateTerminal = () => {
                         const now = Math.floor(Date.now() / 1000);
@@ -83,10 +87,12 @@ export default (() => {
                             const lockVal = Math.max(0.1, (99.9 * (1 - progress)) + jitter).toFixed(1);
                             syncGauge.innerHTML = \`SYNC_LOCK: \${lockVal}%\`;
                             syncGauge.classList.remove('searching');
+                            titleEl.innerHTML = \`DECODING://\${program.title.toUpperCase()}\`;
                         } else {
                             const countdown = interLength - (timeInSlot - intelLength);
                             syncGauge.innerHTML = \`ALIGNING: T-minus \${countdown}s\`;
                             syncGauge.classList.add('searching');
+                            titleEl.innerHTML = "TERMINAL://SEARCHING_SIGNAL";
                         }
 
                         // PLAYBACK
@@ -104,6 +110,7 @@ export default (() => {
                             const intFile = base + interstitials[intIndex].replace(/^\\//, '');
                             
                             info.innerHTML = isIntelligenceTime ? "STATUS: SIGNAL DEGRADED // FILLING GAP" : "STATUS: STANDBY // NEXT SIGNAL PENDING";
+                            linksEl.innerHTML = ""; // Clear links during standby
                             
                             if (!mount.querySelector('video') || !mount.querySelector('video').src.includes(intFile)) {
                                 mount.innerHTML = \`<video 
@@ -118,7 +125,19 @@ export default (() => {
                                 v.volume = 0;
                             }
                         } else {
-                            info.innerHTML = \`DECODING: \${program.title.toUpperCase()}\`;
+                            info.innerHTML = "STATUS: SIGNAL LOCKED";
+                            
+                            // Render Related Links
+                            if (program.related && program.related.length > 0) {
+                                const linksHtml = program.related.map(name => {
+                                    // Quartz URLs are slugs, so we kebab-case the name
+                                    const slug = name.toLowerCase().replace(/ /g, '-');
+                                    return \`<a href="\${base}\${slug}" class="vault-link">\${name}</a>\`;
+                                }).join(' ');
+                                if (linksEl.innerHTML !== linksHtml) linksEl.innerHTML = "LINKS: " + linksHtml;
+                            } else {
+                                linksEl.innerHTML = "";
+                            }
                             
                             if (currentVideoId !== program.id) {
                                 currentVideoId = program.id;
@@ -264,12 +283,32 @@ export default (() => {
   .terminal-footer {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
     margin-top: 1rem;
     padding-top: 0.5rem;
     border-top: 1px solid #1a1a1a;
     color: #0f0;
     font-size: 0.8rem;
+  }
+
+  .related-links {
+    margin-top: 0.5rem;
+    font-size: 0.75rem;
+    color: #0c0;
+  }
+
+  .vault-link {
+    color: #0f0;
+    text-decoration: none;
+    margin-right: 0.5rem;
+    border: 1px solid #040;
+    padding: 2px 4px;
+    background: rgba(0,255,0,0.05);
+  }
+
+  .vault-link:hover {
+    background: #0f0;
+    color: #000;
   }
 
   .footer-right {

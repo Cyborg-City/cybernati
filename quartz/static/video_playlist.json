@@ -1,29 +1,56 @@
 {
   "schedule": [
     {
-      "id": "UDdt_ZHGcUA",
-      "duration": 603,
-      "title": "7 Theories About the Mysterious Vanishing Of Roanoke Colony 1"
-    },
-    {
-      "id": "J_r5fibpKVc",
-      "duration": 3459,
-      "title": "ALIEN INCURSION—U.F.O. FILES TRUMP & ULTIMATE DISCLOSURE IMMINENT… (LIVE) PROPHETIC INTEL BRIEFING!"
-    },
-    {
-      "id": "54vJW1wSZ-w",
-      "duration": 3952,
-      "title": "ALL Government UFO Videos Explained"
+      "id": "xVJ7QASPMio",
+      "duration": 2213,
+      "title": "What Science Found at the Edge of Death  The Third Man",
+      "related": [
+        "Case-File-UFO-77"
+      ]
     },
     {
       "id": "cUc3uz9RmCA",
       "duration": 527,
-      "title": "Scientists Finally Solved The Roanoke Colony Mystery - After 400 Years"
+      "title": "Scientists Finally Solved The Roanoke Colony Mystery - After 400 Years",
+      "related": [
+        "PAT-0001-assimilation-survival",
+        "EVD-0001-roanoke-lost-colony"
+      ]
     },
     {
       "id": "sckzQiXapk8",
       "duration": 451,
-      "title": "The Colony of Roanoke’s Mysterious Disappearance  The UnXplained (Season 3)  History"
+      "title": "The Colony of Roanoke’s Mysterious Disappearance  The UnXplained (Season 3)  History",
+      "related": [
+        "CLM-0001-walsingham-sabotage",
+        "EVD-0001-roanoke-lost-colony",
+        "PAT-0001-assimilation-survival"
+      ]
+    },
+    {
+      "id": "UDdt_ZHGcUA",
+      "duration": 603,
+      "title": "7 Theories About the Mysterious Vanishing Of Roanoke Colony 1",
+      "related": [
+        "DOS-0001-roanoke-de-indexing",
+        "CLM-0002-linguistic-command-code"
+      ]
+    },
+    {
+      "id": "54vJW1wSZ-w",
+      "duration": 3952,
+      "title": "ALL Government UFO Videos Explained",
+      "related": [
+        "Case-File-UFO-77"
+      ]
+    },
+    {
+      "id": "J_r5fibpKVc",
+      "duration": 3459,
+      "title": "ALIEN INCURSION—U.F.O. FILES TRUMP & ULTIMATE DISCLOSURE IMMINENT… (LIVE) PROPHETIC INTEL BRIEFING!",
+      "related": [
+        "Case-File-UFO-77"
+      ]
     }
   ],
   "interstitials": [

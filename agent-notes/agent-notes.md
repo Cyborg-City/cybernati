@@ -5,7 +5,6 @@
 ## Backlog
 
 - **Slit Experiment /finalize**: Stage `Clippings/INGEST-20260511-Slit-Experiment/` is ready for merge. User has not yet confirmed whether to proceed or refine further. Awaiting directive.
-- **Slit Experiment Memo closing line**: User requested replacement of "The System is performing as intended." in `MEM-TEMP-slit-experiment.md`. Offered 3 alternatives. User has not selected which one to use.
 
 ---
 
@@ -21,8 +20,10 @@
 
 - **2026-05-11 /ingest**: Extracted 3 sources from `Clippings/slit experiement/` (MIT complementarity, Steinberg negative time, PBS quantum eraser). Drafted 13 entity files in `Clippings/INGEST-20260511-Slit-Experiment/`. Wrote `report.md` with three-lens analysis (Factual, Institutional, Systemic).
 - **2026-05-11 Tactical Alignment**: User elected to SKIP /research — evidence is ubiquitous. Priority is flavor/synthesis only.
-- **2026-05-11 /synthesize**: Drafted `DOS-TEMP-slit-experiment.md` using 4MAT structure. Added Timeline section (11 entries, 1801–2026). Extracted "The Clerk's Assessment" into separate `MEM-TEMP-slit-experiment.md`.
+- **2026-05-11 /synthesize**: Drafted `DOS-TEMP-slit-experiment.md` using 4MAT structure + Timeline. Extracted "The Clerk's Assessment" into separate `MEM-TEMP-slit-experiment.md`.
 - **Pruning**: Removed dedicated `TEMP-pbs-quantum-eraser.md` evidence note per user request. Replaced dead wikilink in `TEMP-mithina-looking-glass.md` with direct YouTube URL.
+- **Refinement (2026-05-11)**: User approved dropping 4 thin entities (MIT org, U of T org, Mithina person, MIT PRL evidence). Dossier rewritten with TL;DR, compressed Timeline (8 entries), tight WHAT paragraphs, render-engine HOW bullets, consolidated WHAT IF (2 questions). Cut ~40% of prose.
+- **Memo closing line (2026-05-11)**: User replaced "The System is performing as intended." in `MEM-TEMP-slit-experiment.md` themselves. Task resolved.
 
 ### System Configuration
 
@@ -41,5 +42,5 @@
 - **CRITICAL**: `agent-log.md` and `agent-notes.md` are two separate files. `agent-log.md` tracks the staged sequence lifecycle. `agent-notes.md` tracks Backlog/Doing/Done/Thoughts. I confused these — user corrected me.
 - The Obsidian CLI skill at `.gemini/SKILLS/obsidian-cli/SKILL.md` is flagged as mandatory in GEMINI.md but I have not been using it — I have been using direct file reads. Future task: refamiliarize with the skill and use it for vault operations going forward.
 - Quantum mechanics flavor angle: "lazy rendering" and "measurement as compile step" are strong metaphors. The user responded well to this framing.
-- The Quartz dev server question (2026-05-11) — user resolved it themselves. I was unfamiliar with the Quartz CLI flags. Different static site generators have different dev commands (Quartz uses `npx quartz dev`, Hugo uses `hugo server`, etc.).
-- The closing line of the Memo is still pending user selection from three options.
+- The Quartz dev server question (2026-05-11) — user resolved it themselves. I was unfamiliar with the Quartz CLI flags. Different static site generators have different dev commands.
+  - **User-corrected**: The correct Quartz dev server command is **`npx quartz build --serve`**. Do not use `npx quartz dev` — it is not a valid Quartz CLI command.

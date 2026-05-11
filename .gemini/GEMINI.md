@@ -39,6 +39,9 @@ Your mission is to compile raw data into a structured, interlinked wiki.
 Maintain `agent-notes/agent-log.md`. Record every stage of the lifecycle.
 
 ### Agent Notes Protocol
+
+If this is a new session for you then you must STOP and read `agent-notes/agent-notes.md` first before proceeding any further. It outlines the current tasks and the status of the project.
+
 Pro-actively read and update `agent-notes/agent-notes.md` to track work across sessions. Before beginning any task, read the log. After completing any task, update it. Keep notes even when not actively working on a sequence — observations, questions, and learnings belong here.
 
 The log must contain the following sections:

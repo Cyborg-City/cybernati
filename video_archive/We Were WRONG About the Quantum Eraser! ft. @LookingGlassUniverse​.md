@@ -8,15 +8,15 @@ created: 2026-05-11
 description: "Thank you to Cyber GhostVPN for Supporting PBS. Learn More About Cyber GhostVPN:  https://cyberghostvpn.com/PBSSpaceTimeDoes quantum mechanics allow the futu..."
 tags:
   - clippings
-modified: 2026-05-11T12:53:01-05:00
+modified: 2026-05-11T14:31:46-05:00
 related:
-  - "[[DOS-TEMP-slit-experiment]]"
-  - "[[TEMP-steinberg-negative-time]]"
-  - "[[TEMP-albert-einstein]]"
-  - "[[TEMP-aephraim-steinberg]]"
-  - "[[TEMP-thomas-young]]"
-  - "[[TEMP-mit-2025-complementarity]]"
-  - "[[TEMP-young-double-slit-1801]]"
+  - "[[DOS-0002-slit-experiment]]"
+  - "[[PER-0005-aephraim-steinberg]]"
+  - "[[PER-0003-albert-einstein]]"
+  - "[[EVT-0005-steinberg-negative-time]]"
+  - "[[PER-0002-thomas-young]]"
+  - "[[EVT-0004-mit-2025-complementarity]]"
+  - "[[EVT-0002-young-double-slit-1801]]"
 duration: 1526
 ---
 ![](https://www.youtube.com/watch?v=sc7FlWUAnzA)

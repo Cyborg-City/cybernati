@@ -8,13 +8,17 @@ created: 2026-05-11
 description: MIT physicists have revisited the famous double-slit experiment, using ultracold atoms and single photons to prove Niels Bohr’s quantum theory and challenge Einstein’s ideas. This groundbreaking exper
 tags:
   - clippings
-modified: 2026-05-11T12:53:31-05:00
+modified: 2026-05-11T14:34:45-05:00
 related:
-  - "[[DOS-TEMP-slit-experiment]]"
-  - "[[TEMP-einstein-bohr-debate-1927]]"
-  - "[[TEMP-albert-einstein]]"
-  - "[[TEMP-mit-2025-complementarity]]"
-  - "[[TEMP-aephraim-steinberg]]"
+  - "[[DOS-0002-slit-experiment]]"
+  - "[[PER-0004-niels-bohr]]"
+  - "[[EVT-0003-einstein-bohr-debate-1927]]"
+  - "[[EVT-0002-young-double-slit-1801]]"
+  - "[[PER-0002-thomas-young]]"
+  - "[[PER-0003-albert-einstein]]"
+  - "[[PER-0005-aephraim-steinberg]]"
+  - "[[EVT-0004-mit-2025-complementarity]]"
+  - "[[EVT-0005-steinberg-negative-time]]"
 duration: 505
 ---
 ![](https://www.youtube.com/watch?v=7PTVXOIXmf0)

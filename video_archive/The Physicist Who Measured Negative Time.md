@@ -8,16 +8,16 @@ created: 2026-05-11
 description: SPONSORS:- Go to https://expressvpn.com/theoriesofeverythingyt to find out how you can get up to 4 extra months thanks to our sponsor, ExpressVPN- Accelerate...
 tags:
   - clippings
-modified: 2026-05-11T12:53:23-05:00
+modified: 2026-05-11T14:33:22-05:00
 related:
-  - "[[DOS-TEMP-slit-experiment]]"
-  - "[[TEMP-steinberg-negative-time]]"
-  - "[[TEMP-albert-einstein]]"
-  - "[[TEMP-einstein-bohr-debate-1927]]"
-  - "[[TEMP-niels-bohr]]"
-  - "[[TEMP-thomas-young]]"
-  - "[[TEMP-young-double-slit-1801]]"
-  - "[[TEMP-aephraim-steinberg]]"
+  - "[[DOS-0002-slit-experiment]]"
+  - "[[EVT-0005-steinberg-negative-time]]"
+  - "[[PER-0003-albert-einstein]]"
+  - "[[PER-0004-niels-bohr]]"
+  - "[[EVT-0003-einstein-bohr-debate-1927]]"
+  - "[[PER-0002-thomas-young]]"
+  - "[[EVT-0002-young-double-slit-1801]]"
+  - "[[EVT-0004-mit-2025-complementarity]]"
 duration: 8489
 ---
 ![](https://www.youtube.com/watch?v=cOZ3Kto6NIc)

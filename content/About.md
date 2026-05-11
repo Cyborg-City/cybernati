@@ -1,11 +1,11 @@
 ---
 title: About
 aliases:
-draft: true
+draft: false
 tags:
   - example-tag
 created: 2026-05-09T22:11:27-05:00
-modified: 2026-05-09T22:14:37-05:00
+modified: 2026-05-11T00:16:45-05:00
 ID:
 type:
 status:

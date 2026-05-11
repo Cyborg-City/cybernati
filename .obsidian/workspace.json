@@ -32,36 +32,12 @@
             }
           },
           {
-            "id": "73aca6725b538998",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "video_archive/The Unexplained Simulation Theory Using a DeWalt Laser.md",
-                "mode": "source",
-                "source": false,
-                "backlinks": true,
-                "backlinkOpts": {
-                  "collapseAll": false,
-                  "extraContext": false,
-                  "sortOrder": "alphabetical",
-                  "showSearch": false,
-                  "searchQuery": "",
-                  "backlinkCollapsed": false,
-                  "unlinkedCollapsed": true
-                }
-              },
-              "icon": "lucide-file",
-              "title": "The Unexplained Simulation Theory Using a DeWalt Laser"
-            }
-          },
-          {
             "id": "a8e2be68b0ce9a2e",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "video_archive/ALL Government UFO Videos Explained.md",
+                "file": "Clippings/INGEST-20260511-Slit-Experiment/MEM-TEMP-slit-experiment.md",
                 "mode": "source",
                 "source": false,
                 "backlinks": true,
@@ -76,7 +52,7 @@
                 }
               },
               "icon": "lucide-file",
-              "title": "ALL Government UFO Videos Explained"
+              "title": "MEM-TEMP-slit-experiment"
             }
           },
           {
@@ -285,7 +261,7 @@
             "state": {
               "type": "localgraph",
               "state": {
-                "file": "video_archive/The Unexplained Simulation Theory Using a DeWalt Laser.md",
+                "file": "Clippings/INGEST-20260511-Slit-Experiment/MEM-TEMP-slit-experiment.md",
                 "options": {
                   "collapse-filter": false,
                   "search": "",
@@ -313,7 +289,7 @@
                 }
               },
               "icon": "lucide-git-fork",
-              "title": "Graph of The Unexplained Simulation Theory Using a DeWalt Laser"
+              "title": "Graph of MEM-TEMP-slit-experiment"
             }
           }
         ]
@@ -341,49 +317,49 @@
       "smart-lookup:Smart Lookup: Open lookup view": false
     }
   },
-  "active": "c45908095075f638",
+  "active": "a8e2be68b0ce9a2e",
   "lastOpenFiles": [
-    "content/Timelines/TIM-0001-main.md",
+    "Clippings/INGEST-20260511-Slit-Experiment/DOS-TEMP-slit-experiment.md",
+    "Clippings/INGEST-20260511-Slit-Experiment/MEM-TEMP-slit-experiment.md",
+    "Clippings/INGEST-20260511-Slit-Experiment/report.md",
+    "Clippings/INGEST-20260511-Slit-Experiment/TEMP-university-of-toronto.md",
+    "Clippings/INGEST-20260511-Slit-Experiment/TEMP-mit-prl-paper.md",
+    "Clippings/INGEST-20260511-Slit-Experiment/TEMP-mit-2025-complementarity.md",
+    "Clippings/INGEST-20260511-Slit-Experiment/TEMP-mit.md",
+    "Clippings/INGEST-20260511-Slit-Experiment/TEMP-pbs-quantum-eraser.md",
+    "Clippings/INGEST-20260511-Slit-Experiment/TEMP-steinberg-negative-time.md",
+    "Clippings/INGEST-20260511-Slit-Experiment/TEMP-young-double-slit-1801.md",
+    "Clippings/INGEST-20260511-Slit-Experiment/TEMP-einstein-bohr-debate-1927.md",
+    "Clippings/INGEST-20260511-Slit-Experiment/TEMP-mithina-looking-glass.md",
+    "Clippings/INGEST-20260511-Slit-Experiment/TEMP-aephraim-steinberg.md",
+    "Clippings/INGEST-20260511-Slit-Experiment/TEMP-albert-einstein.md",
+    "Clippings/INGEST-20260511-Slit-Experiment/TEMP-niels-bohr.md",
+    "Clippings/INGEST-20260511-Slit-Experiment/TEMP-thomas-young.md",
+    "agent-notes/agent-log.md",
+    "video_archive/The Epstein Files are a masterclass in propaganda.md",
+    "Clippings/INGEST-20260511-Slit-Experiment",
+    "video_archive/Why things Feel “OFF” Lately — The GLITCH.md",
+    "video_archive/Terence McKenna 's Final Interview.md",
+    "Clippings/bohemian grove/We Uncovered The Most Infamous Secret Society And The Truth Is Shocking.md",
+    "Clippings/bohemian grove",
+    "Clippings/slit experiement/Breakthrough New MIT Experiment Confirms Quantum Theory with Single Photons.md",
+    "video_archive/Palantir Technologies Explained Like You’re 5.md",
+    "Clippings/slit experiement",
+    "video_archive/Insane Alex Jones Conspiracy Theories That Turned Out True.md",
+    "Clippings/slit experiement/The Physicist Who Measured Negative Time.md",
+    "video_archive/The Double Slit Experiment Has a Third Layer — This One Was Found and Erased.md",
+    "Clippings/93ecf8d8996c288bd671965b7bbdfa2c_MD5.jpg",
     "content/Timelines",
-    "content/Project-MK-Ultra-Redacted.md",
     "content/Places",
-    "content/People/PER-0001-john-white.md",
     "content/People",
-    "content/Patterns/PAT-0001-assimilation-survival.md",
     "content/Patterns",
-    "content/Pacific-Northwest-Sighting.md",
-    "content/Internal Coms/MEM-0001-observability-mandate.md",
-    "content/Internal Coms/COM-0001-coms-reestablished.md",
     "content/Internal Coms",
-    "content/index.md",
-    "content/Evidence/EVD-0001-roanoke-lost-colony.md",
     "content/Evidence",
     "content/Events",
-    "content/Dossiers/DOS-0001-roanoke-de-indexing.md",
     "content/Dossiers/350f6367e7f8f6e5273eb1c069dd17fb_MD5.webp",
-    "content/Dossiers",
-    "content/Claims/CLM-0002-linguistic-command-code.md",
-    "content/Claims/CLM-0001-walsingham-sabotage.md",
-    "content/Claims",
-    "content/CH-0000.md",
-    "content/Case-File-UFO-77.md",
-    "content/About.md",
     "content/364805f72021e1a1372ece0effaabe7b_MD5.png",
-    "content",
-    "video_archive/Untitled.md",
-    "video_archive/The Unexplained Simulation Theory Using a DeWalt Laser.md",
-    "video_archive/The Missing Scientists Case Is So Much Worse Than You Think.md",
-    "video_archive/7 Theories About the Mysterious Vanishing Of Roanoke Colony 1.md",
-    "video_archive/ALL Government UFO Videos Explained.md",
-    "private/Cybernati Player.md",
     "Clippings/d553332cc0ea923238caad136483490c_MD5.webp",
     "Clippings/a2592d1ef388f26622e59e9c111b405b_MD5.jpg",
-    "Clippings/2026-05-05 X UAPDr.md",
-    "Clippings/2022-06-11 X Divinsity.md",
-    "Clippings/93ecf8d8996c288bd671965b7bbdfa2c_MD5.jpg",
-    "video_archive/What Science Found at the Edge of Death  The Third Man.md",
-    "video_archive/Scientists Finally Solved The Roanoke Colony Mystery - After 400 Years.md",
-    "video_archive/The Colony of Roanoke’s Mysterious Disappearance  The UnXplained (Season 3)  History.md",
     "Clippings/e3a44f714504aadf03a376f89f6bdf27_MD5.jpg",
     "Clippings/d70a3924cedd8cc5c6085c8fa55604a4_MD5.webp",
     "Clippings/bfc9bc6ca82333d4bc9a1480f2f4d067_MD5.webp",

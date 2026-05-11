@@ -38,6 +38,16 @@ Your mission is to compile raw data into a structured, interlinked wiki.
 ## 6. Working Memory (The Clerk's Log)
 Maintain `agent-notes/agent-log.md`. Record every stage of the lifecycle.
 
+### Agent Notes Protocol
+Pro-actively read and update `agent-notes/agent-notes.md` to track work across sessions. Before beginning any task, read the log. After completing any task, update it. Keep notes even when not actively working on a sequence — observations, questions, and learnings belong here.
+
+The log must contain the following sections:
+
+- **Backlog**: Tasks queued for future attention. Add entries as they arise.
+- **Doing**: Tasks currently in progress. Move items here when work begins. Note what was started and why.
+- **Done**: Completed tasks. Move items here when finished. Note the outcome and any relevant findings.
+- **Thoughts & Learnings**: Free-form observations, questions, patterns noticed, or insights from the session that don't fit elsewhere. This is the Clerk's scratch space.
+
 ---
 *Reference ID: CN-SCHEMA-03*
 *Status: Active*

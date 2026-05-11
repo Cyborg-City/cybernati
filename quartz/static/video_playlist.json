@@ -1,20 +1,28 @@
 {
-  "totalLoopDuration": 12897,
+  "totalLoopDuration": 13757,
   "schedule": [
+    {
+      "id": "-T2fPCe2or0",
+      "title": "The Unexplained Simulation Theory Using a DeWalt Laser",
+      "duration": 830,
+      "start": 0,
+      "end": 830,
+      "related": []
+    },
     {
       "id": "Z1V-aCva49M",
       "title": "The Missing Scientists Case Is So Much Worse Than You Think",
       "duration": 1482,
-      "start": 0,
-      "end": 1482,
+      "start": 860,
+      "end": 2342,
       "related": []
     },
     {
       "id": "xVJ7QASPMio",
       "title": "What Science Found at the Edge of Death  The Third Man",
       "duration": 2213,
-      "start": 1512,
-      "end": 3725,
+      "start": 2372,
+      "end": 4585,
       "related": [
         {
           "name": "Case-File-UFO-77",
@@ -26,8 +34,8 @@
       "id": "cUc3uz9RmCA",
       "title": "Scientists Finally Solved The Roanoke Colony Mystery - After 400 Years",
       "duration": 527,
-      "start": 3755,
-      "end": 4282,
+      "start": 4615,
+      "end": 5142,
       "related": [
         {
           "name": "PAT-0001-assimilation-survival",
@@ -43,8 +51,8 @@
       "id": "sckzQiXapk8",
       "title": "The Colony of Roanoke’s Mysterious Disappearance  The UnXplained (Season 3)  History",
       "duration": 451,
-      "start": 4312,
-      "end": 4763,
+      "start": 5172,
+      "end": 5623,
       "related": [
         {
           "name": "CLM-0001-walsingham-sabotage",
@@ -64,8 +72,8 @@
       "id": "UDdt_ZHGcUA",
       "title": "7 Theories About the Mysterious Vanishing Of Roanoke Colony 1",
       "duration": 603,
-      "start": 4793,
-      "end": 5396,
+      "start": 5653,
+      "end": 6256,
       "related": [
         {
           "name": "DOS-0001-roanoke-de-indexing",
@@ -81,8 +89,8 @@
       "id": "54vJW1wSZ-w",
       "title": "ALL Government UFO Videos Explained",
       "duration": 3952,
-      "start": 5426,
-      "end": 9378,
+      "start": 6286,
+      "end": 10238,
       "related": [
         {
           "name": "Case-File-UFO-77",
@@ -94,8 +102,8 @@
       "id": "J_r5fibpKVc",
       "title": "ALIEN INCURSION—U.F.O. FILES TRUMP & ULTIMATE DISCLOSURE IMMINENT… (LIVE) PROPHETIC INTEL BRIEFING!",
       "duration": 3459,
-      "start": 9408,
-      "end": 12867,
+      "start": 10268,
+      "end": 13727,
       "related": [
         {
           "name": "Case-File-UFO-77",

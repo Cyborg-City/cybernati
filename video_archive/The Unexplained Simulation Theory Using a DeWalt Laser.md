@@ -9,6 +9,7 @@ description: Join this channel to get access to perks:https://www.youtube.com/ch
 tags:
   - clippings
 modified: 2026-05-10T20:55:35-05:00
+duration: 830
 ---
 ![](https://www.youtube.com/watch?v=-T2fPCe2or0)
 

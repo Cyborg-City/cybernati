@@ -4,7 +4,7 @@
 
 ## Backlog
 
-- **Slit Experiment /finalize**: Stage `Clippings/INGEST-20260511-Slit-Experiment/` is ready for merge. User has not yet confirmed whether to proceed or refine further. Awaiting directive.
+*Nothing in backlog.*
 
 ---
 
@@ -24,6 +24,8 @@
 - **Pruning**: Removed dedicated `TEMP-pbs-quantum-eraser.md` evidence note per user request. Replaced dead wikilink in `TEMP-mithina-looking-glass.md` with direct YouTube URL.
 - **Refinement (2026-05-11)**: User approved dropping 4 thin entities (MIT org, U of T org, Mithina person, MIT PRL evidence). Dossier rewritten with TL;DR, compressed Timeline (8 entries), tight WHAT paragraphs, render-engine HOW bullets, consolidated WHAT IF (2 questions). Cut ~40% of prose.
 - **Memo closing line (2026-05-11)**: User replaced "The System is performing as intended." in `MEM-TEMP-slit-experiment.md` themselves. Task resolved.
+- **Citation enrichment (2026-05-11)**: Used agent-browser skill to find outside sources. Added 6 new citations to Dossier: MIT News article, Steinberg arXiv paper (2010.02200), Kim et al. original quantum eraser paper (quant-ph/9903047), Nature Physics time-double-slit article, Sean Carroll blog post, Feynman Lectures Chapter 1. Organized into Primary Literature / Expert Commentary / Video Sources sections.
+- **/finalize (2026-05-11)**: Merged 10 files into vault content/. IDs assigned: PER-0002→0005, EVT-0002→0005, DOS-0002, MEM-0002. 4 entities pruned. 3 images moved to content/Dossiers/. Draft status set false. Wikilinks refactored. Staging folder deleted.
 
 ### System Configuration
 

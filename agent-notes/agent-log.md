@@ -74,6 +74,27 @@
 - Action: Updated GEMINI.md with "Agent Notes Protocol" — pro-active Backlog/Doing/Done/Thoughts tracking in agent-notes/agent-notes.md.
 - Status: Directive processed.
 
+## [2026-05-11] /finalize: Slit Experiment Sequence
+- Action: Production merge of Clippings/INGEST-20260511-Slit-Experiment/ into content/.
+- Sequence Check: Next available IDs confirmed.
+- Final ID Mapping:
+  - PER-TEMP-thomas-young → [[PER-0002-thomas-young]]
+  - PER-TEMP-albert-einstein → [[PER-0003-albert-einstein]]
+  - PER-TEMP-niels-bohr → [[PER-0004-niels-bohr]]
+  - PER-TEMP-aephraim-steinberg → [[PER-0005-aephraim-steinberg]]
+  - EVT-TEMP-young-double-slit-1801 → [[EVT-0002-young-double-slit-1801]]
+  - EVT-TEMP-einstein-bohr-debate-1927 → [[EVT-0003-einstein-bohr-debate-1927]]
+  - EVT-TEMP-mit-2025-complementarity → [[EVT-0004-mit-2025-complementarity]]
+  - EVT-TEMP-steinberg-negative-time → [[EVT-0005-steinberg-negative-time]]
+  - DOS-TEMP-slit-experiment → [[DOS-0002-slit-experiment]]
+  - MEM-TEMP-slit-experiment → [[MEM-0002-slit-experiment]]
+- Dropped entities (pruned): TEMP-mit.md, TEMP-mit-prl-paper.md, TEMP-university-of-toronto.md, TEMP-mithina-looking-glass.md
+- Images moved: 3 .webp files to content/Dossiers/
+- Draft status: Set to false for all 10 merged files.
+- Wikilinks: All TEMP- references refactored to final IDs.
+- Sanitization: Staging folder and report.md deleted.
+- **Status: FINALIZED**
+
 ---
 *Reference ID: CN-SCHEMA-03*
 *Status: Active*

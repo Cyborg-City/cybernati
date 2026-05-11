@@ -3,7 +3,7 @@ import { QuartzComponentConstructor, QuartzComponentProps } from "./types"
 export default (() => {
   function Broadcast(props: QuartzComponentProps) {
     return (
-      <div class="broadcast-terminal">
+      <div id="broadcast-root" class="broadcast-terminal">
         <div class="terminal-header">
             <div id="video-title" class="terminal-id">TERMINAL://INIT_SIGNAL</div>
             <div id="sync-gauge" class="sync-gauge">SYNC_LOCK: --.-%</div>
@@ -44,6 +44,13 @@ export default (() => {
                         </svg>
                     </button>
                     <input type="range" id="volume-control" class="terminal-slider" min="0" max="100" value="0" />
+                    
+                    {/* FULLSCREEN TOGGLE */}
+                    <button id="fullscreen-toggle" class="mute-btn" title="Full Screen">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
+                        </svg>
+                    </button>
                 </div>
                 <div class="control-row">
                     <span class="control-label">DESYNC:</span>
@@ -77,40 +84,9 @@ export default (() => {
             if (window.location.search.includes('embed=true')) {
                 const style = document.createElement('style');
                 style.innerHTML = \`
-                    /* Hide EVERYTHING by default */
-                    header, footer, .sidebar, .left, .right, .backlinks, .toc, .recent-notes, .page-header, .page-footer, .breadcrumb-container, article, hr { 
-                        display: none !important; 
-                    }
-                    
-                    /* Force the terminal and its direct path to be visible */
-                    body, #quartz-root, #quartz-body, .center, .page, .page-footer { 
-                        display: block !important; 
-                        margin: 0 !important; 
-                        padding: 0 !important; 
-                        width: 100vw !important; 
-                        height: 100vh !important; 
-                        background: black !important;
-                        overflow: hidden !important;
-                    }
-
-                    .broadcast-terminal { 
-                        display: flex !important;
-                        position: fixed !important;
-                        top: 0 !important;
-                        left: 0 !important;
-                        right: 0 !important;
-                        bottom: 0 !important;
-                        width: auto !important;
-                        height: auto !important;
-                        z-index: 999999 !important;
-                        margin: 0 !important;
-                        border: none !important;
-                        background: #000 !important;
-                        padding: 12px !important;
-                        flex-direction: column !important;
-                        box-sizing: border-box !important;
-                    }
-                    
+                    header, footer, .sidebar, .left, .right, .backlinks, .toc, .recent-notes, .page-header, .page-footer, .breadcrumb-container, article, hr { display: none !important; }
+                    body, #quartz-root, #quartz-body, .center, .page, .page-footer { display: block !important; margin: 0 !important; padding: 0 !important; width: 100vw !important; height: 100vh !important; background: black !important; overflow: hidden !important; }
+                    .broadcast-terminal { display: flex !important; position: fixed !important; top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important; width: auto !important; height: auto !important; z-index: 999999 !important; margin: 0 !important; border: none !important; background: #000 !important; padding: 12px !important; flex-direction: column !important; box-sizing: border-box !important; }
                     .terminal-screen { flex-grow: 1 !important; height: auto !important; }
                     #yt-player, .player-mount video { height: 100% !important; }
                 \`;
@@ -127,6 +103,8 @@ export default (() => {
                 const desyncToggle = document.getElementById('desync-toggle');
                 const speakerIcon = document.getElementById('speaker-icon');
                 const syncGauge = document.getElementById('sync-gauge');
+                const fsBtn = document.getElementById('fullscreen-toggle');
+                const root = document.getElementById('broadcast-root');
                 
                 try {
                     const pathSegments = window.location.pathname.split('/');
@@ -230,6 +208,14 @@ export default (() => {
                         updateAudioUI();
                     });
 
+                    fsBtn.addEventListener('click', () => {
+                        if (!document.fullscreenElement) {
+                            root.requestFullscreen().catch(err => console.error(err));
+                        } else {
+                            document.exitFullscreen();
+                        }
+                    });
+
                     const updateAudioUI = () => { speakerIcon.innerHTML = isMuted ? iconMute : iconVol; volSlider.value = currentVolume; };
                     const establishHandshake = () => { if (handshakeEstablished) return; handshakeEstablished = true; isMuted = false; currentVolume = 25; if (player && player.unMute) { player.unMute(); player.setVolume(currentVolume); } updateAudioUI(); };
                     window.addEventListener('click', establishHandshake);
@@ -269,6 +255,22 @@ export default (() => {
     box-shadow: 0 0 30px rgba(0,255,0,0.05);
     font-family: 'Courier New', Courier, monospace;
     position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* FULLSCREEN FIXES */
+  .broadcast-terminal:fullscreen {
+      padding: 30px;
+      background: #000;
+  }
+  .broadcast-terminal:fullscreen .terminal-screen {
+      flex-grow: 1;
+      height: auto;
+  }
+  .broadcast-terminal:fullscreen #yt-player,
+  .broadcast-terminal:fullscreen .player-mount video {
+      height: 100% !important;
   }
 
   .terminal-header {
@@ -285,7 +287,7 @@ export default (() => {
   .sync-gauge {
     color: #0f0;
     font-weight: bold;
-    min-width: 200px;
+    min-width: 210px;
     text-align: right;
   }
 
@@ -426,7 +428,7 @@ export default (() => {
   .control-row {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.8rem;
   }
 
   .control-label {

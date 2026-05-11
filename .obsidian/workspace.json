@@ -15,7 +15,7 @@
               "state": {
                 "file": "private/Cybernati Player.md",
                 "mode": "source",
-                "source": true,
+                "source": false,
                 "backlinks": true,
                 "backlinkOpts": {
                   "collapseAll": false,
@@ -35,35 +35,9 @@
             "id": "73aca6725b538998",
             "type": "leaf",
             "state": {
-              "type": "bases",
-              "state": {
-                "file": "video_archive/channel-0000.base",
-                "viewName": "Table"
-              },
-              "icon": "lucide-table",
-              "title": "channel-0000"
-            }
-          },
-          {
-            "id": "a8e2be68b0ce9a2e",
-            "type": "leaf",
-            "state": {
-              "type": "bases",
-              "state": {
-                "file": "video_archive/channel-0000.base",
-                "viewName": "Table"
-              },
-              "icon": "lucide-table",
-              "title": "channel-0000"
-            }
-          },
-          {
-            "id": "0d66a495956459a0",
-            "type": "leaf",
-            "state": {
               "type": "markdown",
               "state": {
-                "file": "video_archive/The Missing Scientists Case Is So Much Worse Than You Think.md",
+                "file": "video_archive/The Unexplained Simulation Theory Using a DeWalt Laser.md",
                 "mode": "source",
                 "source": false,
                 "backlinks": true,
@@ -78,10 +52,59 @@
                 }
               },
               "icon": "lucide-file",
-              "title": "The Missing Scientists Case Is So Much Worse Than You Think"
+              "title": "The Unexplained Simulation Theory Using a DeWalt Laser"
+            }
+          },
+          {
+            "id": "a8e2be68b0ce9a2e",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "video_archive/ALL Government UFO Videos Explained.md",
+                "mode": "source",
+                "source": false,
+                "backlinks": true,
+                "backlinkOpts": {
+                  "collapseAll": false,
+                  "extraContext": false,
+                  "sortOrder": "alphabetical",
+                  "showSearch": false,
+                  "searchQuery": "",
+                  "backlinkCollapsed": false,
+                  "unlinkedCollapsed": true
+                }
+              },
+              "icon": "lucide-file",
+              "title": "ALL Government UFO Videos Explained"
+            }
+          },
+          {
+            "id": "0d66a495956459a0",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "content/Claims/CLM-0002-linguistic-command-code.md",
+                "mode": "source",
+                "source": false,
+                "backlinks": true,
+                "backlinkOpts": {
+                  "collapseAll": false,
+                  "extraContext": false,
+                  "sortOrder": "alphabetical",
+                  "showSearch": false,
+                  "searchQuery": "",
+                  "backlinkCollapsed": false,
+                  "unlinkedCollapsed": true
+                }
+              },
+              "icon": "lucide-file",
+              "title": "CLM-0002-linguistic-command-code"
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -262,7 +285,7 @@
             "state": {
               "type": "localgraph",
               "state": {
-                "file": "private/Cybernati Player.md",
+                "file": "video_archive/The Unexplained Simulation Theory Using a DeWalt Laser.md",
                 "options": {
                   "collapse-filter": false,
                   "search": "",
@@ -290,7 +313,7 @@
                 }
               },
               "icon": "lucide-git-fork",
-              "title": "Graph of Cybernati Player"
+              "title": "Graph of The Unexplained Simulation Theory Using a DeWalt Laser"
             }
           }
         ]
@@ -318,25 +341,27 @@
       "smart-lookup:Smart Lookup: Open lookup view": false
     }
   },
-  "active": "04aaa064ac96a36c",
+  "active": "c45908095075f638",
   "lastOpenFiles": [
+    "video_archive/Untitled.md",
+    "video_archive/The Unexplained Simulation Theory Using a DeWalt Laser.md",
     "video_archive/The Missing Scientists Case Is So Much Worse Than You Think.md",
     "video_archive/channel-0000.base",
+    "video_archive/7 Theories About the Mysterious Vanishing Of Roanoke Colony 1.md",
     "video_archive/ALL Government UFO Videos Explained.md",
+    "private/Cybernati Player.md",
+    "Clippings/d553332cc0ea923238caad136483490c_MD5.webp",
+    "Clippings/a2592d1ef388f26622e59e9c111b405b_MD5.jpg",
+    "Clippings/2026-05-05 X UAPDr.md",
+    "Clippings/2022-06-11 X Divinsity.md",
+    "Clippings/93ecf8d8996c288bd671965b7bbdfa2c_MD5.jpg",
+    "video_archive/What Science Found at the Edge of Death  The Third Man.md",
     "video_archive/Scientists Finally Solved The Roanoke Colony Mystery - After 400 Years.md",
     "video_archive/The Colony of Roanoke’s Mysterious Disappearance  The UnXplained (Season 3)  History.md",
     "content/Claims/CLM-0002-linguistic-command-code.md",
     "content/Evidence/EVD-0001-roanoke-lost-colony.md",
-    "video_archive/7 Theories About the Mysterious Vanishing Of Roanoke Colony 1.md",
     "content/Internal Coms/COM-0001-coms-reestablished.md",
     "content/Dossiers/DOS-0001-roanoke-de-indexing.md",
-    "private/Cybernati Player.md",
-    "video_archive/What Science Found at the Edge of Death  The Third Man.md",
-    "Clippings/93ecf8d8996c288bd671965b7bbdfa2c_MD5.jpg",
-    "Clippings/2022-06-11 X Divinsity.md",
-    "Clippings/2026-05-05 X UAPDr.md",
-    "Clippings/a2592d1ef388f26622e59e9c111b405b_MD5.jpg",
-    "Clippings/d553332cc0ea923238caad136483490c_MD5.webp",
     "Clippings/e3a44f714504aadf03a376f89f6bdf27_MD5.jpg",
     "Clippings/Post by @truthstreamnews on X.md",
     "Clippings/Post by @UAPDr on X.md",
@@ -359,7 +384,6 @@
     "content/Claims/CLM-0001-walsingham-sabotage.md",
     "content/Claims",
     "content/CH-0000.md",
-    "content/Case-File-UFO-77.md",
     "content/364805f72021e1a1372ece0effaabe7b_MD5.png",
     "Clippings/d70a3924cedd8cc5c6085c8fa55604a4_MD5.webp",
     "Clippings/bfc9bc6ca82333d4bc9a1480f2f4d067_MD5.webp",

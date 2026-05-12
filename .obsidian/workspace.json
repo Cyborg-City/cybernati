@@ -15,7 +15,7 @@
               "state": {
                 "file": "private/Cybernati Player.md",
                 "mode": "source",
-                "source": false,
+                "source": true,
                 "backlinks": true,
                 "backlinkOpts": {
                   "collapseAll": false,

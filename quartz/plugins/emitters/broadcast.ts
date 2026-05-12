@@ -778,6 +778,7 @@ export function generatePlayerHtml(): string {
         player: null, currentVolume: 0, isMuted: true, handshakeEstablished: false,
         isDesynced: false, updateTimer: null, desyncTimer: null,
         currentVideoId: null, playlistData: null, basePath: null,
+        currentInterstitialIndex: null,
 
         icons: {
           mute: '<path d="M11 5L6 9H2v6h4l5 4V5z"></path><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line>',
@@ -968,6 +969,11 @@ export function generatePlayerHtml(): string {
           const { schedule, interstitials } = this.playlistData;
           const self = this;
           if (this.updateTimer) clearInterval(this.updateTimer);
+
+          // Plays a random video segment, then an interstitial, then recurses.
+          // Gap duration = the interstitial's natural video length.
+          // We read video.duration from the <video> element after mountStandby
+          // creates it. If metadata isn't loaded yet we fall back to 10 s.
           const playRandom = () => {
             const prog = self.findRandomVideo(schedule);
             if (!prog) return;
@@ -981,7 +987,21 @@ export function generatePlayerHtml(): string {
               remaining--;
               const progressBar = document.getElementById('sync-progress');
               if (progressBar) progressBar.style.width = (remaining / playWindow * 100) + "%";
-              if (remaining <= 0) { clearInterval(self.desyncTimer); self.mountStandby(interstitials); setTimeout(playRandom, 5000); }
+              if (remaining <= 0) {
+                clearInterval(self.desyncTimer);
+                self.mountStandby(interstitials);
+
+                // Wait for the interstitial's full duration before next random video.
+                // mountStandby creates the <video> element; we poll briefly for duration.
+                const scheduleNext = () => {
+                  const videoEl = document.querySelector('#player-mount video');
+                  const gapMs = (videoEl && videoEl.duration && isFinite(videoEl.duration))
+                    ? videoEl.duration * 1000
+                    : 10000;
+                  setTimeout(playRandom, gapMs);
+                };
+                setTimeout(scheduleNext, 100);
+              }
             }, 1000);
           };
           playRandom();
@@ -993,6 +1013,8 @@ export function generatePlayerHtml(): string {
           if (this.currentVideoId === prog.id && this.player && this.player.getPlayerState && this.player.getPlayerState() > 0) return;
           if (this.player && this.player.destroy) { this.player.destroy(); }
           this.player = null; this.currentVideoId = prog.id;
+          // Clear the interstitial index so the next standby picks a fresh one.
+          this.currentInterstitialIndex = null;
           mount.innerHTML = '<div id="yt-player"></div>';
           const self = this;
           this.player = new YT.Player('yt-player', {
@@ -1012,10 +1034,20 @@ export function generatePlayerHtml(): string {
         mountStandby: function(interstitials) {
           const mount = document.getElementById('player-mount');
           if (!mount) return;
-          const intFile = this.basePath + interstitials[Math.floor(Date.now() / 10000) % interstitials.length].replace(/^\\//, '');
+
+          // Pick ONE random interstitial on first entry and reuse it for the
+          // entire standby period. This prevents the old Date.now()-based rotation
+          // that swapped files every 10 seconds and caused stutter restarts.
+          if (this.currentInterstitialIndex === null) {
+            this.currentInterstitialIndex = Math.floor(Math.random() * interstitials.length);
+          }
+          const intFile = this.basePath + interstitials[this.currentInterstitialIndex].replace(/^\\//, '');
+
           const existing = mount.querySelector('video');
           if (existing && existing.getAttribute('src') === intFile) return;
+
           if (this.player && this.player.destroy) { this.player.destroy(); this.player = null; this.currentVideoId = null; }
+
           mount.innerHTML = '<video src="' + intFile + '" autoplay muted loop style="width:100%; height:100%; background:black; object-fit: cover;"></video>';
         },
 

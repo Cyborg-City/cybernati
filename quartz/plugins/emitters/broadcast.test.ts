@@ -931,6 +931,37 @@ describe("Player Page Generator", () => {
     // So the icon path must be relative: static/cybernati.svg
     assert.ok(html.includes('src="static/cybernati.svg"'), "icon must use static/cybernati.svg path")
   })
+
+  test("interstitial uses persistent index instead of Date.now rotation", () => {
+    const html = generatePlayerHtml()
+
+    // Must use currentInterstitialIndex, not the old Date.now() formula
+    const hasPersistentIndex = /currentInterstitialIndex/.test(html)
+    assert.strictEqual(hasPersistentIndex, true, "must use currentInterstitialIndex for persistent interstitial selection")
+
+    const noDateRotation = /Date\.now\(\)\s*\/\s*10000/.test(html)
+    assert.strictEqual(noDateRotation, false, "must NOT use Date.now() / 10000 rotation — causes stutter")
+  })
+
+  test("mountVideo clears currentInterstitialIndex", () => {
+    const html = generatePlayerHtml()
+
+    // When switching from standby back to video, clear the index so next
+    // standby picks a fresh random interstitial
+    const clearsIndex = /this\.currentInterstitialIndex\s*=\s*null/.test(html)
+    assert.strictEqual(clearsIndex, true, "mountVideo must clear currentInterstitialIndex to null")
+  })
+
+  test("desync mode waits for interstitial duration, not fixed 5s", () => {
+    const html = generatePlayerHtml()
+
+    // Must read video.duration instead of hardcoded 5000ms
+    const readsDuration = /videoEl\.duration/.test(html)
+    assert.strictEqual(readsDuration, true, "desync mode must read video.duration for gap timing")
+
+    const noFixedGap = /setTimeout\(playRandom,\s*5000\)/.test(html)
+    assert.strictEqual(noFixedGap, false, "desync mode must NOT use hardcoded 5000ms gap")
+  })
 })
 
 // ============================================================================

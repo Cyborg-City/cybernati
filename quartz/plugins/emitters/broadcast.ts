@@ -801,8 +801,8 @@ export function generatePlayerHtml(): string {
           if (this.isInitializing) return;
           this.isInitializing = true;
           try {
-            const pathSegments = window.location.pathname.split('/');
-            this.basePath = pathSegments.length > 2 ? '/' + pathSegments[1] + '/' : '/';
+            const path = window.location.pathname;
+            this.basePath = path.substring(0, path.lastIndexOf('/') + 1);
             const response = await fetch(this.basePath + 'static/video_playlist.json?v=' + Date.now());
             if (!response.ok) throw new Error("Playlist 404");
             this.playlistData = await response.json();

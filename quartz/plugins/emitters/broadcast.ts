@@ -641,17 +641,17 @@ export function generatePlayerHtml(): string {
     .progress-container { width: 100%; height: 4px; background: #111; position: relative; overflow: hidden; }
     .progress-bar { height: 100%; background: #0f0; width: 0%; transition: width 1s linear; box-shadow: 0 0 10px #0f0; }
 
-    .terminal-footer { display: flex; flex-direction: column; margin-top: auto; padding-top: 0.5rem; color: #0f0; font-size: 0.8rem; gap: 0.4rem; }
+    .terminal-footer { display: flex; flex-direction: column; margin-top: auto; padding-top: 0.5rem; color: #0f0; font-size: 0.8rem; gap: 0.4rem; position: relative; }
     .footer-top-row { display: flex; justify-content: space-between; align-items: center; width: 100%; }
     .next-section { display: flex; align-items: center; gap: 0.4rem; }
     .top-controls { display: flex; align-items: center; gap: 0.8rem; }
     .footer-fold { width: 100%; text-align: center; background: transparent; border: none; color: #060; cursor: pointer; padding: 0.6rem; font-family: 'IBM Plex Mono', monospace !important; font-size: 0.7rem; border-top: 1px solid #111; border-bottom: 1px solid #111; display: flex; align-items: center; justify-content: center; }
     .footer-fold:hover { color: #0f0; }
-    .footer-collapsible { overflow: hidden; transition: max-height 0.3s ease, opacity 0.3s ease; max-height: 500px; opacity: 1; }
+    .footer-collapsible { position: absolute; bottom: 100%; left: 0; width: 100%; background: #050505; z-index: 100; overflow: hidden; transition: max-height 0.3s ease, opacity 0.3s ease; max-height: 300px; opacity: 1; border: 1px solid #111; border-bottom: none; }
     .footer-collapsible.collapsed { max-height: 0; opacity: 0; }
-    .footer-section { display: flex; flex-direction: column; gap: 0.4rem; align-items: flex-start; margin-top: 0.5rem; }
+    .footer-collapsible > .footer-section { display: flex; flex-direction: column; gap: 0.4rem; align-items: flex-start; padding: 0.5rem 1.5rem 0; margin-top: 0; }
+    .footer-collapsible > .footer-row-meta { display: flex; gap: 1.5rem; align-items: center; padding: 0.5rem 1.5rem; margin-top: 0; }
     .footer-section .label { color: #fff; font-weight: bold; text-transform: uppercase; font-size: 0.7rem; font-family: 'IBM Plex Mono', monospace !important; }
-    .footer-row-meta { display: flex; gap: 1.5rem; align-items: center; margin-top: 0.5rem; }
     .links-container { display: flex; flex-wrap: wrap; gap: 8px; }
     .vault-link {
       color: #fff; text-decoration: none; border: 1px solid #060; padding: 4px 10px 2px 10px;

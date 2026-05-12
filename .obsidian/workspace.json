@@ -4,59 +4,20 @@
     "type": "split",
     "children": [
       {
-        "id": "40ea797cb9751780",
+        "id": "5f8e6bd485dc7c04",
         "type": "tabs",
         "children": [
           {
-            "id": "e344acac107a190f",
+            "id": "e19e5aca8d086364",
             "type": "leaf",
             "state": {
-              "type": "markdown",
-              "state": {
-                "file": "docs/features/recent notes.md",
-                "mode": "source",
-                "source": false,
-                "backlinks": true,
-                "backlinkOpts": {
-                  "collapseAll": false,
-                  "extraContext": false,
-                  "sortOrder": "alphabetical",
-                  "showSearch": false,
-                  "searchQuery": "",
-                  "backlinkCollapsed": false,
-                  "unlinkedCollapsed": true
-                }
-              },
+              "type": "empty",
+              "state": {},
               "icon": "lucide-file",
-              "title": "recent notes"
-            }
-          },
-          {
-            "id": "5ffe1fbfbd427627",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "content/Dossiers/DOS-0002-slit-experiment.md",
-                "mode": "source",
-                "source": false,
-                "backlinks": true,
-                "backlinkOpts": {
-                  "collapseAll": false,
-                  "extraContext": false,
-                  "sortOrder": "alphabetical",
-                  "showSearch": false,
-                  "searchQuery": "",
-                  "backlinkCollapsed": false,
-                  "unlinkedCollapsed": true
-                }
-              },
-              "icon": "lucide-file",
-              "title": "DOS-0002-slit-experiment"
+              "title": "New tab"
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -237,7 +198,7 @@
             "state": {
               "type": "localgraph",
               "state": {
-                "file": "content/Dossiers/DOS-0002-slit-experiment.md",
+                "file": "content/About.md",
                 "options": {
                   "collapse-filter": false,
                   "search": "",
@@ -265,7 +226,7 @@
                 }
               },
               "icon": "lucide-git-fork",
-              "title": "Graph of DOS-0002-slit-experiment"
+              "title": "Graph of About"
             }
           }
         ]
@@ -294,49 +255,49 @@
       "smart-lookup:Smart Lookup: Open lookup view": false
     }
   },
-  "active": "5ffe1fbfbd427627",
+  "active": "e19e5aca8d086364",
   "lastOpenFiles": [
-    "content/Project-MK-Ultra-Redacted.md",
-    "content/Pacific-Northwest-Sighting.md",
+    "content/About.md",
     "content/CH-0000.md",
-    "content/index.md",
     "private/Cybernati Player.md",
-    "private/Cybernati-Lore.md",
-    "private/plan.md",
-    "parse_session.cjs",
-    "parse_session.js",
-    "session_gist.html",
-    "session_backup.html",
+    "docs/features/recent notes.md",
     "content/Timelines/TIM-0001-main.md",
     "content/Timelines",
+    "content/Project-MK-Ultra-Redacted.md",
     "content/Places",
-    "content/People/PER-0003-albert-einstein.md",
     "content/People/PER-0004-niels-bohr.md",
-    "content/People/PER-0005-aephraim-steinberg.md",
     "content/People/PER-0002-thomas-young.md",
+    "content/People/PER-0005-aephraim-steinberg.md",
+    "content/People/PER-0003-albert-einstein.md",
     "content/People/PER-0001-john-white.md",
     "content/People",
     "content/Patterns/PAT-0001-assimilation-survival.md",
     "content/Patterns",
+    "content/Pacific-Northwest-Sighting.md",
     "content/Internal Coms/MEM-0002-slit-experiment.md",
     "content/Internal Coms/MEM-0001-observability-mandate.md",
     "content/Internal Coms/COM-0001-coms-reestablished.md",
     "content/Internal Coms",
+    "content/index.md",
     "content/Evidence/EVD-0001-roanoke-lost-colony.md",
     "content/Evidence",
     "content/Events/EVT-0005-steinberg-negative-time.md",
-    "content/Events/EVT-0004-mit-2025-complementarity.md",
     "content/Events/EVT-0003-einstein-bohr-debate-1927.md",
+    "content/Events/EVT-0004-mit-2025-complementarity.md",
     "content/Events/EVT-0002-young-double-slit-1801.md",
-    "content/Dossiers/DOS-0001-roanoke-de-indexing.md",
+    "content/Events",
     "content/Dossiers/DOS-0002-slit-experiment.md",
+    "content/Dossiers/DOS-0001-roanoke-de-indexing.md",
     "content/Dossiers/77df308d905d83206f0db592e5d31801_MD5.webp",
-    "content/Dossiers/1c3ebaa615ec00a14c2646a570b1f5b5_MD5.webp",
     "content/Dossiers/350f6367e7f8f6e5273eb1c069dd17fb_MD5.webp",
+    "content/Dossiers/1c3ebaa615ec00a14c2646a570b1f5b5_MD5.webp",
     "content/Dossiers/01be32d834ebf737fbcc78c9ba6bfe84_MD5.webp",
+    "content/Dossiers",
     "content/Claims/CLM-0002-linguistic-command-code.md",
     "content/Claims/CLM-0001-walsingham-sabotage.md",
+    "content/Claims",
     "content/364805f72021e1a1372ece0effaabe7b_MD5.png",
+    "content",
     "docs/images/custom-social-image-preview-dark.png",
     "Clippings/INGEST-20260511-Slit-Experiment/67d3754c244c01213ac08348f4fe450d_MD5.webp",
     "Clippings/INGEST-20260511-Slit-Experiment/Pasted image 20260511131153.png",

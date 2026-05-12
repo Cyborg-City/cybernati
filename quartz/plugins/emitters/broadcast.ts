@@ -628,7 +628,7 @@ export function generatePlayerHtml(): string {
       display: flex; flex-direction: column;
       width: 100%; height: 100%; box-sizing: border-box;
     }
-    .broadcast-terminal.desynced .next-section { display: none; }
+    .broadcast-terminal.desynced .next-section { visibility: hidden; }
     .terminal-header { border-bottom: 1px solid #1a1a1a; padding-bottom: 0.15rem; display: flex; flex-direction: column; gap: 0.15rem; }
     .header-brand { display: flex; align-items: center; gap: 0.6rem; }
     .terminal-icon { width: 18px; height: 22px; display: inline-block; vertical-align: middle; }
@@ -1017,6 +1017,8 @@ export function generatePlayerHtml(): string {
           if (this.currentVideoId === prog.id && this.player && this.player.getPlayerState && this.player.getPlayerState() > 0) return;
           if (this.player && this.player.destroy) { this.player.destroy(); }
           this.player = null; this.currentVideoId = prog.id;
+          const titleEl = document.getElementById('video-title');
+          if (titleEl) { titleEl.innerHTML = prog.title.toUpperCase(); this.fitTitle(titleEl); }
           // Clear the interstitial index so the next standby picks a fresh one.
           this.currentInterstitialIndex = null;
           mount.innerHTML = '<div id="yt-player"></div>';

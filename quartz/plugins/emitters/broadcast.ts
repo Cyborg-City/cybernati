@@ -683,6 +683,29 @@ export function generatePlayerHtml(): string {
 
     .signal-initializing { height: 100%; display: flex; align-items: center; justify-content: center; background: #000; color: #0f0; }
     @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
+
+    /* Prevent scrollbars on the player page itself */
+    body { overflow: hidden; }
+    .broadcast-terminal { overflow: hidden; }
+
+    /* Responsive: small viewports */
+    @media (max-width: 600px) {
+      .broadcast-terminal { padding: 0.75rem; }
+      .terminal-header { margin-bottom: 0.5rem; padding-bottom: 0.4rem; }
+      .terminal-version { font-size: 0.85rem; letter-spacing: 0.05rem; }
+      .video-title { font-size: 0.85rem; }
+      .terminal-screen { min-height: 180px; }
+      .footer-top-row { flex-direction: column; align-items: flex-start; gap: 0.4rem; }
+      .top-controls { gap: 0.4rem; width: 100%; justify-content: flex-end; }
+      .desync-action-btn { padding: 4px 10px 2px 10px; font-size: 0.65rem; }
+      .terminal-slider { width: 60px; }
+      .footer-fold { padding: 0.4rem; }
+      .footer-collapsible { max-height: 250px; }
+      .footer-collapsible > .footer-section,
+      .footer-collapsible > .footer-row-meta { padding-left: 0.75rem; padding-right: 0.75rem; }
+      .embed-modal { padding: 1rem; }
+      .modal-content { padding: 1rem; width: 95%; }
+    }
   </style>
 </head>
 <body>

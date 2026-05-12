@@ -659,7 +659,7 @@ export function generatePlayerHtml(): string {
       font-size: 0.75rem; transition: all 0.1s ease; line-height: 1;
     }
     .vault-link:hover { background: #0f0; color: #000; }
-    .next-title { color: #0c0; font-style: italic; }
+    .next-title { color: #0f0; font-weight: bold; font-family: system-ui, sans-serif; }
     .mute-btn { background: transparent; border: none; color: #060; cursor: pointer; padding: 2px; display: flex; align-items: center; }
     .mute-btn:hover { color: #0f0; }
     .mute-btn.muted { color: #0f0; animation: blink 1s infinite; }
@@ -945,7 +945,7 @@ export function generatePlayerHtml(): string {
             if (!standby && active) {
               if (progressBar) progressBar.style.width = (100 - (off / active.duration) * 100) + "%";
               if (titleEl) titleEl.innerHTML = active.title.toUpperCase();
-              if (nextEl) nextEl.innerHTML = schedule[nextIdx].title.toUpperCase();
+              if (nextEl) nextEl.innerHTML = self.truncateWords(schedule[nextIdx].title, 7).toUpperCase();
               if (self.currentVideoId !== active.id) self.mountVideo(active, off);
               else if (self.player && self.player.getCurrentTime) {
                 const drift = Math.abs(self.player.getCurrentTime() - off);
@@ -954,7 +954,7 @@ export function generatePlayerHtml(): string {
             } else {
               if (progressBar) progressBar.style.width = Math.min(100, (wait / 30) * 100) + "%";
               if (titleEl) titleEl.innerHTML = "SIGNAL_LOST: RE-ALIGNING...";
-              if (nextEl) nextEl.innerHTML = schedule[nextIdx].title.toUpperCase();
+              if (nextEl) nextEl.innerHTML = self.truncateWords(schedule[nextIdx].title, 7).toUpperCase();
               self.mountStandby(interstitials);
             }
           };

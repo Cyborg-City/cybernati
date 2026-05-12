@@ -684,10 +684,6 @@ export function generatePlayerHtml(): string {
     .signal-initializing { height: 100%; display: flex; align-items: center; justify-content: center; background: #000; color: #0f0; }
     @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
 
-    /* Prevent scrollbars on the player page itself */
-    body { overflow: hidden; }
-    .broadcast-terminal { overflow: hidden; }
-
     /* Responsive: small viewports */
     @media (max-width: 600px) {
       .broadcast-terminal { padding: 0.75rem; }

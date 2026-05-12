@@ -7,7 +7,7 @@ export const sharedPageComponents: SharedLayout = {
   header: [],
   afterBody: [
     Component.ConditionalRender({
-      component: Component.RecentNotes({ title: "Recent Updates", limit: 3, showTags: false }),
+      component: Component.RecentNotes({ title: "Recent Anomalies", limit: 20, showTags: true, linkToMore: "tags" }),
       condition: (page) => page.fileData.slug === "index",
     }),
   ],

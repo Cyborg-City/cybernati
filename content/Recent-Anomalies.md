@@ -1,9 +1,7 @@
 ---
-created: 2026-05-12T18:11:36-05:00
-modified: 2026-05-12T18:12:16-05:00
-title: test note
+title: Recent Anomalies
 aliases:
-draft: false
+draft: true
 tags:
   - example-tag
 ID:
@@ -13,9 +11,12 @@ clearance:
 confidence:
 mechanism:
 primary_beneficiary:
+created: 2026-05-12T18:14:07-05:00
+modified: 2026-05-12T18:19:26-05:00
 narrative_volatility:
 source_provenance:
 description:
 related:
 ---
-![[Pacific-Northwest-Sighting]]
+---
+

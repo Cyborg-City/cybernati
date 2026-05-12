@@ -1,6 +1,6 @@
 ---
 created: 2026-05-10T11:09:45-05:00
-modified: 2026-05-12T02:37:19-05:00
+modified: 2026-05-12T04:35:19-05:00
 ---
 # Cybernati™ Player: Channel Zero
 
@@ -54,7 +54,3 @@ Create `quartz/plugins/emitters/broadcast.ts`.
 *The System Is Performing as Intended.*
 *Reference ID: CN-PL-MOD-02*
 
-
-
-
-<iframe src="http://localhost:8080/player.html" width="100%" height="500" frameborder="0" allowfullscreen style="border:none;"></iframe>

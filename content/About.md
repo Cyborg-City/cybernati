@@ -3,9 +3,9 @@ title: About
 aliases:
 draft: false
 tags:
-  - example-tag
+  - lore
 created: 2026-05-09T22:11:27-05:00
-modified: 2026-05-11T00:16:45-05:00
+modified: 2026-05-12T05:34:43-05:00
 ID:
 type:
 status:
@@ -26,19 +26,13 @@ Welcome to the **Cybernati Vault**. This archive contains digitized evidence, ca
 
 **Cybernati** is an internal observability consortium tasked with documenting systemic outcomes and public anomalies since 1984.
 
-It’s a creative research project mixing real references, speculative claims, and fictional presentation.
+It’s a creative research project mixing real references, speculative claims, and fictional presentation. A reality based ARG. Dossiers and Internal Coms are Cybernati lore everything else is real world. 
 ### [SEARCH THE ARCHIVE](.)
 Use the terminal prompt in the sidebar to query the database.
 
 ---
 
-### HIGH PRIORITY FILES
-*   [[Project-MK-Ultra-Redacted|CLASSIFIED: Project MK-Ultra Intelligence]]
-*   [[Case-File-UFO-77|UFO-77: The Rendlesham Incident]]
-
----
 
 > [!WARNING]
 > Access to this data is restricted. Unauthorized dissemination of these materials could possibly open your mind to alternative possibilities.
-
 

@@ -626,7 +626,7 @@ export function generatePlayerHtml(): string {
       border: none; border-radius: 0; box-shadow: none;
       font-family: 'Special Elite', cursive; position: relative;
       display: flex; flex-direction: column;
-      width: 100%; min-height: 100vh; box-sizing: border-box;
+      width: 100%; height: 100%; box-sizing: border-box;
     }
     .terminal-header { margin-bottom: 1rem; border-bottom: 1px solid #1a1a1a; padding-bottom: 0.8rem; display: flex; flex-direction: column; gap: 0.4rem; }
     .header-brand { display: flex; align-items: center; gap: 0.6rem; }
@@ -635,10 +635,10 @@ export function generatePlayerHtml(): string {
     .terminal-version:hover { text-shadow: 0 0 8px rgba(0,255,0,0.5); }
     .video-title { color: #0f0; font-size: 1.1rem; font-weight: normal; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 1; }
 
-    .terminal-screen { position: relative; width: 100%; flex-grow: 1; min-height: 300px; background: black; overflow: hidden; border: 1px solid #222; }
+    .terminal-screen { position: relative; width: 100%; flex-grow: 1; min-height: 180px; background: black; overflow: hidden; border: 1px solid #222; }
     .player-mount { width: 100%; height: 100%; }
 
-    .progress-container { width: 100%; height: 4px; background: #111; position: relative; overflow: hidden; }
+    .progress-container { position: absolute; bottom: 0; left: 0; width: 100%; height: 4px; background: #111; z-index: 10; overflow: hidden; }
     .progress-bar { height: 100%; background: #0f0; width: 0%; transition: width 1s linear; box-shadow: 0 0 10px #0f0; }
 
     .terminal-footer { display: flex; flex-direction: column; margin-top: auto; padding-top: 0.5rem; color: #0f0; font-size: 0.8rem; gap: 0.4rem; position: relative; }
@@ -727,9 +727,9 @@ export function generatePlayerHtml(): string {
           </div>
         </div>
       </div>
-    </div>
-    <div id="progress-container" class="progress-container">
-      <div id="sync-progress" class="progress-bar"></div>
+      <div id="progress-container" class="progress-container">
+        <div id="sync-progress" class="progress-bar"></div>
+      </div>
     </div>
     <div class="terminal-footer">
       <div class="footer-top-row">

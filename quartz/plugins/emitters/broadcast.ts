@@ -636,9 +636,10 @@ export const Broadcast: QuartzEmitterPlugin<Partial<BroadcastEmitterOptions>> = 
 
       // Build slug → title map from Quartz content (for friendly related link names)
       const titleMap = new Map<string, string>()
-      for (const page of content) {
-        const slug = page.slug
-        const title = page.frontmatter?.title as string | undefined
+      for (const [, vfile] of content) {
+        const data = vfile.data as { slug?: string; frontmatter?: Record<string, unknown> }
+        const slug = data.slug
+        const title = data.frontmatter?.title as string | undefined
         if (slug && title) {
           titleMap.set(slug, title)
         }

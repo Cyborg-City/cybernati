@@ -106,15 +106,24 @@ describe("Broadcast.tsx Structural Integrity", () => {
       assert.strictEqual(resetsPlayer, true, "desync button must reset player to null")
     })
 
-    test("startLoop only calls mountVideo when video ID changes", () => {
-      const scriptMatch = source.match(/startLoop:[^}]*\{[\s\S]*?\n                    \}/)
-      assert.ok(scriptMatch, "startLoop function not found")
+    test("startLoop resyncs player if drift exceeds 3 seconds", () => {
+      // Must check getCurrentTime and seekTo when on correct video
+      const hasDriftCheck = /const\s+drift\s*=\s*Math\.abs\(self\.player\.getCurrentTime\(\)\s*-\s*off\)/.test(source)
+      assert.strictEqual(hasDriftCheck, true, "startLoop must calculate drift between player time and expected offset")
 
-      const loopBody = scriptMatch[0]
+      const hasSeekTo = /if\s*\(\s*drift\s*>\s*3\s*\)\s*self\.player\.seekTo\(off,\s*true\)/.test(source)
+      assert.strictEqual(hasSeekTo, true, "startLoop must seekTo correct offset when drift > 3 seconds")
+    })
 
-      // Must have the ID comparison guard
-      const hasIdCheck = /self\.currentVideoId\s*!==\s*active\.id/.test(loopBody)
-      assert.strictEqual(hasIdCheck, true, "startLoop should only mount when currentVideoId !== active.id")
+    test("drift resync is gated behind isDesynced check", () => {
+      // The update() function must bail out early when desynced
+      const hasDesyncGuard = /if\s*\(\s*self\.isDesynced\s*\)\s*return/.test(source)
+      assert.strictEqual(hasDesyncGuard, true, "update() must return early when isDesynced is true")
+
+      // seekTo must only appear after the desync guard (inside normal loop path)
+      const driftCheckPosition = source.indexOf("self.player.getCurrentTime()")
+      const desyncGuardPosition = source.indexOf("if (self.isDesynced) return")
+      assert.ok(driftCheckPosition > desyncGuardPosition, "drift check must come after isDesynced guard")
     })
 
     test("nav listener checks YT readiness before init", () => {

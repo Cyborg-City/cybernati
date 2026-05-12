@@ -257,6 +257,10 @@ export default (() => {
                                 // Force remount if player exists but wrong video
                                 if (self.currentVideoId !== active.id) {
                                     self.mountVideo(active, off);
+                                } else if (self.player && self.player.getCurrentTime) {
+                                    // Resync if drift exceeds 3 seconds (e.g. user paused tab)
+                                    const drift = Math.abs(self.player.getCurrentTime() - off);
+                                    if (drift > 3) self.player.seekTo(off, true);
                                 }
                             } else {
                                 if (progressBar) progressBar.style.width = Math.min(100, (wait / 30) * 100) + "%";

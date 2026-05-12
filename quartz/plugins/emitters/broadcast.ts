@@ -820,7 +820,11 @@ export function generatePlayerHtml(): string {
           if (icon) icon.src = self.basePath + 'static/cybernati.svg';
 
           const versionLink = document.getElementById('terminal-version');
-          if (versionLink) versionLink.href = self.basePath;
+          if (versionLink) {
+            versionLink.href = self.basePath;
+            versionLink.target = '_blank';
+            versionLink.rel = 'noopener noreferrer';
+          }
 
           const handleInteraction = () => {
             if (self.handshakeEstablished) return;

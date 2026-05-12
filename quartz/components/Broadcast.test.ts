@@ -145,9 +145,14 @@ describe("Broadcast.tsx Structural Integrity", () => {
   })
 
   describe("JSX Structure", () => {
-    test("player-mount div exists with correct ID", () => {
-      const hasPlayerMount = /id="player-mount"/.test(source)
-      assert.strictEqual(hasPlayerMount, true, "player-mount div missing")
+    test("header-brand wrapper exists for icon + version", () => {
+      const hasBrand = /class="header-brand"/.test(source)
+      assert.strictEqual(hasBrand, true, ".header-brand wrapper must exist for icon + version row")
+    })
+
+    test("terminal-header uses flex-direction column", () => {
+      const hasColumn = /flex-direction:\s*column/.test(source)
+      assert.strictEqual(hasColumn, true, ".terminal-header must use flex-direction: column")
     })
 
     test("sync-progress bar exists", () => {

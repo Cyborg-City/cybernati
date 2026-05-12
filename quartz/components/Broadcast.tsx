@@ -5,7 +5,10 @@ export default (() => {
     return (
       <div id="broadcast-root" class="broadcast-terminal">
         <div class="terminal-header">
-            <div class="terminal-version">CYBERNATI™ Player Beta</div>
+            <div class="header-brand">
+                <img width="18" height="22" class="terminal-icon" alt="" />
+                <div class="terminal-version">CYBERNATI™ Player Beta |</div>
+            </div>
             <div id="video-title" class="video-title">INITIALIZING...</div>
         </div>
         
@@ -129,6 +132,9 @@ export default (() => {
                     setupUI: function() {
                         const self = this;
                         
+                        const icon = document.querySelector('.terminal-icon');
+                        if (icon) icon.src = self.basePath + 'static/cybernati.svg';
+
                         const handleInteraction = () => {
                             if (self.handshakeEstablished) return;
                             self.handshakeEstablished = true;
@@ -388,9 +394,11 @@ export default (() => {
     display: flex; flex-direction: column;
   }
 
-  .terminal-header { margin-bottom: 1rem; border-bottom: 1px solid #1a1a1a; padding-bottom: 0.8rem; }
-  .terminal-version { font-size: 0.9rem; color: #fff; text-transform: uppercase; margin-bottom: 0.3rem; letter-spacing: 0.1rem; }
-  .video-title { color: #0f0; font-size: 1.1rem; font-weight: normal; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .terminal-header { margin-bottom: 1rem; border-bottom: 1px solid #1a1a1a; padding-bottom: 0.8rem; display: flex; flex-direction: column; gap: 0.4rem; }
+  .header-brand { display: flex; align-items: center; gap: 0.6rem; }
+  .terminal-icon { width: 18px; height: 22px; display: inline-block; vertical-align: middle; }
+  .terminal-version { font-size: 1.1rem; color: #fff; text-transform: uppercase; letter-spacing: 0.1rem; line-height: 1; }
+  .video-title { color: #0f0; font-size: 1.1rem; font-weight: normal; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 1; }
 
   .terminal-screen { position: relative; width: 100%; height: 400px; background: black; overflow: hidden; border: 1px solid #222; }
   .player-mount { width: 100%; height: 100%; }

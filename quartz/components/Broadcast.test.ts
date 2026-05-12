@@ -2,10 +2,9 @@
  * @fileoverview Broadcast Component Structural Tests
  *
  * These tests validate the Broadcast.tsx component file itself.
- * They ensure that CSS color changes don't accidentally corrupt
- * the embedded JavaScript logic inside dangerouslySetInnerHTML.
+ * They ensure that the component renders an iframe pointing to player.html.
  *
- * If a CSS edit breaks the player, these tests will fail.
+ * If the embed logic breaks, these tests will fail.
  */
 
 import test, { describe } from "node:test"
@@ -25,259 +24,39 @@ function readBroadcastFile(): string {
 describe("Broadcast.tsx Structural Integrity", () => {
   const source = readBroadcastFile()
 
-  describe("CSS Color Requirements", () => {
-    test("terminal-version is white (#fff)", () => {
-      // Must use #fff, not #0f0 or any other color
-      const match = source.match(/\.terminal-version\s*\{[^}]*color:\s*(#[0-9a-fA-F]+)/)
-      assert.ok(match, "terminal-version CSS rule with color property not found")
-      assert.strictEqual(match[1].toLowerCase(), "#fff", `terminal-version color is ${match[1]}, expected #fff`)
-    })
-
-    test("footer-section label is white (#fff)", () => {
-      const match = source.match(/\.footer-section\s+\.label\s*\{[^}]*color:\s*(#[0-9a-fA-F]+)/)
-      assert.ok(match, "footer-section .label CSS rule with color property not found")
-      assert.strictEqual(match[1].toLowerCase(), "#fff", `footer-section .label color is ${match[1]}, expected #fff`)
-    })
-
-    test("vault-link text is white (#fff)", () => {
-      const match = source.match(/\.vault-link\s*\{[^}]*color:\s*(#[0-9a-fA-F]+)/)
-      assert.ok(match, "vault-link CSS rule with color property not found")
-      assert.strictEqual(match[1].toLowerCase(), "#fff", `vault-link color is ${match[1]}, expected #fff`)
-    })
-
-    test("desync-action-btn text is white (#fff)", () => {
-      const match = source.match(/\.desync-action-btn\s*\{[^}]*color:\s*(#[0-9a-fA-F]+)/)
-      assert.ok(match, "desync-action-btn CSS rule with color property not found")
-      assert.strictEqual(match[1].toLowerCase(), "#fff", `desync-action-btn color is ${match[1]}, expected #fff`)
-    })
-
-    test("embed-btn CSS class is removed (using desync-action-btn instead)", () => {
-      const hasEmbedBtnClass = /\.embed-btn\s*\{/.test(source)
-      assert.strictEqual(hasEmbedBtnClass, false, ".embed-btn CSS class should not exist — use .desync-action-btn for embed trigger")
-    })
+  test("component renders an iframe", () => {
+    const hasIframe = /<iframe/.test(source)
+    assert.strictEqual(hasIframe, true, "Broadcast must render an iframe element")
   })
 
-  describe("JavaScript Logic Integrity", () => {
-    test("mountVideo does NOT have buggy early-return on currentVideoId", () => {
-      // The old buggy code was:
-      //   if (!mount || this.currentVideoId === prog.id) return;
-      // The fixed code checks player state instead.
-      const scriptMatch = source.match(/mountVideo:[^}]*\{[\s\S]*?\n                    \}/)
-      assert.ok(scriptMatch, "mountVideo function not found in script block")
-
-      const mountVideoBody = scriptMatch[0]
-
-      // Must NOT have the old buggy pattern
-      const hasBuggyPattern = /this\.currentVideoId\s*===\s*prog\.id.*return/.test(mountVideoBody)
-      assert.strictEqual(hasBuggyPattern, false, "mountVideo still has buggy early-return: 'this.currentVideoId === prog.id' — this prevents video reloads when the player hasn't actually loaded")
-
-      // Must have the fixed pattern: check player.getPlayerState()
-      const hasFixedPattern = /getPlayerState\(\)/.test(mountVideoBody)
-      assert.strictEqual(hasFixedPattern, true, "mountVideo missing fixed pattern: getPlayerState() check")
-    })
-
-    test("mountVideo destroys existing player before creating new one", () => {
-      const scriptMatch = source.match(/mountVideo:[^}]*\{[\s\S]*?\n                    \}/)
-      assert.ok(scriptMatch, "mountVideo function not found")
-
-      const mountVideoBody = scriptMatch[0]
-
-      // Must destroy existing player
-      const hasDestroy = /this\.player\s*&&\s*this\.player\.destroy/.test(mountVideoBody)
-      assert.strictEqual(hasDestroy, true, "mountVideo should destroy existing player before creating new one")
-    })
-
-    test("desync button clears both timers on toggle", () => {
-      const scriptMatch = source.match(/desyncBtn\.onclick\s*=\s*\(\)[\s\S]*?\n                        \};/)
-      assert.ok(scriptMatch, "desyncBtn onclick handler not found")
-
-      const handlerBody = scriptMatch[0]
-
-      // Must clear desyncTimer
-      const clearsDesync = /clearInterval\(self\.desyncTimer\)/.test(handlerBody)
-      assert.strictEqual(clearsDesync, true, "desync button must clear desyncTimer")
-
-      // Must clear updateTimer
-      const clearsUpdate = /clearInterval\(self\.updateTimer\)/.test(handlerBody)
-      assert.strictEqual(clearsUpdate, true, "desync button must clear updateTimer")
-
-      // Must reset player state
-      const resetsPlayer = /self\.player\s*=\s*null/.test(handlerBody)
-      assert.strictEqual(resetsPlayer, true, "desync button must reset player to null")
-    })
-
-    test("startLoop resyncs player if drift exceeds 3 seconds", () => {
-      // Must check getCurrentTime and seekTo when on correct video
-      const hasDriftCheck = /const\s+drift\s*=\s*Math\.abs\(self\.player\.getCurrentTime\(\)\s*-\s*off\)/.test(source)
-      assert.strictEqual(hasDriftCheck, true, "startLoop must calculate drift between player time and expected offset")
-
-      const hasSeekTo = /if\s*\(\s*drift\s*>\s*3\s*\)\s*self\.player\.seekTo\(off,\s*true\)/.test(source)
-      assert.strictEqual(hasSeekTo, true, "startLoop must seekTo correct offset when drift > 3 seconds")
-    })
-
-    test("drift resync is gated behind isDesynced check", () => {
-      // The update() function must bail out early when desynced
-      const hasDesyncGuard = /if\s*\(\s*self\.isDesynced\s*\)\s*return/.test(source)
-      assert.strictEqual(hasDesyncGuard, true, "update() must return early when isDesynced is true")
-
-      // seekTo must only appear after the desync guard (inside normal loop path)
-      const driftCheckPosition = source.indexOf("self.player.getCurrentTime()")
-      const desyncGuardPosition = source.indexOf("if (self.isDesynced) return")
-      assert.ok(driftCheckPosition > desyncGuardPosition, "drift check must come after isDesynced guard")
-    })
-
-    test("nav listener checks YT readiness before init", () => {
-      const hasYTCheck = /if\s*\(\s*document\.getElementById\('player-mount'\)\s*&&\s*window\.YT\s*&&\s*window\.YT\.Player\s*\)/.test(source)
-      assert.strictEqual(hasYTCheck, true, "nav listener must check window.YT && window.YT.Player before init")
-    })
-
-    test("destroy clears mount element innerHTML", () => {
-      const clearsMount = /const\s+mount\s*=\s*document\.getElementById\('player-mount'\)/.test(source) &&
-                          /if\s*\(\s*mount\s*\)\s*mount\.innerHTML\s*=\s*''/.test(source)
-      assert.strictEqual(clearsMount, true, "destroy() must clear player-mount innerHTML to remove zombie iframes")
-    })
-
-    test("init guards against double-calls with isInitializing flag", () => {
-      const hasGuard = /if\s*\(\s*this\.isInitializing\s*\)\s*return/.test(source)
-      assert.strictEqual(hasGuard, true, "init() must have isInitializing guard to prevent concurrent calls")
-    })
-
-    test("init checks YT readiness before proceeding", () => {
-      const hasYTCheck = /if\s*\(\s*!mount\s*\|\|\s*!window\.YT\s*\|\|\s*!window\.YT\.Player\s*\)\s*return/.test(source)
-      assert.strictEqual(hasYTCheck, true, "init() must check window.YT && window.YT.Player before proceeding")
-    })
-
-    test("onReady does NOT call playVideo (rely on autoplay)", () => {
-      const hasPlayVideo = /e\.target\.playVideo\(\)/.test(source)
-      assert.strictEqual(hasPlayVideo, false, "onReady must NOT call playVideo() — rely on autoplay:1 + mute:1")
-    })
+  test("iframe src points to player.html", () => {
+    const hasPlayerHtml = /player\.html/.test(source)
+    assert.strictEqual(hasPlayerHtml, true, "iframe src must reference player.html")
   })
 
-  describe("JSX Structure", () => {
-    test("header-brand wrapper exists for icon + version", () => {
-      const hasBrand = /class="header-brand"/.test(source)
-      assert.strictEqual(hasBrand, true, ".header-brand wrapper must exist for icon + version row")
-    })
+  test("iframe has explicit height for layout stability", () => {
+    const hasHeight = /height="\d+"/.test(source)
+    assert.strictEqual(hasHeight, true, "iframe must have explicit height to prevent layout shift")
+  })
 
-    test("terminal-header uses flex-direction column", () => {
-      const hasColumn = /flex-direction:\s*column/.test(source)
-      assert.strictEqual(hasColumn, true, ".terminal-header must use flex-direction: column")
-    })
+  test("iframe has no border", () => {
+    const hasNoBorder = /frameborder="0"/.test(source)
+    assert.strictEqual(hasNoBorder, true, "iframe must have frameborder=0")
+  })
 
-    test("mountStandby checks existing video src before recreating", () => {
-      const hasExistingCheck = /const\s+existing\s*=\s*mount\.querySelector\('video'\)/.test(source)
-      assert.strictEqual(hasExistingCheck, true, "mountStandby must check existing video element")
+  test("component has embed container CSS", () => {
+    const hasContainer = /broadcast-embed-container/.test(source)
+    assert.strictEqual(hasContainer, true, "must have .broadcast-embed-container CSS class")
+  })
 
-      const hasSrcGuard = /if\s*\(\s*existing\s*&&\s*existing\.getAttribute\('src'\)\s*===\s*intFile\s*\)\s*return/.test(source)
-      assert.strictEqual(hasSrcGuard, true, "mountStandby must return early if same interstitial is already playing")
-    })
+  test("component no longer contains inline player markup", () => {
+    // The old component had terminal markup, JS, CSS all inline.
+    // Now it should only contain the iframe — no player-mount, no script block.
+    const hasPlayerMount = /id="player-mount"/.test(source)
+    assert.strictEqual(hasPlayerMount, false, "must NOT contain player-mount div — player lives in player.html")
 
-    test("footer-top-row exists for NEXT + controls", () => {
-      const hasTopRow = /class="footer-top-row"/.test(source)
-      assert.strictEqual(hasTopRow, true, ".footer-top-row must exist")
-    })
-
-    test("next-section exists in top row", () => {
-      const hasNext = /class="next-section"/.test(source)
-      assert.strictEqual(hasNext, true, ".next-section must exist")
-    })
-
-    test("top-controls exists with desync + mute + vol + fullscreen", () => {
-      const hasTopControls = /class="top-controls"/.test(source)
-      assert.strictEqual(hasTopControls, true, ".top-controls must exist")
-    })
-
-    test("footer-fold toggle button exists", () => {
-      const hasFold = /id="footer-fold"/.test(source)
-      assert.strictEqual(hasFold, true, "footer-fold button missing")
-    })
-
-    test("footer-collapsible exists with collapsed class", () => {
-      const hasCollapsible = /id="footer-collapsible"/.test(source)
-      assert.strictEqual(hasCollapsible, true, "footer-collapsible missing")
-      const startsCollapsed = /id="footer-collapsible"[^>]*class="[^"]*collapsed[^"]*"/.test(source)
-      assert.strictEqual(startsCollapsed, true, "footer-collapsible must start with collapsed class")
-    })
-
-    test("fold button toggles collapsible and swaps arrow SVG", () => {
-      const hasToggle = /collapsible\.classList\.toggle\('collapsed'\)/.test(source)
-      assert.strictEqual(hasToggle, true, "fold button must toggle 'collapsed' class")
-      const hasArrowSwap = /arrow\.innerHTML\s*=\s*isCollapsed/.test(source)
-      assert.strictEqual(hasArrowSwap, true, "fold button must swap arrow-down/arrow-up SVG")
-    })
-
-    test("sync-progress bar exists", () => {
-      const hasProgressBar = /id="sync-progress"/.test(source)
-      assert.strictEqual(hasProgressBar, true, "sync-progress bar missing")
-    })
-
-    test("desync button exists", () => {
-      const hasDesyncBtn = /id="desync-btn"/.test(source)
-      assert.strictEqual(hasDesyncBtn, true, "desync button missing")
-    })
-
-    test("handshake-hint text is removed from JSX", () => {
-      const hasHint = /id="handshake-hint"/.test(source)
-      assert.strictEqual(hasHint, false, "#handshake-hint element should be removed from JSX")
-    })
-
-    test("mute-btn has muted class with blink animation", () => {
-      const hasMutedClass = /\.mute-btn\.muted\s*\{/.test(source)
-      assert.strictEqual(hasMutedClass, true, ".mute-btn.muted CSS rule missing")
-
-      const hasBlinkAnimation = /animation:\s*blink\s+1s\s+infinite/.test(source)
-      assert.strictEqual(hasBlinkAnimation, true, ".mute-btn.muted must have blink animation")
-    })
-
-    test("mute toggle toggles muted class on button", () => {
-      // Must toggle class in mute button onclick
-      const hasToggle = /muteBtn\.classList\.toggle\('muted',\s*self\.isMuted\)/.test(source)
-      assert.strictEqual(hasToggle, true, "mute button onclick must toggle 'muted' class")
-
-      // Must also toggle on volume slider change
-      const hasSliderToggle = /muteBtn\.classList\.toggle\('muted',\s*self\.isMuted\)/g
-      const matches = source.match(hasSliderToggle)
-      assert.ok(matches && matches.length >= 2, "volume slider oninput must also toggle 'muted' class")
-    })
-
-    test("embed-trigger uses player.html URL (not current page) for iframe src", () => {
-      // Why: Embedding the current Quartz page would include sidebar, nav, etc.
-      // The standalone player.html page contains only the terminal.
-      const usesPlayerUrl = /self\.basePath\s*\+\s*'player\.html'/.test(source)
-      assert.strictEqual(usesPlayerUrl, true, "embed trigger must use self.basePath + 'player.html' for iframe src")
-
-      const notCurrentPage = /window\.location\.href/.test(source)
-      assert.strictEqual(notCurrentPage, false, "embed trigger must NOT use window.location.href — that embeds the Quartz page")
-    })
-
-    test("embed-trigger populates embed-code textarea on click", () => {
-      // Why: The textarea starts empty. Clicking embed-trigger must fill it
-      // with valid iframe HTML before showing the modal.
-      const hasPopulate = /document\.getElementById\('embed-code'\)\.value\s*=\s*embedCode/.test(source)
-      assert.strictEqual(hasPopulate, true, "embed trigger must populate embed-code textarea with iframe HTML")
-    })
-
-    test("copy-embed-btn has onclick handler with clipboard API", () => {
-      // Why: Users expect the COPY_CODE button to actually copy.
-      // Modern browsers have navigator.clipboard; we also provide a fallback.
-      const hasCopyHandler = /copyEmbedBtn\.onclick/.test(source)
-      assert.strictEqual(hasCopyHandler, true, "copy-embed-btn must have an onclick handler")
-
-      const usesClipboardAPI = /navigator\.clipboard\.writeText/.test(source)
-      assert.strictEqual(usesClipboardAPI, true, "copy handler must use navigator.clipboard.writeText")
-
-      const hasFallback = /document\.execCommand\('copy'\)/.test(source)
-      assert.strictEqual(hasFallback, true, "copy handler must have execCommand fallback for older browsers")
-    })
-
-    test("handshake-btn shares desync-action-btn styling", () => {
-      // Why: Modal buttons (COPY_CODE, CLOSE) should look identical to
-      // DESYNC and EMBED_SIGNAL for visual consistency.
-      const hasBg = /\.handshake-btn\s*\{[^}]*background:\s*#111/.test(source)
-      assert.strictEqual(hasBg, true, ".handshake-btn must have #111 background")
-      const hasBorder = /\.handshake-btn\s*\{[^}]*border:\s*1px\s+solid\s+#fff/.test(source)
-      assert.strictEqual(hasBorder, true, ".handshake-btn must have white border")
-    })
+    const hasScriptBlock = /dangerouslySetInnerHTML/.test(source)
+    assert.strictEqual(hasScriptBlock, false, "must NOT contain dangerouslySetInnerHTML — JS lives in player.html")
   })
 })
 

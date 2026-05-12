@@ -601,40 +601,13 @@ const DEFAULT_OPTIONS: BroadcastEmitterOptions = {
 }
 
 /**
- * Generates a standalone player.html page from Broadcast.tsx source.
+ * Generates a standalone player.html page.
  *
  * The standalone page contains only the player terminal — no Quartz layout,
- * no sidebar, no header, no footer. It is designed to be embedded in an
- * iframe on external sites.
- *
- * CSS and JS are extracted directly from Broadcast.tsx so the standalone
- * page stays in sync with the component automatically.
+ * no sidebar, no header, no footer. It fills the entire browser viewport
+ * when viewed directly, and scales to fit any iframe container when embedded.
  */
 export function generatePlayerHtml(): string {
-  const broadcastPath = path.join(process.cwd(), "quartz/components/Broadcast.tsx")
-  const source = fs.readFileSync(broadcastPath, "utf-8")
-
-  // ── Extract CSS ──────────────────────────────────────────────────────────
-  const cssStartMarker = "Broadcast.css = `"
-  const cssStart = source.indexOf(cssStartMarker)
-  if (cssStart === -1) throw new Error("[PlayerHtml] CSS start marker not found in Broadcast.tsx")
-  const cssBodyStart = cssStart + cssStartMarker.length
-  // CSS ends at the first backtick on its own line after cssBodyStart
-  const cssEnd = source.indexOf("\n  `", cssBodyStart)
-  if (cssEnd === -1) throw new Error("[PlayerHtml] CSS end marker not found in Broadcast.tsx")
-  const css = source.substring(cssBodyStart, cssEnd).trim()
-
-  // ── Extract JS ───────────────────────────────────────────────────────────
-  const jsStartMarker = "__html: `"
-  const jsStart = source.indexOf(jsStartMarker)
-  if (jsStart === -1) throw new Error("[PlayerHtml] JS start marker not found in Broadcast.tsx")
-  const jsBodyStart = jsStart + jsStartMarker.length
-  const jsEndMarker = "`}} />"
-  const jsEnd = source.indexOf(jsEndMarker, jsBodyStart)
-  if (jsEnd === -1) throw new Error("[PlayerHtml] JS end marker not found in Broadcast.tsx")
-  const js = source.substring(jsBodyStart, jsEnd).trim()
-
-  // ── Build standalone HTML ────────────────────────────────────────────────
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -645,8 +618,70 @@ export function generatePlayerHtml(): string {
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=IBM+Plex+Mono:wght@400;700&display=swap" rel="stylesheet">
   <style>
-    body { margin: 0; background: #000; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
-    ${css}
+    html, body { margin: 0; padding: 0; width: 100%; height: 100%; background: #000; }
+    body { display: flex; align-items: stretch; justify-content: center; min-height: 100vh; }
+
+    .broadcast-terminal {
+      margin: 0; padding: 1.5rem; background: #050505;
+      border: none; border-radius: 0; box-shadow: none;
+      font-family: 'Special Elite', cursive; position: relative;
+      display: flex; flex-direction: column;
+      width: 100%; min-height: 100vh; box-sizing: border-box;
+    }
+    .terminal-header { margin-bottom: 1rem; border-bottom: 1px solid #1a1a1a; padding-bottom: 0.8rem; display: flex; flex-direction: column; gap: 0.4rem; }
+    .header-brand { display: flex; align-items: center; gap: 0.6rem; }
+    .terminal-icon { width: 18px; height: 22px; display: inline-block; vertical-align: middle; }
+    .terminal-version { font-size: 1.1rem; color: #fff; text-transform: uppercase; letter-spacing: 0.1rem; line-height: 1; }
+    .video-title { color: #0f0; font-size: 1.1rem; font-weight: normal; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 1; }
+
+    .terminal-screen { position: relative; width: 100%; flex-grow: 1; min-height: 300px; background: black; overflow: hidden; border: 1px solid #222; }
+    .player-mount { width: 100%; height: 100%; }
+
+    .progress-container { width: 100%; height: 4px; background: #111; position: relative; overflow: hidden; }
+    .progress-bar { height: 100%; background: #0f0; width: 0%; transition: width 1s linear; box-shadow: 0 0 10px #0f0; }
+
+    .terminal-footer { display: flex; flex-direction: column; margin-top: auto; padding-top: 0.5rem; color: #0f0; font-size: 0.8rem; gap: 0.4rem; }
+    .footer-top-row { display: flex; justify-content: space-between; align-items: center; width: 100%; }
+    .next-section { display: flex; align-items: center; gap: 0.4rem; }
+    .top-controls { display: flex; align-items: center; gap: 0.8rem; }
+    .footer-fold { width: 100%; text-align: center; background: transparent; border: none; color: #060; cursor: pointer; padding: 0.6rem; font-family: 'IBM Plex Mono', monospace !important; font-size: 0.7rem; border-top: 1px solid #111; border-bottom: 1px solid #111; display: flex; align-items: center; justify-content: center; }
+    .footer-fold:hover { color: #0f0; }
+    .footer-collapsible { overflow: hidden; transition: max-height 0.3s ease, opacity 0.3s ease; max-height: 500px; opacity: 1; }
+    .footer-collapsible.collapsed { max-height: 0; opacity: 0; }
+    .footer-section { display: flex; flex-direction: column; gap: 0.4rem; align-items: flex-start; margin-top: 0.5rem; }
+    .footer-section .label { color: #fff; font-weight: bold; text-transform: uppercase; font-size: 0.7rem; font-family: 'IBM Plex Mono', monospace !important; }
+    .footer-row-meta { display: flex; gap: 1.5rem; align-items: center; margin-top: 0.5rem; }
+    .links-container { display: flex; flex-wrap: wrap; gap: 8px; }
+    .vault-link {
+      color: #fff; text-decoration: none; border: 1px solid #060; padding: 4px 10px 2px 10px;
+      background: rgba(0,255,0,0.05); display: inline-flex; align-items: center; justify-content: center;
+      font-size: 0.75rem; transition: all 0.1s ease; line-height: 1;
+    }
+    .vault-link:hover { background: #0f0; color: #000; }
+    .next-title { color: #0c0; font-style: italic; }
+    .mute-btn { background: transparent; border: none; color: #060; cursor: pointer; padding: 2px; display: flex; align-items: center; }
+    .mute-btn:hover { color: #0f0; }
+    .mute-btn.muted { color: #0f0; animation: blink 1s infinite; }
+
+    .desync-action-btn {
+      background: #111; border: 1px solid #fff; color: #fff; padding: 6px 16px 4px 16px;
+      display: inline-flex; align-items: center; justify-content: center;
+      cursor: pointer; font-family: inherit; font-size: 0.75rem; border-radius: 4px; line-height: 1;
+    }
+    .desync-action-btn:hover { background: #0f0; color: #000; }
+    .desync-action-btn.active { color: #000; background: #0f0; }
+
+    .terminal-slider { width: 80px; accent-color: #0f0; cursor: pointer; background: transparent; }
+
+    .embed-modal { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 1000; display: none; align-items: center; justify-content: center; padding: 2rem; }
+    .modal-content { background: #050505; border: 1px solid #0f0; padding: 1.5rem; width: 90%; max-width: 500px; color: #0f0; box-shadow: 0 0 40px rgba(0,255,0,0.2); box-sizing: border-box; }
+    .modal-header { font-size: 0.7rem; margin-bottom: 0.5rem; border-bottom: 1px solid #040; }
+    #embed-code { width: 100%; height: 80px; background: #000; color: #0c0; border: 1px solid #040; font-family: inherit; font-size: 0.6rem; padding: 0.5rem; margin-bottom: 1rem; resize: none; }
+    .handshake-btn { background: #111; border: 1px solid #fff; color: #fff; padding: 6px 16px 4px 16px; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; font-family: inherit; font-size: 0.75rem; border-radius: 4px; line-height: 1; text-transform: uppercase; }
+    .handshake-btn:hover { background: #0f0; color: #000; }
+
+    .signal-initializing { height: 100%; display: flex; align-items: center; justify-content: center; background: #000; color: #0f0; }
+    @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
   </style>
 </head>
 <body>
@@ -714,7 +749,264 @@ export function generatePlayerHtml(): string {
     </div>
   </div>
   <script>
-${js}
+    (function() {
+      if (window.CyberPlayer) { window.CyberPlayer.destroy(); }
+
+      window.CyberPlayer = {
+        player: null, currentVolume: 0, isMuted: true, handshakeEstablished: false,
+        isDesynced: false, updateTimer: null, desyncTimer: null,
+        currentVideoId: null, playlistData: null, basePath: null,
+
+        icons: {
+          mute: '<path d="M11 5L6 9H2v6h4l5 4V5z"></path><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line>',
+          vol: '<path d="M11 5L6 9H2v6h4l5 4V5z"></path><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>'
+        },
+
+        destroy: function() {
+          if (this.updateTimer) clearInterval(this.updateTimer);
+          if (this.desyncTimer) clearInterval(this.desyncTimer);
+          if (this.player && this.player.destroy) this.player.destroy();
+          this.player = null; this.currentVideoId = null;
+          const mount = document.getElementById('player-mount');
+          if (mount) mount.innerHTML = '';
+        },
+
+        init: async function() {
+          const mount = document.getElementById('player-mount');
+          if (!mount || !window.YT || !window.YT.Player) return;
+          if (this.isInitializing) return;
+          this.isInitializing = true;
+          try {
+            const pathSegments = window.location.pathname.split('/');
+            this.basePath = pathSegments.length > 2 ? '/' + pathSegments[1] + '/' : '/';
+            const response = await fetch(this.basePath + 'static/video_playlist.json?v=' + Date.now());
+            if (!response.ok) throw new Error("Playlist 404");
+            this.playlistData = await response.json();
+            this.setupUI(); this.startLoop();
+          } catch (e) {
+            const status = document.getElementById('terminal-status-msg');
+            if (status) status.innerHTML = "CONNECTION ERROR: ARCHIVE UNREACHABLE";
+            console.error("Player Error:", e);
+          } finally { this.isInitializing = false; }
+        },
+
+        setupUI: function() {
+          const self = this;
+          const icon = document.querySelector('.terminal-icon');
+          if (icon) icon.src = self.basePath + 'static/cybernati.svg';
+
+          const handleInteraction = () => {
+            if (self.handshakeEstablished) return;
+            self.handshakeEstablished = true; self.isMuted = false; self.currentVolume = 25;
+            if (self.player && self.player.unMute) { self.player.unMute(); self.player.setVolume(self.currentVolume); }
+            const speaker = document.getElementById('speaker-icon');
+            if (speaker) speaker.innerHTML = self.icons.vol;
+            const slider = document.getElementById('volume-control');
+            if (slider) slider.value = 25;
+            const muteBtn = document.getElementById('mute-toggle');
+            if (muteBtn) muteBtn.classList.remove('muted');
+          };
+          window.addEventListener('click', handleInteraction, { once: true });
+
+          const muteBtn = document.getElementById('mute-toggle');
+          if (muteBtn) {
+            muteBtn.classList.toggle('muted', self.isMuted);
+            muteBtn.onclick = () => {
+              self.isMuted = !self.isMuted;
+              if (self.player) {
+                if (self.isMuted) self.player.mute();
+                else { if (self.currentVolume === 0) self.currentVolume = 50; self.player.unMute(); self.player.setVolume(self.currentVolume); }
+              }
+              const speaker = document.getElementById('speaker-icon');
+              if (speaker) speaker.innerHTML = self.isMuted ? self.icons.mute : self.icons.vol;
+              const slider = document.getElementById('volume-control');
+              if (slider) slider.value = self.isMuted ? 0 : self.currentVolume;
+              if (muteBtn) muteBtn.classList.toggle('muted', self.isMuted);
+            };
+          }
+
+          const volSlider = document.getElementById('volume-control');
+          if (volSlider) volSlider.oninput = (e) => {
+            self.currentVolume = e.target.value;
+            self.isMuted = self.currentVolume == 0;
+            if (self.player && self.player.setVolume) {
+              if (self.isMuted) self.player.mute();
+              else { self.player.unMute(); self.player.setVolume(self.currentVolume); }
+            }
+            const speaker = document.getElementById('speaker-icon');
+            if (speaker) speaker.innerHTML = self.isMuted ? self.icons.mute : self.icons.vol;
+            if (muteBtn) muteBtn.classList.toggle('muted', self.isMuted);
+          };
+
+          const fsBtn = document.getElementById('fullscreen-toggle');
+          if (fsBtn) fsBtn.onclick = () => {
+            const root = document.getElementById('broadcast-root');
+            if (!document.fullscreenElement) root.requestFullscreen();
+            else document.exitFullscreen();
+          };
+
+          const foldBtn = document.getElementById('footer-fold');
+          const collapsible = document.getElementById('footer-collapsible');
+          if (foldBtn && collapsible) {
+            foldBtn.onclick = () => {
+              collapsible.classList.toggle('collapsed');
+              const arrow = foldBtn.querySelector('svg');
+              if (arrow) {
+                const isCollapsed = collapsible.classList.contains('collapsed');
+                arrow.innerHTML = isCollapsed
+                  ? '<line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline>'
+                  : '<line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline>';
+              }
+            };
+          }
+
+          const desyncBtn = document.getElementById('desync-btn');
+          if (desyncBtn) desyncBtn.onclick = () => {
+            self.isDesynced = !self.isDesynced;
+            if (self.isDesynced) {
+              desyncBtn.classList.add('active'); desyncBtn.innerHTML = 'SYNC';
+              if (self.updateTimer) clearInterval(self.updateTimer);
+              if (self.player && self.player.getPlayerState) { self.player.destroy(); self.player = null; self.currentVideoId = null; }
+              self.startDesyncSequence();
+            } else {
+              desyncBtn.classList.remove('active'); desyncBtn.innerHTML = 'DESYNC';
+              if (self.desyncTimer) clearInterval(self.desyncTimer);
+              self.currentVideoId = null; self.player = null;
+              self.startLoop();
+            }
+          };
+
+          const embedBtn = document.getElementById('embed-trigger');
+          if (embedBtn) embedBtn.onclick = () => {
+            const playerUrl = window.location.origin + self.basePath + 'player.html';
+            const embedCode = '<iframe src="' + playerUrl + '" width="100%" height="400" frameborder="0" allowfullscreen style="border:none;"></iframe>';
+            document.getElementById('embed-code').value = embedCode;
+            document.getElementById('embed-modal').style.display = 'flex';
+          };
+          const copyEmbedBtn = document.getElementById('copy-embed-btn');
+          if (copyEmbedBtn) copyEmbedBtn.onclick = () => {
+            const textarea = document.getElementById('embed-code');
+            if (textarea && textarea.value) {
+              if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(textarea.value);
+              else { textarea.select(); document.execCommand('copy'); }
+            }
+          };
+          const closeEmbed = document.getElementById('close-embed-btn');
+          if (closeEmbed) closeEmbed.onclick = () => { document.getElementById('embed-modal').style.display = 'none'; };
+        },
+
+        startLoop: function() {
+          const { totalLoopDuration, schedule, interstitials } = this.playlistData;
+          const self = this;
+          const update = () => {
+            if (self.isDesynced) return;
+            const now = Math.floor(Date.now() / 1000);
+            const pos = now % totalLoopDuration;
+            let active = null, standby = true, wait = 0, off = 0, nextIdx = 0;
+            for (let i = 0; i < schedule.length; i++) {
+              const p = schedule[i];
+              if (pos >= p.start && pos < p.end) { active = p; standby = false; off = pos - p.start; nextIdx = (i + 1) % schedule.length; break; }
+              if (pos >= p.end && (i === schedule.length - 1 || pos < schedule[i+1].start)) {
+                standby = true; wait = (i === schedule.length - 1) ? (totalLoopDuration - pos) : (schedule[i+1].start - pos);
+                nextIdx = (i + 1) % schedule.length; break;
+              }
+            }
+            const progressBar = document.getElementById('sync-progress');
+            const titleEl = document.getElementById('video-title');
+            const nextEl = document.getElementById('next-title');
+            if (!standby && active) {
+              if (progressBar) progressBar.style.width = (100 - (off / active.duration) * 100) + "%";
+              if (titleEl) titleEl.innerHTML = active.title.toUpperCase();
+              if (nextEl) nextEl.innerHTML = schedule[nextIdx].title.toUpperCase();
+              if (self.currentVideoId !== active.id) self.mountVideo(active, off);
+              else if (self.player && self.player.getCurrentTime) {
+                const drift = Math.abs(self.player.getCurrentTime() - off);
+                if (drift > 3) self.player.seekTo(off, true);
+              }
+            } else {
+              if (progressBar) progressBar.style.width = Math.min(100, (wait / 30) * 100) + "%";
+              if (titleEl) titleEl.innerHTML = "SIGNAL_LOST: RE-ALIGNING...";
+              if (nextEl) nextEl.innerHTML = schedule[nextIdx].title.toUpperCase();
+              self.mountStandby(interstitials);
+            }
+          };
+          if (this.updateTimer) clearInterval(this.updateTimer);
+          this.updateTimer = setInterval(update, 1000);
+          update();
+        },
+
+        startDesyncSequence: function() {
+          const { schedule, interstitials } = this.playlistData;
+          const self = this;
+          if (this.updateTimer) clearInterval(this.updateTimer);
+          const playRandom = () => {
+            const prog = self.findRandomVideo(schedule);
+            if (!prog) return;
+            const playWindow = Math.min(prog.duration, 300);
+            const startAt = Math.floor(Math.random() * (prog.duration - playWindow));
+            self.mountVideo(prog, startAt);
+            let remaining = playWindow;
+            if (self.desyncTimer) clearInterval(self.desyncTimer);
+            self.desyncTimer = setInterval(() => {
+              if (!self.isDesynced) { clearInterval(self.desyncTimer); return; }
+              remaining--;
+              const progressBar = document.getElementById('sync-progress');
+              if (progressBar) progressBar.style.width = (remaining / playWindow * 100) + "%";
+              if (remaining <= 0) { clearInterval(self.desyncTimer); self.mountStandby(interstitials); setTimeout(playRandom, 5000); }
+            }, 1000);
+          };
+          playRandom();
+        },
+
+        mountVideo: function(prog, offset) {
+          const mount = document.getElementById('player-mount');
+          if (!mount) return;
+          if (this.currentVideoId === prog.id && this.player && this.player.getPlayerState && this.player.getPlayerState() > 0) return;
+          if (this.player && this.player.destroy) { this.player.destroy(); }
+          this.player = null; this.currentVideoId = prog.id;
+          mount.innerHTML = '<div id="yt-player"></div>';
+          const self = this;
+          this.player = new YT.Player('yt-player', {
+            height: '100%', width: '100%', videoId: prog.id,
+            playerVars: { autoplay: 1, mute: 1, controls: 0, disablekb: 1, modestbranding: 1, rel: 0, start: Math.floor(offset) },
+            events: {
+              onReady: (e) => { if (self.isMuted) { e.target.mute(); } else { e.target.unMute(); e.target.setVolume(self.currentVolume); } },
+              onError: (e) => { console.error('YT Player Error:', e); }
+            }
+          });
+          const linksEl = document.getElementById('related-links');
+          if (linksEl) linksEl.innerHTML = (prog.related?.length > 0)
+            ? prog.related.map(l => '<a href="' + this.basePath + l.slug + '" target="_blank" class="vault-link">' + l.name + '</a>').join(' ')
+            : "NONE DETECTED";
+        },
+
+        mountStandby: function(interstitials) {
+          const mount = document.getElementById('player-mount');
+          if (!mount) return;
+          const intFile = this.basePath + interstitials[Math.floor(Date.now() / 10000) % interstitials.length].replace(/^\\//, '');
+          const existing = mount.querySelector('video');
+          if (existing && existing.getAttribute('src') === intFile) return;
+          if (this.player && this.player.destroy) { this.player.destroy(); this.player = null; this.currentVideoId = null; }
+          mount.innerHTML = '<video src="' + intFile + '" autoplay muted loop style="width:100%; height:100%; background:black; object-fit: cover;"></video>';
+        },
+
+        findRandomVideo: function(timeline) {
+          if (timeline.length === 0) return null;
+          return timeline[Math.floor(Math.random() * timeline.length)];
+        }
+      };
+
+      if (!window.YT) {
+        const tag = document.createElement('script');
+        tag.src = "https://www.youtube.com/iframe_api";
+        document.head.appendChild(tag);
+      }
+      const checkReady = setInterval(() => {
+        if (window.YT && window.YT.Player && document.getElementById('player-mount')) {
+          clearInterval(checkReady); window.CyberPlayer.init();
+        }
+      }, 500);
+    })();
   </script>
 </body>
 </html>`

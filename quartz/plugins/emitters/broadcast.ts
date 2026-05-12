@@ -628,7 +628,7 @@ export function generatePlayerHtml(): string {
       display: flex; flex-direction: column;
       width: 100%; height: 100%; box-sizing: border-box;
     }
-    .terminal-header { border-bottom: 1px solid #1a1a1a; padding-bottom: 0.8rem; display: flex; flex-direction: column; gap: 0.4rem; }
+    .terminal-header { border-bottom: 1px solid #1a1a1a; padding-bottom: 0.15rem; display: flex; flex-direction: column; gap: 0.15rem; }
     .header-brand { display: flex; align-items: center; gap: 0.6rem; }
     .terminal-icon { width: 18px; height: 22px; display: inline-block; vertical-align: middle; }
     .terminal-version { font-size: 1.1rem; color: #fff; text-transform: uppercase; letter-spacing: 0.1rem; line-height: 1; text-decoration: none; }
@@ -688,7 +688,7 @@ export function generatePlayerHtml(): string {
     /* Responsive: small viewports */
     @media (max-width: 600px) {
       .broadcast-terminal { padding: 0.75rem; }
-      .terminal-header { padding-bottom: 0.4rem; }
+      .terminal-header { padding-bottom: 0.15rem; }
       .terminal-version { font-size: 0.85rem; letter-spacing: 0.05rem; }
       .video-title { font-size: 0.85rem; }
       .terminal-screen { min-height: 180px; }

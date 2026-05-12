@@ -1,5 +1,6 @@
 {
   "alwaysUpdateLinks": true,
   "attachmentFolderPath": "./",
-  "userIgnoreFilters": null
+  "userIgnoreFilters": null,
+  "readableLineLength": true
 }

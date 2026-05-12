@@ -8,7 +8,7 @@ export default (() => {
         <iframe
           src={baseDir + "player.html"}
           width="100%"
-          height="520"
+          height="500"
           frameborder="0"
           allowfullscreen
           style="border: none; display: block;"

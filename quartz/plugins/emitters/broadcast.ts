@@ -902,7 +902,7 @@ export function generatePlayerHtml(): string {
           const embedBtn = document.getElementById('embed-trigger');
           if (embedBtn) embedBtn.onclick = () => {
             const playerUrl = window.location.origin + self.basePath + 'player.html';
-            const embedCode = '<iframe src="' + playerUrl + '" width="100%" height="400" frameborder="0" allowfullscreen style="border:none;"></iframe>';
+            const embedCode = '<iframe src="' + playerUrl + '" width="100%" height="500" frameborder="0" allowfullscreen style="border:none;"></iframe>';
             document.getElementById('embed-code').value = embedCode;
             document.getElementById('embed-modal').style.display = 'flex';
           };

@@ -11,7 +11,6 @@ export default (() => {
           height="500"
           frameborder="0"
           allowfullscreen
-          style="border: none; display: block;"
           title="Cybernati Player"
         />
       </div>
@@ -24,7 +23,9 @@ export default (() => {
     margin: 2rem 0;
   }
   .broadcast-embed-container iframe {
-    border-radius: 4px;
+    display: block;
+    border: 1px solid #1a1a1a;
+    border-radius: 8px;
     box-shadow: 0 0 30px rgba(0,255,0,0.05);
   }
   `

@@ -39,9 +39,16 @@ describe("Broadcast.tsx Structural Integrity", () => {
     assert.strictEqual(hasHeight, true, "iframe must have explicit height to prevent layout shift")
   })
 
-  test("iframe has no border", () => {
-    const hasNoBorder = /frameborder="0"/.test(source)
-    assert.strictEqual(hasNoBorder, true, "iframe must have frameborder=0")
+  test("iframe has default styling (border-radius, border, shadow)", () => {
+    // YouTube-style approach: subtle default styling that embedders can override
+    const hasBorder = /border:\s*1px\s+solid/.test(source)
+    assert.strictEqual(hasBorder, true, "iframe must have subtle border by default")
+
+    const hasRadius = /border-radius:\s*8px/.test(source)
+    assert.strictEqual(hasRadius, true, "iframe must have 8px border-radius")
+
+    const hasShadow = /box-shadow:/.test(source)
+    assert.strictEqual(hasShadow, true, "iframe must have subtle box-shadow")
   })
 
   test("component has embed container CSS", () => {

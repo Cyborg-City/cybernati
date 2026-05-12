@@ -2,7 +2,7 @@
 created: 2026-05-12T04:35:23-05:00
 modified: 2026-05-12T05:28:44-05:00
 ---
-- [ ] Cybernati player is not playing interstitials correctly. it plays all of them and not fully. it only plays a peice of the video and plays all 3. it should choose 1 at random and play it on a loop until the 30 seconds are up.
+- [x] Cybernati player is not playing interstitials correctly. it plays all of them and not fully. it only plays a peice of the video and plays all 3. it should choose 1 at random and play it on a loop until the 30 seconds are up.
 
 
 Internet Archive is the best long term storage for video and large files. this can also be a good way to back up links in the vault... maybe.

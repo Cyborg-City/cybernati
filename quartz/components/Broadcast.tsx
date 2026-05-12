@@ -34,21 +34,14 @@ export default (() => {
         </div>
 
         <div class="terminal-footer">
-            <div class="footer-left">
-                <div class="footer-section">
-                    <span class="label">Related Notes:</span>
-                    <div id="related-links" class="links-container">NONE DETECTED</div>
-                </div>
-                <div class="footer-section">
+            {/* Row 1: Always visible — NEXT + controls */}
+            <div class="footer-top-row">
+                <div class="next-section">
                     <span class="label">Next:</span>
                     <span id="next-title" class="next-title">STANDBY</span>
                 </div>
-                <div class="footer-row-meta">
-                    <button id="embed-trigger" class="desync-action-btn">[EMBED_SIGNAL]</button>
-                </div>
-            </div>
-            <div class="footer-right">
-                <div class="control-row">
+                <div class="top-controls">
+                    <button id="desync-btn" class="desync-action-btn">DESYNC</button>
                     <button id="mute-toggle" class="mute-btn" title="Toggle Mute">
                         <svg id="speaker-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M11 5L6 9H2v6h4l5 4V5z"></path>
@@ -57,15 +50,25 @@ export default (() => {
                         </svg>
                     </button>
                     <input type="range" id="volume-control" class="terminal-slider" min="0" max="100" value="0" />
-                    
                     <button id="fullscreen-toggle" class="mute-btn" title="Full Screen">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
                         </svg>
                     </button>
                 </div>
-                <div class="control-row">
-                    <button id="desync-btn" class="desync-action-btn">DESYNC</button>
+            </div>
+            
+            {/* Row 2: Fold toggle */}
+            <button id="footer-fold" class="footer-fold">[▼]</button>
+            
+            {/* Row 3-5: Collapsible — Related + Embed */}
+            <div id="footer-collapsible" class="footer-collapsible collapsed">
+                <div class="footer-section">
+                    <span class="label">Related Notes:</span>
+                    <div id="related-links" class="links-container">NONE DETECTED</div>
+                </div>
+                <div class="footer-row-meta">
+                    <button id="embed-trigger" class="desync-action-btn">[EMBED_SIGNAL]</button>
                 </div>
             </div>
         </div>
@@ -193,6 +196,15 @@ export default (() => {
                             if (!document.fullscreenElement) root.requestFullscreen();
                             else document.exitFullscreen();
                         };
+
+                        const foldBtn = document.getElementById('footer-fold');
+                        const collapsible = document.getElementById('footer-collapsible');
+                        if (foldBtn && collapsible) {
+                            foldBtn.onclick = () => {
+                                collapsible.classList.toggle('collapsed');
+                                foldBtn.innerHTML = collapsible.classList.contains('collapsed') ? '[▼]' : '[▲]';
+                            };
+                        }
 
                         const desyncBtn = document.getElementById('desync-btn');
                         if (desyncBtn) desyncBtn.onclick = () => {
@@ -415,11 +427,17 @@ export default (() => {
   .progress-container { width: 100%; height: 4px; background: #111; position: relative; overflow: hidden; }
   .progress-bar { height: 100%; background: #0f0; width: 0%; transition: width 1s linear; box-shadow: 0 0 10px #0f0; }
 
-  .terminal-footer { display: flex; justify-content: space-between; align-items: flex-start; margin-top: 1rem; padding-top: 0.5rem; color: #0f0; font-size: 0.8rem; }
-  .footer-left { display: flex; flex-direction: column; gap: 1rem; flex-grow: 1; }
-  .footer-section { display: flex; flex-direction: column; gap: 0.4rem; align-items: flex-start; }
+  .terminal-footer { display: flex; flex-direction: column; margin-top: 1rem; padding-top: 0.5rem; color: #0f0; font-size: 0.8rem; gap: 0.4rem; }
+  .footer-top-row { display: flex; justify-content: space-between; align-items: center; width: 100%; }
+  .next-section { display: flex; align-items: center; gap: 0.4rem; }
+  .top-controls { display: flex; align-items: center; gap: 0.8rem; }
+  .footer-fold { width: 100%; text-align: center; background: transparent; border: none; color: #060; cursor: pointer; padding: 0.2rem; font-family: 'IBM Plex Mono', monospace !important; font-size: 0.7rem; border-top: 1px solid #111; border-bottom: 1px solid #111; }
+  .footer-fold:hover { color: #0f0; }
+  .footer-collapsible { overflow: hidden; transition: max-height 0.3s ease, opacity 0.3s ease; max-height: 500px; opacity: 1; }
+  .footer-collapsible.collapsed { max-height: 0; opacity: 0; }
+  .footer-section { display: flex; flex-direction: column; gap: 0.4rem; align-items: flex-start; margin-top: 0.5rem; }
   .footer-section .label { color: #fff; font-weight: bold; text-transform: uppercase; font-size: 0.7rem; font-family: 'IBM Plex Mono', monospace !important; }
-  
+  .footer-row-meta { display: flex; gap: 1.5rem; align-items: center; margin-top: 0.5rem; }
   .links-container { display: flex; flex-wrap: wrap; gap: 8px; }
   .vault-link {
     color: #fff; text-decoration: none; border: 1px solid #060; padding: 4px 10px 2px 10px;
@@ -427,13 +445,7 @@ export default (() => {
     font-size: 0.75rem; transition: all 0.1s ease; line-height: 1;
   }
   .vault-link:hover { background: #0f0; color: #000; }
-
   .next-title { color: #0c0; font-style: italic; }
-
-  .footer-row-meta { display: flex; gap: 1.5rem; align-items: center; margin-top: 0.5rem; border-top: 1px solid #111; padding-top: 0.8rem; }
-
-  .footer-right { display: flex; flex-direction: column; align-items: flex-end; gap: 1rem; }
-  .control-row { display: flex; align-items: center; gap: 0.8rem; }
   .mute-btn { background: transparent; border: none; color: #060; cursor: pointer; padding: 2px; display: flex; align-items: center; }
   .mute-btn:hover { color: #0f0; }
   .mute-btn.muted { color: #0f0; animation: blink 1s infinite; }

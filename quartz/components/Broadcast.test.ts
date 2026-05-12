@@ -172,6 +172,40 @@ describe("Broadcast.tsx Structural Integrity", () => {
       assert.strictEqual(hasSrcGuard, true, "mountStandby must return early if same interstitial is already playing")
     })
 
+    test("footer-top-row exists for NEXT + controls", () => {
+      const hasTopRow = /class="footer-top-row"/.test(source)
+      assert.strictEqual(hasTopRow, true, ".footer-top-row must exist")
+    })
+
+    test("next-section exists in top row", () => {
+      const hasNext = /class="next-section"/.test(source)
+      assert.strictEqual(hasNext, true, ".next-section must exist")
+    })
+
+    test("top-controls exists with desync + mute + vol + fullscreen", () => {
+      const hasTopControls = /class="top-controls"/.test(source)
+      assert.strictEqual(hasTopControls, true, ".top-controls must exist")
+    })
+
+    test("footer-fold toggle button exists", () => {
+      const hasFold = /id="footer-fold"/.test(source)
+      assert.strictEqual(hasFold, true, "footer-fold button missing")
+    })
+
+    test("footer-collapsible exists with collapsed class", () => {
+      const hasCollapsible = /id="footer-collapsible"/.test(source)
+      assert.strictEqual(hasCollapsible, true, "footer-collapsible missing")
+      const startsCollapsed = /id="footer-collapsible"[^>]*class="[^"]*collapsed[^"]*"/.test(source)
+      assert.strictEqual(startsCollapsed, true, "footer-collapsible must start with collapsed class")
+    })
+
+    test("fold button toggles collapsible and swaps arrow", () => {
+      const hasToggle = /collapsible\.classList\.toggle\('collapsed'\)/.test(source)
+      assert.strictEqual(hasToggle, true, "fold button must toggle 'collapsed' class")
+      const hasArrowSwap = /foldBtn\.innerHTML\s*=\s*collapsible\.classList\.contains\('collapsed'\)\s*\?\s*'\[▼\]'\s*:\s*'\[▲\]'/.test(source)
+      assert.strictEqual(hasArrowSwap, true, "fold button must swap [▼]/[▲] arrow")
+    })
+
     test("sync-progress bar exists", () => {
       const hasProgressBar = /id="sync-progress"/.test(source)
       assert.strictEqual(hasProgressBar, true, "sync-progress bar missing")

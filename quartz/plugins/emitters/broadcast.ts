@@ -633,7 +633,7 @@ export function generatePlayerHtml(): string {
     .terminal-icon { width: 18px; height: 22px; display: inline-block; vertical-align: middle; }
     .terminal-version { font-size: 1.1rem; color: #fff; text-transform: uppercase; letter-spacing: 0.1rem; line-height: 1; text-decoration: none; }
     .terminal-version:hover { text-shadow: 0 0 8px rgba(0,255,0,0.5); }
-    .video-title { color: #0f0; font-size: 1.1rem; font-weight: normal; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 1; }
+    .video-title { color: #0f0; font-size: 1.1rem; font-weight: normal; overflow: hidden; line-height: 1.2; white-space: nowrap; }
 
     .terminal-screen { position: relative; width: 100%; flex-grow: 1; min-height: 180px; background: black; overflow: hidden; border: 1px solid #222; }
     .player-mount { width: 100%; height: 100%; }
@@ -945,7 +945,7 @@ export function generatePlayerHtml(): string {
             const nextEl = document.getElementById('next-title');
             if (!standby && active) {
               if (progressBar) progressBar.style.width = (100 - (off / active.duration) * 100) + "%";
-              if (titleEl) titleEl.innerHTML = active.title.toUpperCase();
+              if (titleEl) { titleEl.innerHTML = active.title.toUpperCase(); self.fitTitle(titleEl); }
               if (nextEl) nextEl.innerHTML = self.truncateWords(schedule[nextIdx].title, 7).toUpperCase();
               if (self.currentVideoId !== active.id) self.mountVideo(active, off);
               else if (self.player && self.player.getCurrentTime) {
@@ -954,7 +954,7 @@ export function generatePlayerHtml(): string {
               }
             } else {
               if (progressBar) progressBar.style.width = Math.min(100, (wait / 30) * 100) + "%";
-              if (titleEl) titleEl.innerHTML = "SIGNAL_LOST: RE-ALIGNING...";
+              if (titleEl) { titleEl.innerHTML = "SIGNAL_LOST: RE-ALIGNING..."; self.fitTitle(titleEl); }
               if (nextEl) nextEl.innerHTML = self.truncateWords(schedule[nextIdx].title, 7).toUpperCase();
               self.mountStandby(interstitials);
             }
@@ -1028,6 +1028,18 @@ export function generatePlayerHtml(): string {
           const words = text.split(/\s+/);
           if (words.length <= maxWords) return text;
           return words.slice(0, maxWords).join(' ') + '...';
+        },
+
+        fitTitle: function(el) {
+          if (!el) return;
+          // Reset to max size first, then shrink if overflow
+          el.style.fontSize = '1.1rem';
+          const containerWidth = el.clientWidth;
+          let size = 1.1;
+          while (el.scrollWidth > containerWidth && size > 0.6) {
+            size -= 0.05;
+            el.style.fontSize = size + 'rem';
+          }
         }
       };
 

@@ -645,7 +645,7 @@ export function generatePlayerHtml(): string {
     .footer-top-row { display: flex; justify-content: space-between; align-items: center; width: 100%; }
     .next-section { display: flex; align-items: center; gap: 0.4rem; }
     .top-controls { display: flex; align-items: center; gap: 0.8rem; }
-    .footer-fold { width: 100%; text-align: center; background: transparent; border: none; color: #060; cursor: pointer; padding: 0.6rem; font-family: 'IBM Plex Mono', monospace !important; font-size: 0.7rem; border-top: 1px solid #111; border-bottom: 1px solid #111; display: flex; align-items: center; justify-content: center; }
+    .footer-fold { width: 100%; text-align: center; background: transparent; border: none; color: #060; cursor: pointer; padding: 0.3rem; font-family: 'IBM Plex Mono', monospace !important; font-size: 0.7rem; border-top: 1px solid #111; border-bottom: 1px solid #111; display: flex; align-items: center; justify-content: center; gap: 0.5rem; }
     .footer-fold:hover { color: #0f0; }
     .footer-collapsible { position: absolute; bottom: 100%; left: 0; width: 100%; background: #050505; z-index: 100; overflow: hidden; transition: max-height 0.3s ease, opacity 0.3s ease; max-height: 300px; opacity: 1; border: 1px solid #111; border-bottom: none; }
     .footer-collapsible.collapsed { max-height: 0; opacity: 0; }
@@ -695,7 +695,7 @@ export function generatePlayerHtml(): string {
       .top-controls { gap: 0.4rem; width: 100%; justify-content: flex-end; }
       .desync-action-btn { padding: 4px 10px 2px 10px; font-size: 0.65rem; }
       .terminal-slider { width: 60px; }
-      .footer-fold { padding: 0.4rem; }
+      .footer-fold { padding: 0.25rem; }
       .footer-collapsible { max-height: 250px; }
       .footer-collapsible > .footer-section,
       .footer-collapsible > .footer-row-meta { padding-left: 0.75rem; padding-right: 0.75rem; }
@@ -756,6 +756,7 @@ export function generatePlayerHtml(): string {
       </div>
       <button id="footer-fold" class="footer-fold">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+        <span class="fold-text">Show More...</span>
       </button>
       <div id="footer-collapsible" class="footer-collapsible collapsed">
         <div class="footer-section">
@@ -873,12 +874,16 @@ export function generatePlayerHtml(): string {
           if (foldBtn && collapsible) {
             foldBtn.onclick = () => {
               collapsible.classList.toggle('collapsed');
+              const isCollapsed = collapsible.classList.contains('collapsed');
               const arrow = foldBtn.querySelector('svg');
+              const text = foldBtn.querySelector('.fold-text');
               if (arrow) {
-                const isCollapsed = collapsible.classList.contains('collapsed');
                 arrow.innerHTML = isCollapsed
                   ? '<line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline>'
                   : '<line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline>';
+              }
+              if (text) {
+                text.textContent = isCollapsed ? 'Show More...' : 'Show Less';
               }
             };
           }

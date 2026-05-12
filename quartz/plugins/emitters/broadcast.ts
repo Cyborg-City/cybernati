@@ -628,6 +628,7 @@ export function generatePlayerHtml(): string {
       display: flex; flex-direction: column;
       width: 100%; height: 100%; box-sizing: border-box;
     }
+    .broadcast-terminal.desynced .next-section { display: none; }
     .terminal-header { border-bottom: 1px solid #1a1a1a; padding-bottom: 0.15rem; display: flex; flex-direction: column; gap: 0.15rem; }
     .header-brand { display: flex; align-items: center; gap: 0.6rem; }
     .terminal-icon { width: 18px; height: 22px; display: inline-block; vertical-align: middle; }
@@ -890,16 +891,18 @@ export function generatePlayerHtml(): string {
             };
           }
 
-          const desyncBtn = document.getElementById('desync-btn');
+          const root = document.getElementById('broadcast-root');
           if (desyncBtn) desyncBtn.onclick = () => {
             self.isDesynced = !self.isDesynced;
             if (self.isDesynced) {
               desyncBtn.classList.add('active'); desyncBtn.innerHTML = 'SYNC';
+              if (root) root.classList.add('desynced');
               if (self.updateTimer) clearInterval(self.updateTimer);
               if (self.player && self.player.getPlayerState) { self.player.destroy(); self.player = null; self.currentVideoId = null; }
               self.startDesyncSequence();
             } else {
               desyncBtn.classList.remove('active'); desyncBtn.innerHTML = 'DESYNC';
+              if (root) root.classList.remove('desynced');
               if (self.desyncTimer) clearInterval(self.desyncTimer);
               self.currentVideoId = null; self.player = null;
               self.startLoop();

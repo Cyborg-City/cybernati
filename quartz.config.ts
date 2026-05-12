@@ -92,6 +92,8 @@ const config: QuartzConfig = {
       Plugin.NotFoundPage(),
       // Comment out CustomOgImages to speed up build time
       // Plugin.CustomOgImages(),
+      // Cybernati Broadcast Emitter - Generates video_playlist.json
+      Plugin.Broadcast(),
     ],
   },
 }

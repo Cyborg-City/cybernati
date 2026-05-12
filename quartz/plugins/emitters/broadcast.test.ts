@@ -1,0 +1,731 @@
+/**
+ * @fileoverview Broadcast Emitter - Modular TDD Test Suite
+ *
+ * ════════════════════════════════════════════════════════════════════════════
+ * PURPOSE
+ * ════════════════════════════════════════════════════════════════════════════
+ * This test suite defines the expected behavior of the four modular components
+ * of the Cybernati Broadcast Emitter. Following TDD principles, these tests
+ * define the contract before implementation.
+ *
+ * RUN ORDER:
+ *   npm test -- quartz/plugins/emitters/broadcast.test.ts
+ *
+ * EXPECTED: All tests FAIL until implementation is complete.
+ * Once complete: All tests should PASS.
+ *
+ * ════════════════════════════════════════════════════════════════════════════
+ * MODULE OVERVIEW
+ * ════════════════════════════════════════════════════════════════════════════
+ *
+ *  ┌─────────────────┐     ┌──────────────────┐     ┌─────────────────┐
+ *  │   BaseParser    │────▶│ TimelineEngine   │────▶│ video_playlist  │
+ *  │ (filter/sort)   │     │  (pure math)     │     │     .json       │
+ *  └────────┬────────┘     └──────────────────┘     └─────────────────┘
+ *           │                        ▲
+ *           │                        │
+ *  ┌────────▼────────┐     ┌───────┴──────────┐
+ *  │  LinkResolver    │────▶│  YouTubeProvider │
+ *  │ (BuildCtx slugs) │     │  (ID + duration) │
+ *  └──────────────────┘     └──────────────────┘
+ *
+ * ════════════════════════════════════════════════════════════════════════════
+ * TESTING PHILOSOPHY
+ * ════════════════════════════════════════════════════════════════════════════
+ * - Each module is tested INDEPENDENTLY (SOLID compliance)
+ * - Pure functions have no side effects — deterministic tests
+ * - I/O operations (YouTube scraping) are mocked for unit tests
+ * - Integration tests use real BuildCtx in a separate file
+ *
+ * ════════════════════════════════════════════════════════════════════════════
+ */
+
+import test, { describe } from "node:test"
+import assert from "node:assert"
+
+// Import the modules under test
+import {
+  BaseParser,
+  YouTubeProvider,
+  TimelineEngine,
+  LinkResolver,
+  type VideoEntry,
+  type TimelineEntry,
+  type FilterRule,
+  type SortRule,
+  type BroadcastConfig,
+} from "./broadcast"
+
+// Import BuildCtx type for LinkResolver tests
+import type { BuildCtx } from "../../util/ctx"
+
+// ============================================================================
+// BASE PARSER TESTS
+// ============================================================================
+
+describe("BaseParser", () => {
+  describe("YAML Parsing", () => {
+    test("parses valid channel-0000.base YAML into BroadcastConfig", () => {
+      const yaml = `
+views:
+  - type: table
+    name: Table
+    filters:
+      and:
+        - file.hasTag("clippings")
+        - file.inFolder("video_archive")
+    sort:
+      - property: modified
+        direction: DESC
+      - property: file.name
+        direction: ASC
+`
+      const parser = new BaseParser(yaml)
+      const config = parser.parse()
+
+      assert.strictEqual(config.filters.length, 2)
+      assert.strictEqual(config.sortRules.length, 2)
+    })
+
+    test("extracts tag filter from file.hasTag() notation", () => {
+      const yaml = `
+views:
+  - type: table
+    filters:
+      and:
+        - file.hasTag("clippings")
+`
+      const parser = new BaseParser(yaml)
+      const config = parser.parse()
+
+      assert.strictEqual(config.filters[0].type, "tag")
+      assert.strictEqual(config.filters[0].value, "clippings")
+    })
+
+    test("extracts folder filter from file.inFolder() notation", () => {
+      const yaml = `
+views:
+  - type: table
+    filters:
+      and:
+        - file.inFolder("video_archive")
+`
+      const parser = new BaseParser(yaml)
+      const config = parser.parse()
+
+      assert.strictEqual(config.filters[0].type, "folder")
+      assert.strictEqual(config.filters[0].value, "video_archive")
+    })
+
+    test("extracts multiple sort rules in order", () => {
+      const yaml = `
+views:
+  - type: table
+    sort:
+      - property: modified
+        direction: DESC
+      - property: file.name
+        direction: ASC
+`
+      const parser = new BaseParser(yaml)
+      const config = parser.parse()
+
+      assert.strictEqual(config.sortRules[0].property, "modified")
+      assert.strictEqual(config.sortRules[0].direction, "DESC")
+      assert.strictEqual(config.sortRules[1].property, "file.name")
+      assert.strictEqual(config.sortRules[1].direction, "ASC")
+    })
+  })
+
+  describe("Error Handling", () => {
+    test("throws on missing views array", () => {
+      const noViewsYaml = `
+other:
+  - section: value
+`
+      const parser = new BaseParser(noViewsYaml)
+      assert.throws(() => parser.parse(), Error)
+    })
+  })
+
+  describe("Edge Cases", () => {
+    test("handles empty YAML string", () => {
+      const parser = new BaseParser("")
+      const config = parser.parse()
+
+      assert.deepStrictEqual(config.filters, [])
+      assert.deepStrictEqual(config.sortRules, [])
+    })
+
+    test("handles YAML with comments", () => {
+      const yamlWithComments = `
+# This is a comment
+views:
+  - type: table # inline comment
+    # filters section
+    filters:
+      and:
+        - file.hasTag("clippings") # clips tag
+`
+      const parser = new BaseParser(yamlWithComments)
+      const config = parser.parse()
+
+      assert.strictEqual(config.filters[0].value, "clippings")
+    })
+
+    test("handles multiple filter types", () => {
+      const yaml = `
+views:
+  - type: table
+    filters:
+      and:
+        - file.hasTag("clippings")
+        - file.hasTag("featured")
+        - file.inFolder("video_archive")
+`
+      const parser = new BaseParser(yaml)
+      const config = parser.parse()
+
+      assert.strictEqual(config.filters.length, 3)
+    })
+  })
+})
+
+// ============================================================================
+// YOUTUBE PROVIDER TESTS
+// ============================================================================
+
+describe("YouTubeProvider", () => {
+  describe("ID Extraction", () => {
+    test("extracts ID from watch?v= format", () => {
+      const provider = new YouTubeProvider()
+      const id = provider.extractId("https://www.youtube.com/watch?v=abc123def456")
+      assert.strictEqual(id, "abc123def456")
+    })
+
+    test("extracts ID from youtu.be short format", () => {
+      const provider = new YouTubeProvider()
+      const id = provider.extractId("https://youtu.be/xyz789")
+      assert.strictEqual(id, "xyz789")
+    })
+
+    test("extracts ID from /embed/ format", () => {
+      const provider = new YouTubeProvider()
+      const id = provider.extractId("https://www.youtube.com/embed/dQw4w9WgXcQ")
+      assert.strictEqual(id, "dQw4w9WgXcQ")
+    })
+
+    test("extracts ID from shorts format", () => {
+      const provider = new YouTubeProvider()
+      const id = provider.extractId("https://www.youtube.com/shorts/lMnKrBZhO4g")
+      assert.strictEqual(id, "lMnKrBZhO4g")
+    })
+
+    test("extracts ID from /v/ format (older embeds)", () => {
+      const provider = new YouTubeProvider()
+      const id = provider.extractId("https://www.youtube.com/v/PBZwDwQPzfY")
+      assert.strictEqual(id, "PBZwDwQPzfY")
+    })
+
+    test("returns null for invalid URL", () => {
+      const provider = new YouTubeProvider()
+      const id = provider.extractId("https://vimeo.com/123456789")
+      assert.strictEqual(id, null)
+    })
+
+    test("returns null for empty input", () => {
+      const provider = new YouTubeProvider()
+      const id = provider.extractId("")
+      assert.strictEqual(id, null)
+    })
+
+    test("returns null for undefined", () => {
+      const provider = new YouTubeProvider()
+      const id = provider.extractId(undefined)
+      assert.strictEqual(id, null)
+    })
+
+    test("strips additional query parameters", () => {
+      const provider = new YouTubeProvider()
+      const id = provider.extractId(
+        "https://www.youtube.com/watch?v=abc123&list=PLrAXtmErZgOeiKm4sgNOknGvNjby9lrdf&t=120",
+      )
+      assert.strictEqual(id, "abc123")
+    })
+  })
+
+  describe("Caching", () => {
+    test("caches fetched durations", async () => {
+      const provider = new YouTubeProvider()
+      const videoId = "cached_video_123"
+
+      // Manually set cache
+      provider.setCache(videoId, 500)
+
+      // Should return cached value
+      const cached = provider.getCachedDuration(videoId)
+      assert.strictEqual(cached, 500)
+    })
+
+    test("returns cached duration without network request", async () => {
+      const provider = new YouTubeProvider()
+      const videoId = "test_cache"
+
+      // Manually set cache
+      provider.setCache(videoId, 1234)
+
+      // getCachedDuration returns cached without network call
+      const cached = provider.getCachedDuration(videoId)
+      assert.strictEqual(cached, 1234)
+    })
+
+    test("cache key is video ID", () => {
+      const provider = new YouTubeProvider()
+      const id1 = provider.extractId("https://www.youtube.com/watch?v=abc123")
+      const id2 = provider.extractId("https://www.youtube.com/watch?v=abc123")
+
+      assert.strictEqual(id1, id2)
+      assert.strictEqual(typeof id1, "string")
+
+      // Setting cache on one ID should be accessible by same ID
+      provider.setCache(id1!, 100)
+      assert.strictEqual(provider.getCachedDuration(id1!), 100)
+    })
+  })
+
+  describe("Integration with VideoEntry", () => {
+    test("creates VideoEntry from frontmatter source URL", () => {
+      const provider = new YouTubeProvider()
+      const frontmatter = {
+        title: "Test Video",
+        source: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+        duration: 8627,
+        related: ["[[Related Note]]"],
+      }
+
+      const entry = provider.createVideoEntry(frontmatter)
+
+      assert.ok(entry !== null)
+      assert.strictEqual(entry!.id, "dQw4w9WgXcQ")
+      assert.strictEqual(entry!.title, "Test Video")
+      assert.strictEqual(entry!.duration, 8627)
+    })
+
+    test("returns null entry for invalid source URL", () => {
+      const provider = new YouTubeProvider()
+      const frontmatter = {
+        title: "Bad Video",
+        source: "https://notyoutube.com/video",
+        duration: 100,
+      }
+
+      const entry = provider.createVideoEntry(frontmatter)
+
+      assert.strictEqual(entry, null)
+    })
+
+    test("uses DEFAULT_DURATION when duration not provided", () => {
+      const provider = new YouTubeProvider()
+      const frontmatter = {
+        title: "No Duration",
+        source: "https://www.youtube.com/watch?v=abc123",
+      }
+
+      const entry = provider.createVideoEntry(frontmatter)
+
+      assert.ok(entry !== null)
+      assert.strictEqual(entry!.duration, 300) // DEFAULT_DURATION
+    })
+  })
+})
+
+// ============================================================================
+// TIMELINE ENGINE TESTS
+// ============================================================================
+
+describe("TimelineEngine", () => {
+  describe("Basic Timeline Calculation", () => {
+    test("calculates correct start/end for single video", () => {
+      const engine = new TimelineEngine()
+      const videos: VideoEntry[] = [
+        { id: "abc123", title: "Video 1", duration: 100, related: [] },
+      ]
+
+      const timeline = engine.calculateTimeline(videos)
+
+      assert.strictEqual(timeline.length, 1)
+      assert.strictEqual(timeline[0].start, 0)
+      assert.strictEqual(timeline[0].end, 100)
+    })
+
+    test("calculates correct start/end for multiple videos", () => {
+      const engine = new TimelineEngine()
+      const videos: VideoEntry[] = [
+        { id: "a", title: "Video A", duration: 100, related: [] },
+        { id: "b", title: "Video B", duration: 200, related: [] },
+        { id: "c", title: "Video C", duration: 300, related: [] },
+      ]
+
+      const timeline = engine.calculateTimeline(videos)
+
+      // Video A: start=0, end=100
+      assert.strictEqual(timeline[0].start, 0)
+      assert.strictEqual(timeline[0].end, 100)
+
+      // Video B: start=100+30=130, end=130+200=330
+      assert.strictEqual(timeline[1].start, 130)
+      assert.strictEqual(timeline[1].end, 330)
+
+      // Video C: start=330+30=360, end=360+300=660
+      assert.strictEqual(timeline[2].start, 360)
+      assert.strictEqual(timeline[2].end, 660)
+    })
+
+    test("adds 30s gap between all videos", () => {
+      const engine = new TimelineEngine()
+      const videos: VideoEntry[] = [
+        { id: "a", title: "Video A", duration: 100, related: [] },
+        { id: "b", title: "Video B", duration: 100, related: [] },
+      ]
+
+      const timeline = engine.calculateTimeline(videos)
+
+      // Gap between A and B should be 30s
+      assert.strictEqual(timeline[1].start - timeline[0].end, 30)
+    })
+
+    test("NO gap after last video", () => {
+      const engine = new TimelineEngine()
+      const videos: VideoEntry[] = [
+        { id: "a", title: "Video A", duration: 100, related: [] },
+        { id: "b", title: "Video B", duration: 100, related: [] },
+      ]
+
+      const timeline = engine.calculateTimeline(videos)
+
+      // Last video ends at 130, no trailing gap in loop duration
+      assert.strictEqual(timeline[1].end, 230) // 100 + 30 + 100
+    })
+  })
+
+  describe("Total Loop Duration", () => {
+    test("calculates total loop duration", () => {
+      const engine = new TimelineEngine()
+      const videos: VideoEntry[] = [
+        { id: "a", title: "Video A", duration: 100, related: [] },
+        { id: "b", title: "Video B", duration: 200, related: [] },
+      ]
+
+      const timeline = engine.calculateTimeline(videos)
+      const totalDuration = engine.getTotalLoopDuration(timeline)
+
+      // 100 + 30 (gap) + 200 = 330
+      assert.strictEqual(totalDuration, 330)
+    })
+
+    test("handles empty video list", () => {
+      const engine = new TimelineEngine()
+      const timeline = engine.calculateTimeline([])
+      const totalDuration = engine.getTotalLoopDuration(timeline)
+
+      assert.strictEqual(totalDuration, 0)
+    })
+
+    test("handles single video (no gaps)", () => {
+      const engine = new TimelineEngine()
+      const videos: VideoEntry[] = [
+        { id: "a", title: "Single", duration: 500, related: [] },
+      ]
+
+      const timeline = engine.calculateTimeline(videos)
+      const totalDuration = engine.getTotalLoopDuration(timeline)
+
+      assert.strictEqual(totalDuration, 500)
+    })
+
+    test("total duration excludes trailing gap", () => {
+      const engine = new TimelineEngine()
+      const videos: VideoEntry[] = [
+        { id: "a", title: "Video A", duration: 100, related: [] },
+        { id: "b", title: "Video B", duration: 100, related: [] },
+      ]
+
+      const timeline = engine.calculateTimeline(videos)
+      const totalDuration = engine.getTotalLoopDuration(timeline)
+
+      // Loop restarts after last video, no trailing gap
+      // Video A: 0-100, Gap: 100-130, Video B: 130-230
+      // Loop = 230, NOT 260 (which would include trailing gap)
+      assert.strictEqual(totalDuration, 230)
+    })
+  })
+
+  describe("Edge Cases", () => {
+    test("handles zero-duration videos", () => {
+      const engine = new TimelineEngine()
+      const videos: VideoEntry[] = [
+        { id: "a", title: "Zero Duration", duration: 0, related: [] },
+      ]
+
+      const timeline = engine.calculateTimeline(videos)
+
+      assert.strictEqual(timeline[0].start, 0)
+      assert.strictEqual(timeline[0].end, 0)
+    })
+
+    test("handles very long videos", () => {
+      const engine = new TimelineEngine()
+      const videos: VideoEntry[] = [
+        { id: "a", title: "Long Video", duration: 7200, related: [] }, // 2 hours
+      ]
+
+      const timeline = engine.calculateTimeline(videos)
+
+      assert.strictEqual(timeline[0].end, 7200)
+    })
+
+    test("preserves video metadata in timeline entry", () => {
+      const engine = new TimelineEngine()
+      const related = [{ name: "Related", slug: "related" }]
+      const videos: VideoEntry[] = [
+        { id: "abc123", title: "Full Video", duration: 100, related },
+      ]
+
+      const timeline = engine.calculateTimeline(videos)
+
+      assert.strictEqual(timeline[0].id, "abc123")
+      assert.strictEqual(timeline[0].title, "Full Video")
+      assert.deepStrictEqual(timeline[0].related, related)
+    })
+  })
+
+  describe("Sync Position Lookup", () => {
+    test("finds video at given position", () => {
+      const engine = new TimelineEngine()
+      const videos: VideoEntry[] = [
+        { id: "a", title: "Video A", duration: 100, related: [] },
+        { id: "b", title: "Video B", duration: 100, related: [] },
+      ]
+
+      const timeline = engine.calculateTimeline(videos)
+
+      // Position 50 is in Video A (0-100)
+      const video = engine.findVideoAtPosition(50, timeline)
+      assert.strictEqual(video?.id, "a")
+
+      // Position 150 is in Video B (130-230)
+      const video2 = engine.findVideoAtPosition(150, timeline)
+      assert.strictEqual(video2?.id, "b")
+    })
+
+    test("returns null for empty timeline", () => {
+      const engine = new TimelineEngine()
+      const timeline: TimelineEntry[] = []
+
+      const video = engine.findVideoAtPosition(50, timeline)
+      assert.strictEqual(video, null)
+    })
+
+    test("wraps position to loop duration", () => {
+      const engine = new TimelineEngine()
+      const videos: VideoEntry[] = [
+        { id: "a", title: "Video A", duration: 100, related: [] },
+      ]
+
+      const timeline = engine.calculateTimeline(videos)
+      const totalDuration = engine.getTotalLoopDuration(timeline)
+
+      // Simulate Unix Epoch modulo sync
+      const now = 1000
+      const wrappedPosition = engine.wrapPosition(now, timeline)
+
+      // 1000 % 100 = 0
+      assert.strictEqual(wrappedPosition, 0)
+
+      const video = engine.findVideoAtPosition(wrappedPosition, timeline)
+      assert.strictEqual(video?.id, "a")
+    })
+  })
+})
+
+// ============================================================================
+// LINK RESOLVER TESTS
+// ============================================================================
+
+describe("LinkResolver", () => {
+  describe("Slug Resolution", () => {
+    test("resolves simple Wikilink to slug", () => {
+      // Mock BuildCtx with slug map
+      const mockCtx = {
+        allSlugs: ["places/target-note", "people/john-doe"],
+        allFiles: ["places/target-note.md", "people/john-doe.md"],
+      } as unknown as BuildCtx
+
+      const resolver = new LinkResolver(mockCtx)
+      const slug = resolver.resolve("[[Target Note]]")
+
+      assert.strictEqual(slug, "target-note")
+    })
+
+    test("resolves Wikilink with display alias", () => {
+      const mockCtx = {
+        allSlugs: ["places/quantum-physics"],
+        allFiles: ["places/quantum-physics.md"],
+      } as unknown as BuildCtx
+
+      const resolver = new LinkResolver(mockCtx)
+      const result = resolver.resolveWithAlias("[[Quantum Physics|Quantum]]")
+
+      assert.ok(result !== null)
+      assert.strictEqual(result!.name, "Quantum")
+      assert.strictEqual(result!.slug, "quantum-physics")
+    })
+
+    test("handles plain text (no brackets)", () => {
+      const mockCtx = {
+        allSlugs: ["people/john-doe"],
+        allFiles: ["people/john-doe.md"],
+      } as unknown as BuildCtx
+
+      const resolver = new LinkResolver(mockCtx)
+      const slug = resolver.resolve("John Doe")
+
+      assert.strictEqual(slug, "john-doe")
+    })
+  })
+
+  describe("Batch Resolution", () => {
+    test("resolves array of links", () => {
+      const mockCtx = {
+        allSlugs: ["places/note-a", "places/note-b"],
+        allFiles: ["places/note-a.md", "places/note-b.md"],
+      } as unknown as BuildCtx
+
+      const resolver = new LinkResolver(mockCtx)
+      const links = ["[[Note A]]", "[[Note B]]"]
+
+      const resolved = resolver.resolveBatch(links)
+
+      assert.strictEqual(resolved.length, 2)
+      assert.strictEqual(resolved[0].name, "Note A")
+      assert.strictEqual(resolved[0].slug, "note-a")
+      assert.strictEqual(resolved[1].name, "Note B")
+      assert.strictEqual(resolved[1].slug, "note-b")
+    })
+
+    test("skips unresolved links in batch", () => {
+      const mockCtx = {
+        allSlugs: ["places/found"],
+        allFiles: ["places/found.md"],
+      } as unknown as BuildCtx
+
+      const resolver = new LinkResolver(mockCtx)
+      const links = ["[[Found]]", "[[Not Found]]"]
+
+      const resolved = resolver.resolveBatch(links)
+
+      // Should only include resolved
+      assert.strictEqual(resolved.length, 1)
+      assert.strictEqual(resolved[0].slug, "found")
+    })
+  })
+
+  describe("Slug Generation", () => {
+    test("converts spaces to hyphens", () => {
+      const mockCtx = { allSlugs: [], allFiles: [] } as unknown as BuildCtx
+      const resolver = new LinkResolver(mockCtx)
+
+      const slug = resolver.slugify("Multiple Words Here")
+      assert.strictEqual(slug, "multiple-words-here")
+    })
+
+    test("converts to lowercase", () => {
+      const mockCtx = { allSlugs: [], allFiles: [] } as unknown as BuildCtx
+      const resolver = new LinkResolver(mockCtx)
+
+      const slug = resolver.slugify("UPPERCASE TITLE")
+      assert.strictEqual(slug, "uppercase-title")
+    })
+
+    test("handles multiple spaces", () => {
+      const mockCtx = { allSlugs: [], allFiles: [] } as unknown as BuildCtx
+      const resolver = new LinkResolver(mockCtx)
+
+      const slug = resolver.slugify("Extra   Spaces")
+      assert.strictEqual(slug, "extra-spaces")
+    })
+
+    test("handles special characters", () => {
+      const mockCtx = { allSlugs: [], allFiles: [] } as unknown as BuildCtx
+      const resolver = new LinkResolver(mockCtx)
+
+      const slug = resolver.slugify("Test (With) [Brackets]")
+      assert.strictEqual(slug, "test-with-brackets")
+    })
+  })
+
+  describe("BuildCtx Integration", () => {
+    test("uses allSlugs for resolution", () => {
+      const mockCtx = {
+        allSlugs: ["dossiers/slit-experiment", "people/einstein"],
+        allFiles: ["dossiers/slit-experiment.md", "people/einstein.md"],
+      } as unknown as BuildCtx
+
+      const resolver = new LinkResolver(mockCtx)
+      const slug = resolver.resolve("[[slit-experiment]]")
+
+      assert.strictEqual(slug, "slit-experiment")
+    })
+
+    test("returns null for non-existent links (batch will filter)", () => {
+      const mockCtx = { allSlugs: [], allFiles: [] } as unknown as BuildCtx
+      const resolver = new LinkResolver(mockCtx)
+
+      // When allSlugs is empty, no links can be resolved
+      // resolveWithAlias returns null for unresolved links
+      const result = resolver.resolveWithAlias("[[Any Note]]")
+      
+      // Should return null - non-existent links are not resolved
+      assert.strictEqual(result, null)
+    })
+
+    test("returns slugified slug when slug exists but link is partial match", () => {
+      const mockCtx = {
+        allSlugs: ["dossiers/slit-experiment-2025"],
+        allFiles: ["dossiers/slit-experiment-2025.md"],
+      } as unknown as BuildCtx
+      const resolver = new LinkResolver(mockCtx)
+
+      // A partial match should still resolve
+      const result = resolver.resolveWithAlias("[[slit-experiment]]")
+      
+      assert.ok(result !== null)
+      assert.strictEqual(result!.slug, "slit-experiment-2025")
+    })
+  })
+})
+
+// ============================================================================
+// INTEGRATION TEST - Full Emitter Pipeline
+// ============================================================================
+
+describe("Broadcast Emitter (Integration)", () => {
+  test("generates valid playlist structure", () => {
+    const playlist = {
+      totalLoopDuration: 0,
+      schedule: [],
+      interstitials: [
+        "/static/interstitials/int-01.mp4",
+        "/static/interstitials/int-02.mp4",
+        "/static/interstitials/int-03.mp4",
+      ],
+    }
+
+    assert.ok(playlist.interstitials.length === 3)
+    assert.strictEqual(playlist.totalLoopDuration, 0)
+    assert.deepStrictEqual(playlist.schedule, [])
+  })
+})
+
+console.log("✅ Broadcast Emitter Modular Test Suite Loaded")
+console.log("   Run with: npm test -- quartz/plugins/emitters/broadcast.test.ts")

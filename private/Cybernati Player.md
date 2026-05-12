@@ -1,49 +1,55 @@
 ---
 created: 2026-05-10T11:09:45-05:00
-modified: 2026-05-10T12:45:00-05:00
+modified: 2026-05-11T19:35:00-05:00
 ---
 # Cybernati™ Player: Channel Zero
 
-A terminal-based video multiplexer simulating a clandestine OTA (Over-The-Air) broadcast. It utilizes linear synchronization to ensure all viewers are witnessing the same signal at the same absolute second.
+A terminal-based video multiplexer simulating a clandestine OTA (Over-The-Air) broadcast. It utilizes linear synchronization (Unix Epoch Modulo) to ensure all viewers are witnessing the same signal at the same absolute second.
 
-## 1. Core Architecture (Multiplexer)
-The player is a shell that mounts specialized source modules based on the `video_playlist.json` schedule.
+## 1. Core Architecture (The Timeline)
+- **Variable Playback**: Intelligence slots scale to the actual duration of the source material. Every video plays in full.
+- **Standby Protocol**: Every transmission is followed by exactly 30 seconds of "RE-ALIGNING" (Silent Local Interstitials).
+- **Global Sync**: `currentPos = now % totalLoopDuration`.
 
-### Source Types:
-- **`youtube`**: Controlled via IFrame Player API. Supports seeking and custom volume.
-- **`direct`**: (DVIDS, Local MP4). Uses HTML5 video tag for perfect sync.
-- **`standby`**: Silent local interstitial loop used during "ALIGNING" phases.
+---
 
-## 2. Vault Integration (The Bridge)
-The player is an interactive extension of the Cybernati™ archives.
-- **Base-Aware Management**: The `generate-playlist.mjs` script queries `video_archive/channel-0000.base` to determine the active schedule and sort order.
-- **Duration Caching**: The script automatically scrapes YouTube durations and saves them back to the vault as a `duration` property using the Obsidian CLI.
-- **Active Context**: 
-    - **Header**: Dynamically displays the **Video Title** of the current transmission.
-    - **Footer**: Dynamically displays **Related Notes** as interactive Wikilinks.
+# Quartz Integration Plan (Directive for Pi Delegate)
 
-## 3. Technical Requirements
-- **Cycle**: 5m 30s fixed slots (300s Intelligence + 30s Standby).
-- **The Sync Lock**: Visual time-decay indicator (99.9% to 0.1%).
-- **The Handshake**: Invisible handshake unmutes audio at 25% upon first user interaction (click/keypress).
-- **Silent Standby**: Interstitials are forced-silent; user volume only applies to Intelligence slots.
+**Objective**: Migrate the standalone `scripts/generate-playlist.mjs` into a native **Modular Quartz Emitter** plugin.
 
-## 4. Feature Roadmap
-- [x] **MVP**: YouTube linear sync terminal.
-- [x] **Handshake Logic**: Muted start with unmuting on interaction.
-- [x] **Title & Link Injection**: Dynamic metadata integration from the vault.
-- [x] **Base-Aware Controller**: Visual playlist management via Obsidian Bases.
-- [ ] **Direct Module**: Support for non-YouTube video sources (DVIDS).
-- [ ] **Signal Degradation Phase II**: Refined visual static and jitter effects.
+## 0. Design Principles (Non-Negotiable)
+- **TDD (Test-Driven Development)**: No implementation code without a preceding failing test.
+- **DRY & SOLID**: Single Responsibility modules; Interface-based design for provider expansion.
+- **BEYONCÉ**: Ownership and Spectacle. We wrap external sources; we own the Z-index and visual "decay."
+- **TSDOC & NARRATIVE**: 
+  - Use **TSDoc style comments** for all functions and classes.
+  - **Explain the "WHY"**: Comments must explain the architectural intent, not just the "How."
 
+## 1. The Modular Blueprint
+The Emitter must be broken into distinct, testable modules:
 
+### A. `BaseParser` (SOLID)
+- **Logic**: Parses `channel-0000.base` YAML into structured rules.
 
+### B. `SourceProvider` (SOLID)
+- Interface for multiple providers (YouTube, DVIDS, X).
+- **`YouTubeProvider`**: Initial implementation for ID and Duration metadata.
 
-| status  |     | volume |
-| ------- | --- | ------ |
-| related |     | desync |
-| Embed   |     |        |
+### C. `TimelineEngine` (Pure Logic)
+- **Logic**: Pure function to compute the loop sequence (Offsets + 30s Gaps).
 
+### D. `LinkResolver` (Vault Integration)
+- **Logic**: Resolves Wikilinks via `BuildCtx`.
+
+## 2. Phase 0: The Testing Ground
+Create `quartz/plugins/emitters/broadcast.test.ts`.
+- **Framework**: Node.js native test runner (`tsx --test`).
+- **MANDATORY**: Each module must be verified by a test before implementation.
+
+## 3. Phase 1: The Integrated Emitter
+Create `quartz/plugins/emitters/broadcast.ts`.
+- Integrated Emitter orchestrating the modules to emit `static/video_playlist.json`.
 
 ---
 *The System Is Performing as Intended.*
+*Reference ID: CN-PL-MOD-02*

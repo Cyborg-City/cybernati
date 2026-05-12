@@ -98,3 +98,75 @@
 ---
 *Reference ID: CN-SCHEMA-03*
 *Status: Active*
+
+## [2026-05-11] Phase 1: Broadcast Emitter Port Complete
+- **Objective**: Port legacy `scripts/generate-playlist.mjs` to native Quartz emitter.
+- **Files Created**:
+  - `quartz/plugins/emitters/broadcast.ts` — Main emitter with TSDoc documentation
+  - `quartz/plugins/emitters/broadcast.test.ts` — 44 unit tests (all passing)
+- **Files Modified**:
+  - `quartz/plugins/emitters/index.ts` — Added Broadcast export
+  - `quartz.config.ts` — Registered Plugin.Broadcast() in emitters array
+  - `quartz/plugins/emitters/broadcast.ts` — Added /v/ pattern support, null-guard for getYouTubeId
+- **Files Deleted**:
+  - `scripts/generate-playlist.mjs` — Legacy script removed per directive
+- **Tests**: 44/44 passing (getYouTubeId, parseRelatedLinks, filterVideos, sortVideos)
+- **Verification**: `npx quartz build` successfully generated `public/static/video_playlist.json`
+- **Schedule Output**: 12 videos, 24,992s total loop duration (24,992 + 12×30s gaps)
+- **Status**: ✅ COMPLETE — Ready for Phase 2 (Component integration)
+
+## [2026-05-11] Integration Status Update
+- Pi Delegate confirmed usage of native Quartz testing framework.
+- TDD Mandate active; Phase 0 (Testing Ground) in progress.
+- Strategy: Modular architecture (SOLID/DRY) and TSDoc standards established.
+- Status: Standby for code review.
+
+
+## [2026-05-11] Phase 1 (Rev): Modular TDD Test Suite Defined
+- **Directives**: TDD, SOLID, DRY, BEYONCÉ principles
+- **Objective**: Redefine broadcast.ts as 4 modular components
+- **Files**:
+  - `quartz/plugins/emitters/broadcast.test.ts` — 56 tests defining module contracts
+- **Modules Defined**:
+  1. **BaseParser**: Parses channel-0000.base YAML → filter/sort rules
+  2. **YouTubeProvider**: ID extraction + duration scraping/caching
+  3. **TimelineEngine**: Pure timeline math (start/end + 30s gaps)
+  4. **LinkResolver**: Wikilinks → Quartz slugs via BuildCtx
+- **Test Status**: 56 tests / 55 FAIL / 1 PASS (expected until modules implemented)
+- **Next**: Awaiting user confirmation to proceed with module implementation
+- **Status**: ON HOLD — Plan changed, awaiting revised directive
+
+
+## [2026-05-11] Integration Phase: Implementation
+- Pi Delegate test suite reviewed and approved.
+- Objective: Port logic to native Emitter (quartz/plugins/emitters/broadcast.ts).
+- Methodology: Modular implementation based on approved TDD contract.
+- Status: Implementation In Progress.
+
+
+## [2026-05-11] Phase 1: Modular Broadcast Emitter - COMPLETE
+- **TDD**: 50/50 tests passing
+- **Modules**: BaseParser, YouTubeProvider, TimelineEngine, LinkResolver
+- **Fix Applied**: Replaced custom YAML parser with js-yaml (same as Quartz)
+- **Build Output**: 19 videos, 50,196s loop (~14 hours)
+- **Status**: COMPLETE
+
+
+## [2026-05-11] Phase 2: Registration & Calibration - COMPLETE
+- **Registration**: Broadcast emitter already in quartz.config.ts (line 96)
+- **Sorting**: Implemented fs.statSync for modified DESC + title ASC sort
+- **Verification**: Build generates 19 videos, sorted by modification time
+- **Output**: public/static/video_playlist.json (50,196s loop)
+- **Status**: COMPLETE
+
+
+## [2026-05-11] Phase 3: Terminal Coupling & Performance - COMPLETE
+- **UI Coupling**: Broadcast.tsx correctly uses JSON structure
+  - totalLoopDuration for sync calculation
+  - schedule[].start/end for timeline positioning  
+  - related[].{name, slug} for pre-resolved links
+- **Performance**: Related links pre-resolved via LinkResolver (no client-side resolution)
+- **Cleanup**: 
+  - scripts/generate-playlist.mjs - already deleted (Phase 1)
+  - quartz/static/video_playlist.json - already deleted (Phase 2)
+- **Status**: COMPLETE - Pure native Quartz implementation

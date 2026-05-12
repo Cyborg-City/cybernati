@@ -1,5 +1,5 @@
 ---
-title: "Internal Memo: The Observer Construct"
+title: The Observer Construct
 aliases:
 draft: false
 tags:
@@ -14,8 +14,8 @@ clearance: Board Observer
 confidence: Mixed
 mechanism: Technological Anomaly
 primary_beneficiary:
-created: "2026-05-11"
-modified: "2026-05-11T12:34:55-05:00"
+created: 2026-05-11
+modified: 2026-05-11T19:25:26-05:00
 narrative_volatility: Volatile
 source_provenance: Signal Capture
 description: The Clerk's assessment of the double-slit experiment and its descendants. The signal suggests the universe is not broken but optimized — the System does not compute what is unobserved. Information is a control mechanism that determines which version of reality manifests.

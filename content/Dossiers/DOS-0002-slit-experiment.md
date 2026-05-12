@@ -44,19 +44,19 @@ The question itself is the poison.
 
 This is not about light. It is about whether the universe runs independently of our attention. [[PER-0003-albert-einstein|Einstein]] and [[PER-0004-niels-bohr|Bohr]] fought over this in 1927. Einstein believed a photon's path could be measured without disturbing it. Bohr said measurement inherently alters the system. The experiments below settle the debate.
 
-![[02f8b31b37b9122a4b39a80c88e13085_MD5.webp]]
+![[01be32d834ebf737fbcc78c9ba6bfe84_MD5.webp]]
 
 ## WHAT — The Signal
 
 **1. The MIT Experiment (2025)**
 MIT physicists rebuilt the slit using ultracold atoms frozen in a lattice. By tuning how "fuzzy" each atom's position was, they controlled exactly how much path information leaked out. The result was absolute: **any path information, no matter how faint, killed the interference pattern.** Bohr was right. Measurement is not a gentle tap. It is a gun to the head of superposition.
 
-![[054026f3717b249c5eaa7f21c2d72661_MD5.webp]]
+![[77df308d905d83206f0db592e5d31801_MD5.webp]]
 
 **2. The Steinberg Negative-Time Anomaly**
 [[PER-0005-aephraim-steinberg|Aephraim Steinberg]]'s lab at the University of Toronto sent single photons through rubidium atoms and asked a simple question: how long does the atom stay excited? Classically, the answer must be positive. But for transmitted photons, the atoms spent **negative time** excited — less than zero. The same impossible number appears across multiple independent measurements. Not a math bug. A feature of the code.
 
-![[67d3754c244c01213ac08348f4fe450d_MD5.webp]]
+![[1c3ebaa615ec00a14c2646a570b1f5b5_MD5.webp]]
 
 **3. The Quantum Eraser Debunking**
 The delayed-choice quantum eraser is pop physics' most enduring myth: Bob measures a photon *after* Alice has already detected hers, and his choice retroactively changes her result. Mithina's DIY demonstration (PBS Space Time, 2025) reveals the truth: **Alice always sees a single-slit pattern.** The "double-slit" only appears when Bob and Alice sort their data afterward. The photons were entangled twins from birth. The universe did not rewrite history — it simply revealed a correlation that was always there.

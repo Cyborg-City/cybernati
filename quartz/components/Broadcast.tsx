@@ -459,7 +459,7 @@ export default (() => {
   .mute-btn.muted { color: #0f0; animation: blink 1s infinite; }
 
   .desync-action-btn {
-      background: #010; border: 1px solid #060; color: #fff; padding: 6px 16px 4px 16px;
+      background: #010; border: 1px solid #111; color: #fff; padding: 6px 16px 4px 16px;
       display: inline-flex; align-items: center; justify-content: center;
       cursor: pointer; font-family: inherit; font-size: 0.75rem; border-radius: 4px; line-height: 1;
   }

@@ -860,6 +860,11 @@ describe("Player Page Generator", () => {
     assert.ok(html.includes('id="player-mount"'), "must have player-mount for YT.Player")
     assert.ok(html.includes('id="sync-progress"'), "must have sync-progress bar")
     assert.ok(html.includes('id="desync-btn"'), "must have desync button")
+
+    // Version text must be a link back to the main site
+    assert.ok(html.includes('id="terminal-version"'), "must have terminal-version element")
+    const isLink = /<a[^>]*class="terminal-version"[^>]*>/.test(html)
+    assert.strictEqual(isLink, true, "terminal-version must be an <a> tag linking to main site")
   })
 
   test("player page contains extracted CSS from Broadcast.tsx", () => {

@@ -631,7 +631,8 @@ export function generatePlayerHtml(): string {
     .terminal-header { margin-bottom: 1rem; border-bottom: 1px solid #1a1a1a; padding-bottom: 0.8rem; display: flex; flex-direction: column; gap: 0.4rem; }
     .header-brand { display: flex; align-items: center; gap: 0.6rem; }
     .terminal-icon { width: 18px; height: 22px; display: inline-block; vertical-align: middle; }
-    .terminal-version { font-size: 1.1rem; color: #fff; text-transform: uppercase; letter-spacing: 0.1rem; line-height: 1; }
+    .terminal-version { font-size: 1.1rem; color: #fff; text-transform: uppercase; letter-spacing: 0.1rem; line-height: 1; text-decoration: none; }
+    .terminal-version:hover { text-shadow: 0 0 8px rgba(0,255,0,0.5); }
     .video-title { color: #0f0; font-size: 1.1rem; font-weight: normal; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 1; }
 
     .terminal-screen { position: relative; width: 100%; flex-grow: 1; min-height: 300px; background: black; overflow: hidden; border: 1px solid #222; }
@@ -689,7 +690,7 @@ export function generatePlayerHtml(): string {
     <div class="terminal-header">
       <div class="header-brand">
         <img width="18" height="22" class="terminal-icon" alt="" src="static/cybernati.svg" />
-        <div class="terminal-version">CYBERNATI™ Player Beta |</div>
+        <a class="terminal-version" id="terminal-version">CYBERNATI™ Player Beta |</a>
       </div>
       <div id="video-title" class="video-title">INITIALIZING...</div>
     </div>
@@ -794,6 +795,9 @@ export function generatePlayerHtml(): string {
           const self = this;
           const icon = document.querySelector('.terminal-icon');
           if (icon) icon.src = self.basePath + 'static/cybernati.svg';
+
+          const versionLink = document.getElementById('terminal-version');
+          if (versionLink) versionLink.href = self.basePath;
 
           const handleInteraction = () => {
             if (self.handshakeEstablished) return;

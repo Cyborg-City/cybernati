@@ -667,7 +667,7 @@ export function generatePlayerHtml(): string {
     .mute-btn.muted { color: #0f0; animation: blink 1s infinite; }
 
     .desync-action-btn {
-      background: #111; border: 1px solid #fff; color: #fff; padding: 6px 16px 4px 16px;
+      background: #111; border: 1px solid #fff; color: #fff; padding: 6px 10px 4px 10px;
       display: inline-flex; align-items: center; justify-content: center;
       cursor: pointer; font-family: inherit; font-size: 0.75rem; border-radius: 4px; line-height: 1;
     }
@@ -695,7 +695,7 @@ export function generatePlayerHtml(): string {
       .terminal-screen { min-height: 180px; }
       .footer-top-row { flex-direction: column; align-items: flex-start; gap: 0.4rem; }
       .top-controls { gap: 0.4rem; width: 100%; justify-content: flex-end; }
-      .desync-action-btn { padding: 4px 10px 2px 10px; font-size: 0.65rem; }
+      .desync-action-btn { padding: 4px 8px 2px 8px; font-size: 0.65rem; }
       .terminal-slider { width: 60px; }
       .footer-fold { padding: 0.25rem; }
       .footer-collapsible { max-height: 250px; }
@@ -740,6 +740,7 @@ export function generatePlayerHtml(): string {
           <span id="next-title" class="next-title">STANDBY</span>
         </div>
         <div class="top-controls">
+          <button id="embed-trigger" class="desync-action-btn">[EMBED]</button>
           <button id="desync-btn" class="desync-action-btn">DESYNC</button>
           <button id="mute-toggle" class="mute-btn" title="Toggle Mute">
             <svg id="speaker-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -766,7 +767,7 @@ export function generatePlayerHtml(): string {
           <div id="related-links" class="links-container">NONE DETECTED</div>
         </div>
         <div class="footer-row-meta">
-          <button id="embed-trigger" class="desync-action-btn">[EMBED_SIGNAL]</button>
+          <button id="embed-trigger" class="desync-action-btn">[EMBED]</button>
         </div>
       </div>
     </div>

@@ -647,22 +647,22 @@ export function generatePlayerHtml(): string {
     .next-section { display: flex; align-items: center; gap: 0.4rem; }
     .next-section .label { color: #fff; font-weight: bold; text-transform: uppercase; font-size: 0.7rem; font-family: 'IBM Plex Mono', monospace !important; }
     .top-controls { display: flex; align-items: center; gap: 0.8rem; }
-    .footer-fold { width: 100%; text-align: center; background: transparent; border: none; color: #060; cursor: pointer; padding: 0.3rem; font-family: 'IBM Plex Mono', monospace !important; font-size: 0.7rem; border-top: 1px solid #111; border-bottom: 1px solid #111; display: flex; align-items: center; justify-content: center; gap: 0.5rem; }
+    .footer-fold { width: 100%; text-align: center; background: transparent; border: none; color: #808080; cursor: pointer; padding: 0.3rem; font-family: 'IBM Plex Mono', monospace !important; font-size: 0.7rem; border-top: 1px solid #333; border-bottom: 1px solid #333; display: flex; align-items: center; justify-content: center; gap: 0.5rem; }
     .footer-fold:hover { color: #0f0; }
-    .footer-collapsible { position: absolute; bottom: 100%; left: 0; width: 100%; background: #050505; z-index: 100; overflow: hidden; transition: max-height 0.3s ease, opacity 0.3s ease; max-height: 300px; opacity: 1; border: 1px solid #111; border-bottom: none; }
+    .footer-collapsible { position: absolute; bottom: 100%; left: 0; width: 100%; background: #050505; z-index: 100; overflow: hidden; transition: max-height 0.3s ease, opacity 0.3s ease; max-height: 300px; opacity: 1; border: 1px solid #333; border-bottom: none; }
     .footer-collapsible.collapsed { max-height: 0; opacity: 0; }
     .footer-collapsible > .footer-section { display: flex; flex-direction: column; gap: 0.4rem; align-items: flex-start; padding: 0.5rem 1.5rem 0; margin-top: 0; }
     .footer-collapsible > .footer-row-meta { display: flex; gap: 1.5rem; align-items: center; padding: 0.5rem 1.5rem; margin-top: 0; }
     .footer-section .label { color: #fff; font-weight: bold; text-transform: uppercase; font-size: 0.7rem; font-family: 'IBM Plex Mono', monospace !important; }
     .links-container { display: flex; flex-wrap: wrap; gap: 8px; }
     .vault-link {
-      color: #fff; text-decoration: none; border: 1px solid #060; padding: 4px 10px 2px 10px;
+      color: #fff; text-decoration: none; border: 1px solid #555; padding: 4px 10px 2px 10px;
       background: rgba(0,255,0,0.05); display: inline-flex; align-items: center; justify-content: center;
       font-size: 0.75rem; transition: all 0.1s ease; line-height: 1;
     }
     .vault-link:hover { background: #0f0; color: #000; }
     .next-title { color: #0f0; font-weight: bold; font-family: system-ui, sans-serif; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 360px; }
-    .mute-btn { background: transparent; border: none; color: #060; cursor: pointer; padding: 2px; display: flex; align-items: center; }
+    .mute-btn { background: transparent; border: none; color: #808080; cursor: pointer; padding: 2px; display: flex; align-items: center; }
     .mute-btn:hover { color: #0f0; }
     .mute-btn.muted { color: #0f0; animation: blink 1s infinite; }
 
@@ -678,8 +678,8 @@ export function generatePlayerHtml(): string {
 
     .embed-modal { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 1000; display: none; align-items: center; justify-content: center; padding: 2rem; }
     .modal-content { background: #050505; border: 1px solid #0f0; padding: 1.5rem; width: 90%; max-width: 500px; color: #0f0; box-shadow: 0 0 40px rgba(0,255,0,0.2); box-sizing: border-box; }
-    .modal-header { font-size: 0.7rem; margin-bottom: 0.5rem; border-bottom: 1px solid #040; }
-    #embed-code { width: 100%; height: 80px; background: #000; color: #0c0; border: 1px solid #040; font-family: inherit; font-size: 0.6rem; padding: 0.5rem; margin-bottom: 1rem; resize: none; }
+    .modal-header { font-size: 0.7rem; margin-bottom: 0.5rem; border-bottom: 1px solid #333; }
+    #embed-code { width: 100%; height: 80px; background: #000; color: #0c0; border: 1px solid #333; font-family: inherit; font-size: 0.6rem; padding: 0.5rem; margin-bottom: 1rem; resize: none; }
     .handshake-btn { background: #111; border: 1px solid #fff; color: #fff; padding: 6px 16px 4px 16px; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; font-family: inherit; font-size: 0.75rem; border-radius: 4px; line-height: 1; text-transform: uppercase; }
     .handshake-btn:hover { background: #0f0; color: #000; }
 

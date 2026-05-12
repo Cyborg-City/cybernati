@@ -240,14 +240,14 @@ describe("Broadcast.tsx Structural Integrity", () => {
       assert.ok(matches && matches.length >= 2, "volume slider oninput must also toggle 'muted' class")
     })
 
-    test("embed-trigger uses window.location.href (not basePath) for iframe src", () => {
-      // Why: self.basePath is just '/Cybernati/' — an iframe needs a full URL.
-      // window.location.href gives the exact page the user is viewing.
-      const usesHref = /window\.location\.href/.test(source)
-      assert.strictEqual(usesHref, true, "embed trigger must use window.location.href for iframe src")
+    test("embed-trigger uses player.html URL (not current page) for iframe src", () => {
+      // Why: Embedding the current Quartz page would include sidebar, nav, etc.
+      // The standalone player.html page contains only the terminal.
+      const usesPlayerUrl = /self\.basePath\s*\+\s*'player\.html'/.test(source)
+      assert.strictEqual(usesPlayerUrl, true, "embed trigger must use self.basePath + 'player.html' for iframe src")
 
-      const notBasePath = /embedCode\s*=\s*'<iframe[^>]*src="'\s*\+\s*self\.basePath/.test(source)
-      assert.strictEqual(notBasePath, false, "embed trigger must NOT use self.basePath — it's not a full URL")
+      const notCurrentPage = /window\.location\.href/.test(source)
+      assert.strictEqual(notCurrentPage, false, "embed trigger must NOT use window.location.href — that embeds the Quartz page")
     })
 
     test("embed-trigger populates embed-code textarea on click", () => {

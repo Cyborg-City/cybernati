@@ -600,6 +600,126 @@ const DEFAULT_OPTIONS: BroadcastEmitterOptions = {
   baseFile: "video_archive/channel-0000.base",
 }
 
+/**
+ * Generates a standalone player.html page from Broadcast.tsx source.
+ *
+ * The standalone page contains only the player terminal — no Quartz layout,
+ * no sidebar, no header, no footer. It is designed to be embedded in an
+ * iframe on external sites.
+ *
+ * CSS and JS are extracted directly from Broadcast.tsx so the standalone
+ * page stays in sync with the component automatically.
+ */
+export function generatePlayerHtml(): string {
+  const broadcastPath = path.join(process.cwd(), "quartz/components/Broadcast.tsx")
+  const source = fs.readFileSync(broadcastPath, "utf-8")
+
+  // ── Extract CSS ──────────────────────────────────────────────────────────
+  const cssStartMarker = "Broadcast.css = `"
+  const cssStart = source.indexOf(cssStartMarker)
+  if (cssStart === -1) throw new Error("[PlayerHtml] CSS start marker not found in Broadcast.tsx")
+  const cssBodyStart = cssStart + cssStartMarker.length
+  // CSS ends at the first backtick on its own line after cssBodyStart
+  const cssEnd = source.indexOf("\n  `", cssBodyStart)
+  if (cssEnd === -1) throw new Error("[PlayerHtml] CSS end marker not found in Broadcast.tsx")
+  const css = source.substring(cssBodyStart, cssEnd).trim()
+
+  // ── Extract JS ───────────────────────────────────────────────────────────
+  const jsStartMarker = "__html: `"
+  const jsStart = source.indexOf(jsStartMarker)
+  if (jsStart === -1) throw new Error("[PlayerHtml] JS start marker not found in Broadcast.tsx")
+  const jsBodyStart = jsStart + jsStartMarker.length
+  const jsEndMarker = "`}} />"
+  const jsEnd = source.indexOf(jsEndMarker, jsBodyStart)
+  if (jsEnd === -1) throw new Error("[PlayerHtml] JS end marker not found in Broadcast.tsx")
+  const js = source.substring(jsBodyStart, jsEnd).trim()
+
+  // ── Build standalone HTML ────────────────────────────────────────────────
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cybernati Player</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=IBM+Plex+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body { margin: 0; background: #000; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+    ${css}
+  </style>
+</head>
+<body>
+  <div id="broadcast-root" class="broadcast-terminal">
+    <div class="terminal-header">
+      <div class="header-brand">
+        <img width="18" height="22" class="terminal-icon" alt="" src="static/cybernati.svg" />
+        <div class="terminal-version">CYBERNATI™ Player Beta |</div>
+      </div>
+      <div id="video-title" class="video-title">INITIALIZING...</div>
+    </div>
+    <div id="terminal-screen" class="terminal-screen">
+      <div id="player-mount" class="player-mount">
+        <div id="terminal-status-msg" class="signal-initializing">SCANNING FOR SIGNAL...</div>
+      </div>
+      <div id="embed-modal" class="embed-modal">
+        <div class="modal-content">
+          <div class="modal-header">ESTABLISH_REMOTE_NODE</div>
+          <textarea id="embed-code" readonly="readonly"></textarea>
+          <div class="modal-footer">
+            <button id="copy-embed-btn" class="handshake-btn">COPY_CODE</button>
+            <button id="close-embed-btn" class="handshake-btn">CLOSE</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="progress-container" class="progress-container">
+      <div id="sync-progress" class="progress-bar"></div>
+    </div>
+    <div class="terminal-footer">
+      <div class="footer-top-row">
+        <div class="next-section">
+          <span class="label">Next:</span>
+          <span id="next-title" class="next-title">STANDBY</span>
+        </div>
+        <div class="top-controls">
+          <button id="desync-btn" class="desync-action-btn">DESYNC</button>
+          <button id="mute-toggle" class="mute-btn" title="Toggle Mute">
+            <svg id="speaker-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M11 5L6 9H2v6h4l5 4V5z"></path>
+              <line x1="23" y1="9" x2="17" y2="15"></line>
+              <line x1="17" y1="9" x2="23" y2="15"></line>
+            </svg>
+          </button>
+          <input type="range" id="volume-control" class="terminal-slider" min="0" max="100" value="0" />
+          <button id="fullscreen-toggle" class="mute-btn" title="Full Screen">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+      <button id="footer-fold" class="footer-fold">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+      </button>
+      <div id="footer-collapsible" class="footer-collapsible collapsed">
+        <div class="footer-section">
+          <span class="label">Related Notes:</span>
+          <div id="related-links" class="links-container">NONE DETECTED</div>
+        </div>
+        <div class="footer-row-meta">
+          <button id="embed-trigger" class="desync-action-btn">[EMBED_SIGNAL]</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+${js}
+  </script>
+</body>
+</html>`
+}
+
 export const Broadcast: QuartzEmitterPlugin<Partial<BroadcastEmitterOptions>> = (
   opts,
 ) => {
@@ -743,7 +863,7 @@ export const Broadcast: QuartzEmitterPlugin<Partial<BroadcastEmitterOptions>> = 
         ],
       }
 
-      // Emit file
+      // Emit playlist JSON
       const fp = joinSegments("static", "video_playlist") as FullSlug
 
       yield write({
@@ -753,9 +873,19 @@ export const Broadcast: QuartzEmitterPlugin<Partial<BroadcastEmitterOptions>> = 
         ext: ".json",
       })
 
+      // Emit standalone player page (embeddable, no Quartz layout)
+      const playerHtml = generatePlayerHtml()
+      yield write({
+        ctx,
+        content: playerHtml,
+        slug: "player" as FullSlug,
+        ext: ".html",
+      })
+
       console.log("=".repeat(50))
       console.log(`📡 TIMELINE SYNCED: ${totalLoopDuration}s total loop`)
       console.log(`📁 Output: static/video_playlist.json`)
+      console.log(`📁 Output: player.html`)
       console.log("=".repeat(50))
     },
   }

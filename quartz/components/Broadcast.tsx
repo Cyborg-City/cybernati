@@ -240,10 +240,11 @@ export default (() => {
 
                         const embedBtn = document.getElementById('embed-trigger');
                         if (embedBtn) embedBtn.onclick = () => {
-                            // Use the current page URL so embedders get exactly what they see.
-                            // self.basePath is just '/Cybernati/' — not enough for an iframe src.
-                            const pageUrl = window.location.href;
-                            const embedCode = '<iframe src="' + pageUrl + '" width="100%" height="400" frameborder="0" allowfullscreen style="border:none;"></iframe>';
+                            // Embed the standalone player page, not the current Quartz page.
+                            // The standalone page is at {basePath}player.html and contains
+                            // only the terminal — no sidebar, no header, no footer.
+                            const playerUrl = window.location.origin + self.basePath + 'player.html';
+                            const embedCode = '<iframe src="' + playerUrl + '" width="100%" height="400" frameborder="0" allowfullscreen style="border:none;"></iframe>';
                             document.getElementById('embed-code').value = embedCode;
                             document.getElementById('embed-modal').style.display = 'flex';
                         };

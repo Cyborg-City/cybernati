@@ -49,6 +49,7 @@ import {
   YouTubeProvider,
   TimelineEngine,
   LinkResolver,
+  generatePlayerHtml,
   type VideoEntry,
   type TimelineEntry,
   type FilterRule,
@@ -824,6 +825,85 @@ describe("LinkResolver", () => {
       assert.ok(result !== null)
       assert.strictEqual(result!.slug, "dossiers/slit-experiment-2025")
     })
+  })
+})
+
+// ============================================================================
+// STANDALONE PLAYER PAGE TESTS
+// ============================================================================
+
+describe("Player Page Generator", () => {
+  test("generatePlayerHtml returns a valid HTML document", () => {
+    const html = generatePlayerHtml()
+
+    // Must be a complete HTML5 document
+    assert.ok(html.startsWith("<!DOCTYPE html>"), "must start with DOCTYPE")
+    assert.ok(html.includes("<html lang=\"en\">"), "must have html tag with lang")
+    assert.ok(html.includes("</html>"), "must close html tag")
+    assert.ok(html.includes("<head>"), "must have head section")
+    assert.ok(html.includes("<body>"), "must have body section")
+  })
+
+  test("player page loads required Google Fonts", () => {
+    const html = generatePlayerHtml()
+
+    // Special Elite for the terminal aesthetic
+    assert.ok(html.includes("Special+Elite"), "must load Special Elite font")
+    // IBM Plex Mono for labels and monospace text
+    assert.ok(html.includes("IBM+Plex+Mono"), "must load IBM Plex Mono font")
+  })
+
+  test("player page contains terminal markup", () => {
+    const html = generatePlayerHtml()
+
+    assert.ok(html.includes('id="broadcast-root"'), "must have broadcast-root container")
+    assert.ok(html.includes('id="player-mount"'), "must have player-mount for YT.Player")
+    assert.ok(html.includes('id="sync-progress"'), "must have sync-progress bar")
+    assert.ok(html.includes('id="desync-btn"'), "must have desync button")
+  })
+
+  test("player page contains extracted CSS from Broadcast.tsx", () => {
+    const html = generatePlayerHtml()
+
+    // Key CSS selectors that prove extraction worked
+    assert.ok(html.includes(".broadcast-terminal"), "must have .broadcast-terminal CSS")
+    assert.ok(html.includes(".terminal-screen"), "must have .terminal-screen CSS")
+    assert.ok(html.includes(".progress-bar"), "must have .progress-bar CSS")
+    assert.ok(html.includes("@keyframes blink"), "must have blink animation CSS")
+  })
+
+  test("player page contains extracted JS from Broadcast.tsx", () => {
+    const html = generatePlayerHtml()
+
+    // Key JS patterns that prove extraction worked
+    assert.ok(html.includes("window.CyberPlayer"), "must define CyberPlayer singleton")
+    assert.ok(html.includes("YT.Player"), "must create YouTube player")
+    assert.ok(html.includes("startLoop"), "must have startLoop function")
+    assert.ok(html.includes("mountStandby"), "must have mountStandby function")
+  })
+
+  test("player page has correct title and meta tags", () => {
+    const html = generatePlayerHtml()
+
+    assert.ok(html.includes("<title>Cybernati Player</title>"), "must have correct title")
+    assert.ok(html.includes('charset="UTF-8"'), "must have UTF-8 charset")
+    assert.ok(html.includes('name="viewport"'), "must have viewport meta")
+  })
+
+  test("player page has black body background for embedding", () => {
+    const html = generatePlayerHtml()
+
+    // When embedded, the host page background shows through if transparent.
+    // Black body ensures the terminal looks correct even without Quartz styles.
+    assert.ok(html.includes("background: #000"), "must have black body background")
+  })
+
+  test("player page icon uses correct relative path", () => {
+    const html = generatePlayerHtml()
+
+    // The standalone page is at /player.html, static files are at /static/.
+    // So the icon path must be relative: static/cybernati.svg
+    assert.ok(html.includes('src="static/cybernati.svg"'), "icon must use static/cybernati.svg path")
   })
 })
 

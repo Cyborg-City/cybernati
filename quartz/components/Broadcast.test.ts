@@ -117,17 +117,30 @@ describe("Broadcast.tsx Structural Integrity", () => {
       assert.strictEqual(hasIdCheck, true, "startLoop should only mount when currentVideoId !== active.id")
     })
 
-    test("nav listener always destroys before init", () => {
-      // Must destroy first, then use requestAnimationFrame for init
-      const hasDestroyFirst = /window\.CyberPlayer\.destroy\(\)/.test(source)
-      assert.strictEqual(hasDestroyFirst, true, "nav listener must destroy() before anything else")
+    test("nav listener checks YT readiness before init", () => {
+      const hasYTCheck = /if\s*\(\s*document\.getElementById\('player-mount'\)\s*&&\s*window\.YT\s*&&\s*window\.YT\.Player\s*\)/.test(source)
+      assert.strictEqual(hasYTCheck, true, "nav listener must check window.YT && window.YT.Player before init")
+    })
 
-      const hasRAF = /requestAnimationFrame/.test(source)
-      assert.strictEqual(hasRAF, true, "nav listener must use requestAnimationFrame before init")
+    test("destroy clears mount element innerHTML", () => {
+      const clearsMount = /const\s+mount\s*=\s*document\.getElementById\('player-mount'\)/.test(source) &&
+                          /if\s*\(\s*mount\s*\)\s*mount\.innerHTML\s*=\s*''/.test(source)
+      assert.strictEqual(clearsMount, true, "destroy() must clear player-mount innerHTML to remove zombie iframes")
+    })
 
-      // Must NOT have the old buggy pattern
-      const hasOldPattern = /if\s*\(\s*document\.getElementById\('player-mount'\)\s*\)\s*window\.CyberPlayer\.init\(\)/.test(source)
-      assert.strictEqual(hasOldPattern, false, "nav listener must NOT init directly — must use RAF after destroy")
+    test("init guards against double-calls with isInitializing flag", () => {
+      const hasGuard = /if\s*\(\s*this\.isInitializing\s*\)\s*return/.test(source)
+      assert.strictEqual(hasGuard, true, "init() must have isInitializing guard to prevent concurrent calls")
+    })
+
+    test("init checks YT readiness before proceeding", () => {
+      const hasYTCheck = /if\s*\(\s*!mount\s*\|\|\s*!window\.YT\s*\|\|\s*!window\.YT\.Player\s*\)\s*return/.test(source)
+      assert.strictEqual(hasYTCheck, true, "init() must check window.YT && window.YT.Player before proceeding")
+    })
+
+    test("onReady does NOT call playVideo (rely on autoplay)", () => {
+      const hasPlayVideo = /e\.target\.playVideo\(\)/.test(source)
+      assert.strictEqual(hasPlayVideo, false, "onReady must NOT call playVideo() — rely on autoplay:1 + mute:1")
     })
   })
 
@@ -147,9 +160,28 @@ describe("Broadcast.tsx Structural Integrity", () => {
       assert.strictEqual(hasDesyncBtn, true, "desync button missing")
     })
 
-    test("program-info status text is removed from JSX", () => {
-      const hasProgramInfo = /id="program-info"/.test(source)
-      assert.strictEqual(hasProgramInfo, false, "#program-info element should be removed from JSX")
+    test("handshake-hint text is removed from JSX", () => {
+      const hasHint = /id="handshake-hint"/.test(source)
+      assert.strictEqual(hasHint, false, "#handshake-hint element should be removed from JSX")
+    })
+
+    test("mute-btn has muted class with blink animation", () => {
+      const hasMutedClass = /\.mute-btn\.muted\s*\{/.test(source)
+      assert.strictEqual(hasMutedClass, true, ".mute-btn.muted CSS rule missing")
+
+      const hasBlinkAnimation = /animation:\s*blink\s+1s\s+infinite/.test(source)
+      assert.strictEqual(hasBlinkAnimation, true, ".mute-btn.muted must have blink animation")
+    })
+
+    test("mute toggle toggles muted class on button", () => {
+      // Must toggle class in mute button onclick
+      const hasToggle = /muteBtn\.classList\.toggle\('muted',\s*self\.isMuted\)/.test(source)
+      assert.strictEqual(hasToggle, true, "mute button onclick must toggle 'muted' class")
+
+      // Must also toggle on volume slider change
+      const hasSliderToggle = /muteBtn\.classList\.toggle\('muted',\s*self\.isMuted\)/g
+      const matches = source.match(hasSliderToggle)
+      assert.ok(matches && matches.length >= 2, "volume slider oninput must also toggle 'muted' class")
     })
 
     test("embed-trigger uses desync-action-btn class", () => {

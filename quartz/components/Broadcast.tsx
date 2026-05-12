@@ -42,7 +42,6 @@ export default (() => {
                 </div>
                 <div class="footer-row-meta">
                     <button id="embed-trigger" class="desync-action-btn">[EMBED_SIGNAL]</button>
-                    <span id="handshake-hint" class="handshake-hint">[CLICK TO SYNC AUDIO]</span>
                 </div>
             </div>
             <div class="footer-right">
@@ -98,11 +97,15 @@ export default (() => {
                         if (this.player && this.player.destroy) this.player.destroy();
                         this.player = null;
                         this.currentVideoId = null;
+                        const mount = document.getElementById('player-mount');
+                        if (mount) mount.innerHTML = '';
                     },
 
                     init: async function() {
                         const mount = document.getElementById('player-mount');
-                        if (!mount) return;
+                        if (!mount || !window.YT || !window.YT.Player) return;
+                        if (this.isInitializing) return;
+                        this.isInitializing = true;
 
                         try {
                             const pathSegments = window.location.pathname.split('/');
@@ -118,6 +121,8 @@ export default (() => {
                             const status = document.getElementById('terminal-status-msg');
                             if (status) status.innerHTML = "CONNECTION ERROR: ARCHIVE UNREACHABLE";
                             console.error("Player Error:", e);
+                        } finally {
+                            this.isInitializing = false;
                         }
                     },
 
@@ -137,27 +142,31 @@ export default (() => {
                             if (speaker) speaker.innerHTML = self.icons.vol;
                             const slider = document.getElementById('volume-control');
                             if (slider) slider.value = 25;
-                            const hint = document.getElementById('handshake-hint');
-                            if (hint) hint.style.display = 'none';
+                            const muteBtn = document.getElementById('mute-toggle');
+                            if (muteBtn) muteBtn.classList.remove('muted');
                         };
                         window.addEventListener('click', handleInteraction, { once: true });
 
                         const muteBtn = document.getElementById('mute-toggle');
-                        if (muteBtn) muteBtn.onclick = () => {
-                            self.isMuted = !self.isMuted;
-                            if (self.player) {
-                                if (self.isMuted) self.player.mute();
-                                else {
-                                    if (self.currentVolume === 0) self.currentVolume = 50;
-                                    self.player.unMute();
-                                    self.player.setVolume(self.currentVolume);
+                        if (muteBtn) {
+                            muteBtn.classList.toggle('muted', self.isMuted);
+                            muteBtn.onclick = () => {
+                                self.isMuted = !self.isMuted;
+                                if (self.player) {
+                                    if (self.isMuted) self.player.mute();
+                                    else {
+                                        if (self.currentVolume === 0) self.currentVolume = 50;
+                                        self.player.unMute();
+                                        self.player.setVolume(self.currentVolume);
+                                    }
                                 }
-                            }
-                            const speaker = document.getElementById('speaker-icon');
-                            if (speaker) speaker.innerHTML = self.isMuted ? self.icons.mute : self.icons.vol;
-                            const slider = document.getElementById('volume-control');
-                            if (slider) slider.value = self.isMuted ? 0 : self.currentVolume;
-                        };
+                                const speaker = document.getElementById('speaker-icon');
+                                if (speaker) speaker.innerHTML = self.isMuted ? self.icons.mute : self.icons.vol;
+                                const slider = document.getElementById('volume-control');
+                                if (slider) slider.value = self.isMuted ? 0 : self.currentVolume;
+                                if (muteBtn) muteBtn.classList.toggle('muted', self.isMuted);
+                            };
+                        }
 
                         const volSlider = document.getElementById('volume-control');
                         if (volSlider) volSlider.oninput = (e) => {
@@ -169,6 +178,7 @@ export default (() => {
                             }
                             const speaker = document.getElementById('speaker-icon');
                             if (speaker) speaker.innerHTML = self.isMuted ? self.icons.mute : self.icons.vol;
+                            if (muteBtn) muteBtn.classList.toggle('muted', self.isMuted);
                         };
 
                         const fsBtn = document.getElementById('fullscreen-toggle');
@@ -314,7 +324,8 @@ export default (() => {
                             playerVars: { autoplay: 1, mute: 1, controls: 0, disablekb: 1, modestbranding: 1, rel: 0, start: Math.floor(offset) },
                             events: { 
                                 onReady: (e) => { 
-                                    if (!self.isMuted) { e.target.unMute(); e.target.setVolume(self.currentVolume); } 
+                                    if (self.isMuted) { e.target.mute(); }
+                                    else { e.target.unMute(); e.target.setVolume(self.currentVolume); }
                                 },
                                 onError: (e) => { console.error('YT Player Error:', e); }
                             }
@@ -353,18 +364,15 @@ export default (() => {
                     }
                 }, 500);
 
+                let navDebounce;
                 document.addEventListener("nav", () => {
-                    // Always destroy old player before navigation completes
-                    // The nav event fires while old DOM still exists,
-                    // so we must clean up before new page renders.
-                    window.CyberPlayer.destroy();
-                    
-                    // Wait for new DOM to render, then init if player exists
-                    requestAnimationFrame(() => {
-                        if (document.getElementById('player-mount')) {
+                    clearTimeout(navDebounce);
+                    if (window.CyberPlayer.player) window.CyberPlayer.destroy();
+                    navDebounce = setTimeout(() => {
+                        if (document.getElementById('player-mount') && window.YT && window.YT.Player) {
                             window.CyberPlayer.init();
                         }
-                    });
+                    }, 100);
                 });
             })();
         `}} />
@@ -406,12 +414,12 @@ export default (() => {
   .next-title { color: #0c0; font-style: italic; }
 
   .footer-row-meta { display: flex; gap: 1.5rem; align-items: center; margin-top: 0.5rem; border-top: 1px solid #111; padding-top: 0.8rem; }
-  .handshake-hint { font-size: 0.65rem; color: #f00; animation: blink 2s infinite; font-family: 'IBM Plex Mono', monospace !important; }
 
   .footer-right { display: flex; flex-direction: column; align-items: flex-end; gap: 1rem; }
   .control-row { display: flex; align-items: center; gap: 0.8rem; }
   .mute-btn { background: transparent; border: none; color: #060; cursor: pointer; padding: 2px; display: flex; align-items: center; }
   .mute-btn:hover { color: #0f0; }
+  .mute-btn.muted { color: #0f0; animation: blink 1s infinite; }
 
   .desync-action-btn {
       background: #010; border: 1px solid #060; color: #fff; padding: 4px 12px 2px 12px;

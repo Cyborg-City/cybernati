@@ -1,6 +1,6 @@
 ---
 created: 2026-05-10T11:09:45-05:00
-modified: 2026-05-11T19:35:00-05:00
+modified: 2026-05-12T01:26:06-05:00
 ---
 # Cybernati™ Player: Channel Zero
 
@@ -56,3 +56,4 @@ Create `quartz/plugins/emitters/broadcast.ts`.
 
 
 
+<iframe src="https://cyborg-city.github.io/Cybernati/CH-0000" width="100%" height="400" frameborder="0" allowfullscreen style="border:none;"></iframe>

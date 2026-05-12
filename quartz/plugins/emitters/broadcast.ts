@@ -495,9 +495,11 @@ import type { FullSlug } from "../../util/path"
 export class LinkResolver {
   private slugMap: Map<string, FullSlug>
   private allSlugs: string[]
+  private titleMap: Map<string, string>
 
-  constructor(ctx: BuildCtx) {
+  constructor(ctx: BuildCtx, titleMap?: Map<string, string>) {
     this.allSlugs = ctx.allSlugs ?? []
+    this.titleMap = titleMap ?? new Map()
 
     this.slugMap = new Map()
     for (const slug of this.allSlugs) {
@@ -537,10 +539,11 @@ export class LinkResolver {
     const parsed = this.parseLink(link)
     if (!parsed) return null
 
-    const name = parsed.alias ?? parsed.target
     const slug = this.resolve(`[[${parsed.target}]]`)
 
     if (slug) {
+      // Priority: explicit alias > friendly title from content > raw target name
+      const name = parsed.alias ?? this.titleMap.get(slug) ?? parsed.target
       return { name, slug }
     }
 
@@ -631,9 +634,19 @@ export const Broadcast: QuartzEmitterPlugin<Partial<BroadcastEmitterOptions>> = 
 
       console.log(`📋 Found ${videoFiles.length} video files in video_archive/`)
 
+      // Build slug → title map from Quartz content (for friendly related link names)
+      const titleMap = new Map<string, string>()
+      for (const page of content) {
+        const slug = page.slug
+        const title = page.frontmatter?.title as string | undefined
+        if (slug && title) {
+          titleMap.set(slug, title)
+        }
+      }
+
       // Parse frontmatter from each video file
       const provider = new YouTubeProvider()
-      const linkResolver = new LinkResolver(ctx)
+      const linkResolver = new LinkResolver(ctx, titleMap)
       const videos: VideoEntry[] = []
 
       for (const filename of videoFiles) {

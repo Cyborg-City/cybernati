@@ -641,6 +641,54 @@ describe("LinkResolver", () => {
       assert.strictEqual(slug, "places/target-note")
     })
 
+    test("uses friendly title from titleMap when available", () => {
+      const mockCtx = {
+        allSlugs: ["places/quantum-physics"],
+        allFiles: ["places/quantum-physics.md"],
+      } as unknown as BuildCtx
+
+      const titleMap = new Map<string, string>()
+      titleMap.set("places/quantum-physics", "The Quantum Physics of Consciousness")
+
+      const resolver = new LinkResolver(mockCtx, titleMap)
+      const result = resolver.resolveWithAlias("[[Quantum Physics]]")
+
+      assert.ok(result !== null)
+      assert.strictEqual(result!.name, "The Quantum Physics of Consciousness")
+      assert.strictEqual(result!.slug, "places/quantum-physics")
+    })
+
+    test("falls back to raw name when titleMap has no entry", () => {
+      const mockCtx = {
+        allSlugs: ["places/quantum-physics"],
+        allFiles: ["places/quantum-physics.md"],
+      } as unknown as BuildCtx
+
+      const resolver = new LinkResolver(mockCtx)
+      const result = resolver.resolveWithAlias("[[Quantum Physics]]")
+
+      assert.ok(result !== null)
+      assert.strictEqual(result!.name, "Quantum Physics")
+      assert.strictEqual(result!.slug, "places/quantum-physics")
+    })
+
+    test("prefers alias over titleMap when alias is provided", () => {
+      const mockCtx = {
+        allSlugs: ["places/quantum-physics"],
+        allFiles: ["places/quantum-physics.md"],
+      } as unknown as BuildCtx
+
+      const titleMap = new Map<string, string>()
+      titleMap.set("places/quantum-physics", "The Quantum Physics of Consciousness")
+
+      const resolver = new LinkResolver(mockCtx, titleMap)
+      const result = resolver.resolveWithAlias("[[Quantum Physics|Quantum]]")
+
+      assert.ok(result !== null)
+      assert.strictEqual(result!.name, "Quantum")
+      assert.strictEqual(result!.slug, "places/quantum-physics")
+    })
+
     test("resolves Wikilink with display alias", () => {
       const mockCtx = {
         allSlugs: ["places/quantum-physics"],

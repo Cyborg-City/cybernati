@@ -54,7 +54,7 @@ export const defaultContentPageLayout: PageLayout = {
   afterBody: [
     Component.ConditionalRender({
       component: Component.Broadcast(),
-      condition: (page) => page.fileData.slug?.toLowerCase() === "ch-0000",
+      condition: (page) => page.fileData.slug === "ch-0000" || page.fileData.slug === "CH-0000",
     }),
   ],
 }

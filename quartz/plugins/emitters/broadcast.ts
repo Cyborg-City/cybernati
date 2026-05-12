@@ -490,29 +490,22 @@ export class LinkResolver {
     if (!parsed) return null
 
     const slugifiedTarget = this.slugify(parsed.target)
+    
+    // Check for exact match in our slug map (which stores full slugs)
     const exactMatch = this.slugMap.get(slugifiedTarget)
     if (exactMatch) {
-      return this.extractFilename(exactMatch)
+      return exactMatch // Return the FULL slug, not just the filename
     }
 
     const originalMatch = this.slugMap.get(parsed.target.toLowerCase())
     if (originalMatch) {
-      return this.extractFilename(originalMatch)
+      return originalMatch
     }
 
+    // Partial matches
     for (const [slugKey, slugValue] of this.slugMap) {
       if (slugKey.includes(slugifiedTarget)) {
-        return this.extractFilename(slugValue)
-      }
-    }
-
-    for (const [slugKey, slugValue] of this.slugMap) {
-      if (
-        slugifiedTarget === slugKey ||
-        slugifiedTarget.startsWith(slugKey + "-") ||
-        slugifiedTarget.startsWith(slugKey + "_")
-      ) {
-        return this.extractFilename(slugValue)
+        return slugValue
       }
     }
 

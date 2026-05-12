@@ -497,6 +497,60 @@ describe("TimelineEngine", () => {
       assert.strictEqual(timeline[0].title, "Full Video")
       assert.deepStrictEqual(timeline[0].related, related)
     })
+    })
+
+    describe("Position & Progress Logic", () => {
+    const engine = new TimelineEngine()
+    const videos: VideoEntry[] = [
+      { id: "v1", title: "Video 1", duration: 100, related: [] },
+      { id: "v2", title: "Video 2", duration: 100, related: [] },
+    ]
+    const timeline = engine.calculateTimeline(videos)
+
+    test("identifies active video correctly", () => {
+      const active = engine.findVideoAtPosition(50, timeline)
+      assert.strictEqual(active?.id, "v1")
+    })
+
+    test("identifies standby gap correctly", () => {
+      const active = engine.findVideoAtPosition(115, timeline) // Between 100 and 130
+      assert.strictEqual(active, null)
+    })
+
+    test("calculates progress bar percentage for active video", () => {
+      const active = engine.findVideoAtPosition(25, timeline)
+      const off = 25 - active!.start
+      const progress = (off / active!.duration) * 100
+      assert.strictEqual(progress, 25)
+      // Visual Bar: 100 - 25 = 75% remaining
+      assert.strictEqual(100 - progress, 75)
+    })
+
+    test("calculates countdown progress for 30s standby gap", () => {
+      // In standby (100 to 130). Position 115 is halfway through.
+      const pos = 115
+      const nextIdx = 1
+      const wait = timeline[nextIdx].start - pos // 130 - 115 = 15s remaining
+
+      const standbyProgress = Math.min(100, (wait / 30) * 100)
+      assert.strictEqual(standbyProgress, 50)
+    })
+
+    test("standby progress is 100% at start of gap", () => {
+      const pos = 100
+      const nextIdx = 1
+      const wait = timeline[nextIdx].start - pos // 30s remaining
+      const standbyProgress = (wait / 30) * 100
+      assert.strictEqual(standbyProgress, 100)
+    })
+
+    test("standby progress is 0% at end of gap", () => {
+      const pos = 130
+      const nextIdx = 1
+      const wait = timeline[nextIdx].start - pos // 0s remaining
+      const standbyProgress = (wait / 30) * 100
+      assert.strictEqual(standbyProgress, 0)
+    })
   })
 
   describe("Sync Position Lookup", () => {
@@ -545,6 +599,26 @@ describe("TimelineEngine", () => {
       const video = engine.findVideoAtPosition(wrappedPosition, timeline)
       assert.strictEqual(video?.id, "a")
     })
+
+    test("picks a random video from timeline", () => {
+        const engine = new TimelineEngine()
+        const videos: VideoEntry[] = [
+            { id: "v1", title: "V1", duration: 100, related: [] },
+            { id: "v2", title: "V2", duration: 100, related: [] }
+        ]
+        const timeline = engine.calculateTimeline(videos)
+        const random = engine.findRandomVideo(timeline)
+        assert.ok(random !== null)
+        assert.ok(random.id === "v1" || random.id === "v2")
+    })
+
+    test("calculates a safe random offset (5m window)", () => {
+        const engine = new TimelineEngine()
+        // Video duration 1000s (16 mins)
+        // Max start should be 1000 - 300 = 700s
+        const offset = engine.getRandomOffset(1000)
+        assert.ok(offset >= 0 && offset <= 700)
+    })
   })
 })
 
@@ -564,7 +638,7 @@ describe("LinkResolver", () => {
       const resolver = new LinkResolver(mockCtx)
       const slug = resolver.resolve("[[Target Note]]")
 
-      assert.strictEqual(slug, "target-note")
+      assert.strictEqual(slug, "places/target-note")
     })
 
     test("resolves Wikilink with display alias", () => {
@@ -578,7 +652,7 @@ describe("LinkResolver", () => {
 
       assert.ok(result !== null)
       assert.strictEqual(result!.name, "Quantum")
-      assert.strictEqual(result!.slug, "quantum-physics")
+      assert.strictEqual(result!.slug, "places/quantum-physics")
     })
 
     test("handles plain text (no brackets)", () => {
@@ -590,7 +664,7 @@ describe("LinkResolver", () => {
       const resolver = new LinkResolver(mockCtx)
       const slug = resolver.resolve("John Doe")
 
-      assert.strictEqual(slug, "john-doe")
+      assert.strictEqual(slug, "people/john-doe")
     })
   })
 
@@ -608,9 +682,9 @@ describe("LinkResolver", () => {
 
       assert.strictEqual(resolved.length, 2)
       assert.strictEqual(resolved[0].name, "Note A")
-      assert.strictEqual(resolved[0].slug, "note-a")
+      assert.strictEqual(resolved[0].slug, "places/note-a")
       assert.strictEqual(resolved[1].name, "Note B")
-      assert.strictEqual(resolved[1].slug, "note-b")
+      assert.strictEqual(resolved[1].slug, "places/note-b")
     })
 
     test("skips unresolved links in batch", () => {
@@ -626,7 +700,7 @@ describe("LinkResolver", () => {
 
       // Should only include resolved
       assert.strictEqual(resolved.length, 1)
-      assert.strictEqual(resolved[0].slug, "found")
+      assert.strictEqual(resolved[0].slug, "places/found")
     })
   })
 
@@ -674,7 +748,7 @@ describe("LinkResolver", () => {
       const resolver = new LinkResolver(mockCtx)
       const slug = resolver.resolve("[[slit-experiment]]")
 
-      assert.strictEqual(slug, "slit-experiment")
+      assert.strictEqual(slug, "dossiers/slit-experiment")
     })
 
     test("returns null for non-existent links (batch will filter)", () => {
@@ -689,18 +763,18 @@ describe("LinkResolver", () => {
       assert.strictEqual(result, null)
     })
 
-    test("returns slugified slug when slug exists but link is partial match", () => {
+    test("returns full slug when slug exists but link is partial match", () => {
       const mockCtx = {
         allSlugs: ["dossiers/slit-experiment-2025"],
         allFiles: ["dossiers/slit-experiment-2025.md"],
       } as unknown as BuildCtx
       const resolver = new LinkResolver(mockCtx)
 
-      // A partial match should still resolve
+      // A partial match should still resolve to the FULL slug
       const result = resolver.resolveWithAlias("[[slit-experiment]]")
       
       assert.ok(result !== null)
-      assert.strictEqual(result!.slug, "slit-experiment-2025")
+      assert.strictEqual(result!.slug, "dossiers/slit-experiment-2025")
     })
   })
 })

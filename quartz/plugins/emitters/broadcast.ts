@@ -460,6 +460,27 @@ export class TimelineEngine {
     if (totalDuration === 0) return 0
     return position % totalDuration
   }
+
+  /**
+   * Picks a random video from the timeline for Desync mode
+   */
+  findRandomVideo(timeline: TimelineEntry[]): TimelineEntry | null {
+    if (timeline.length === 0) return null
+    const randomIndex = Math.floor(Math.random() * timeline.length)
+    return timeline[randomIndex]
+  }
+
+  /**
+   * Calculates a safe random offset for a video
+   * Ensures we don't start at the very end of a long video
+   */
+  getRandomOffset(duration: number): number {
+    if (duration <= 0) return 0
+    // Limit play window to 5 mins if video is longer
+    const playWindow = Math.min(duration, 300)
+    const maxStart = duration - playWindow
+    return Math.floor(Math.random() * maxStart)
+  }
 }
 
 // ============================================================================
@@ -490,7 +511,7 @@ export class LinkResolver {
     if (!parsed) return null
 
     const slugifiedTarget = this.slugify(parsed.target)
-    
+
     // Check for exact match in our slug map (which stores full slugs)
     const exactMatch = this.slugMap.get(slugifiedTarget)
     if (exactMatch) {
@@ -669,20 +690,20 @@ export const Broadcast: QuartzEmitterPlugin<Partial<BroadcastEmitterOptions>> = 
         // Get file paths (stored during parsing)
         const aPath = (a as any)._filePath as string | undefined
         const bPath = (b as any)._filePath as string | undefined
-        
+
         if (!aPath || !bPath) {
           // Fallback to title sort
           return a.title.localeCompare(b.title)
         }
-        
+
         try {
           const aStat = fs.statSync(path.join(videoArchiveDir, aPath))
           const bStat = fs.statSync(path.join(videoArchiveDir, bPath))
-          
+
           // Sort by modified DESC (newer first)
           const mtimeDiff = bStat.mtimeMs - aStat.mtimeMs
           if (mtimeDiff !== 0) return mtimeDiff
-          
+
           // If same time, sort by name ASC (alphabetical)
           return a.title.localeCompare(b.title)
         } catch {

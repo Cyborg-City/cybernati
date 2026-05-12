@@ -711,7 +711,7 @@ export function generatePlayerHtml(): string {
     <div class="terminal-header">
       <div class="header-brand">
         <img width="18" height="22" class="terminal-icon" alt="" src="static/cybernati.svg" />
-        <a class="terminal-version" id="terminal-version">CYBERNATI™ Player Beta |</a>
+        <a class="terminal-version" id="terminal-version" target="_blank">CYBERNATI™ Player Beta |</a>
       </div>
       <div id="video-title" class="video-title">INITIALIZING...</div>
     </div>

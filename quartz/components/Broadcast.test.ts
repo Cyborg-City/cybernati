@@ -199,11 +199,11 @@ describe("Broadcast.tsx Structural Integrity", () => {
       assert.strictEqual(startsCollapsed, true, "footer-collapsible must start with collapsed class")
     })
 
-    test("fold button toggles collapsible and swaps arrow", () => {
+    test("fold button toggles collapsible and swaps arrow SVG", () => {
       const hasToggle = /collapsible\.classList\.toggle\('collapsed'\)/.test(source)
       assert.strictEqual(hasToggle, true, "fold button must toggle 'collapsed' class")
-      const hasArrowSwap = /foldBtn\.innerHTML\s*=\s*collapsible\.classList\.contains\('collapsed'\)\s*\?\s*'\[▼\]'\s*:\s*'\[▲\]'/.test(source)
-      assert.strictEqual(hasArrowSwap, true, "fold button must swap [▼]/[▲] arrow")
+      const hasArrowSwap = /arrow\.innerHTML\s*=\s*isCollapsed/.test(source)
+      assert.strictEqual(hasArrowSwap, true, "fold button must swap arrow-down/arrow-up SVG")
     })
 
     test("sync-progress bar exists", () => {

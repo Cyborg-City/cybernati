@@ -59,7 +59,9 @@ export default (() => {
             </div>
             
             {/* Row 2: Fold toggle */}
-            <button id="footer-fold" class="footer-fold">[▼]</button>
+            <button id="footer-fold" class="footer-fold">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+            </button>
             
             {/* Row 3-5: Collapsible — Related + Embed */}
             <div id="footer-collapsible" class="footer-collapsible collapsed">
@@ -202,7 +204,13 @@ export default (() => {
                         if (foldBtn && collapsible) {
                             foldBtn.onclick = () => {
                                 collapsible.classList.toggle('collapsed');
-                                foldBtn.innerHTML = collapsible.classList.contains('collapsed') ? '[▼]' : '[▲]';
+                                const arrow = foldBtn.querySelector('svg');
+                                if (arrow) {
+                                    const isCollapsed = collapsible.classList.contains('collapsed');
+                                    arrow.innerHTML = isCollapsed
+                                        ? '<line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline>'
+                                        : '<line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline>';
+                                }
                             };
                         }
 
@@ -431,7 +439,7 @@ export default (() => {
   .footer-top-row { display: flex; justify-content: space-between; align-items: center; width: 100%; }
   .next-section { display: flex; align-items: center; gap: 0.4rem; }
   .top-controls { display: flex; align-items: center; gap: 0.8rem; }
-  .footer-fold { width: 100%; text-align: center; background: transparent; border: none; color: #060; cursor: pointer; padding: 0.2rem; font-family: 'IBM Plex Mono', monospace !important; font-size: 0.7rem; border-top: 1px solid #111; border-bottom: 1px solid #111; }
+  .footer-fold { width: 100%; text-align: center; background: transparent; border: none; color: #060; cursor: pointer; padding: 0.6rem; font-family: 'IBM Plex Mono', monospace !important; font-size: 0.7rem; border-top: 1px solid #111; border-bottom: 1px solid #111; display: flex; align-items: center; justify-content: center; }
   .footer-fold:hover { color: #0f0; }
   .footer-collapsible { overflow: hidden; transition: max-height 0.3s ease, opacity 0.3s ease; max-height: 500px; opacity: 1; }
   .footer-collapsible.collapsed { max-height: 0; opacity: 0; }

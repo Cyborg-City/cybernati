@@ -1,6 +1,6 @@
 ---
 created: 2026-05-12T04:35:23-05:00
-modified: 2026-05-12T05:28:44-05:00
+modified: 2026-05-12T17:58:57-05:00
 ---
 - [x] Cybernati player is not playing interstitials correctly. it plays all of them and not fully. it only plays a peice of the video and plays all 3. it should choose 1 at random and play it on a loop until the 30 seconds are up.
 

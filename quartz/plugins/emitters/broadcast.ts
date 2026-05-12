@@ -644,6 +644,7 @@ export function generatePlayerHtml(): string {
     .terminal-footer { display: flex; flex-direction: column; margin-top: auto; padding-top: 0.5rem; color: #0f0; font-size: 0.8rem; gap: 0.4rem; position: relative; }
     .footer-top-row { display: flex; justify-content: space-between; align-items: center; width: 100%; }
     .next-section { display: flex; align-items: center; gap: 0.4rem; }
+    .next-section .label { color: #fff; font-weight: bold; text-transform: uppercase; font-size: 0.7rem; font-family: 'IBM Plex Mono', monospace !important; }
     .top-controls { display: flex; align-items: center; gap: 0.8rem; }
     .footer-fold { width: 100%; text-align: center; background: transparent; border: none; color: #060; cursor: pointer; padding: 0.3rem; font-family: 'IBM Plex Mono', monospace !important; font-size: 0.7rem; border-top: 1px solid #111; border-bottom: 1px solid #111; display: flex; align-items: center; justify-content: center; gap: 0.5rem; }
     .footer-fold:hover { color: #0f0; }
@@ -659,7 +660,7 @@ export function generatePlayerHtml(): string {
       font-size: 0.75rem; transition: all 0.1s ease; line-height: 1;
     }
     .vault-link:hover { background: #0f0; color: #000; }
-    .next-title { color: #0f0; font-weight: bold; font-family: system-ui, sans-serif; }
+    .next-title { color: #0f0; font-weight: bold; font-family: system-ui, sans-serif; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px; }
     .mute-btn { background: transparent; border: none; color: #060; cursor: pointer; padding: 2px; display: flex; align-items: center; }
     .mute-btn:hover { color: #0f0; }
     .mute-btn.muted { color: #0f0; animation: blink 1s infinite; }

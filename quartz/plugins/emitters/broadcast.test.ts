@@ -895,6 +895,24 @@ describe("Player Page Generator", () => {
     assert.ok(html.includes('name="viewport"'), "must have viewport meta")
   })
 
+  test("Next label is white (#fff) in next-section", () => {
+    const html = generatePlayerHtml()
+
+    // The "Next:" label must be white, not green (inherited from terminal-footer)
+    const hasWhiteLabel = /\.next-section\s+\.label\s*\{[^}]*color:\s*#fff/.test(html)
+    assert.strictEqual(hasWhiteLabel, true, ".next-section .label must be white (#fff)")
+  })
+
+  test("next-title has truncation CSS (nowrap + ellipsis)", () => {
+    const html = generatePlayerHtml()
+
+    const hasNoWrap = /\.next-title\s*\{[^}]*white-space:\s*nowrap/.test(html)
+    assert.strictEqual(hasNoWrap, true, ".next-title must have white-space: nowrap")
+
+    const hasEllipsis = /\.next-title\s*\{[^}]*text-overflow:\s*ellipsis/.test(html)
+    assert.strictEqual(hasEllipsis, true, ".next-title must have text-overflow: ellipsis")
+  })
+
   test("player page has black body background for embedding", () => {
     const html = generatePlayerHtml()
 

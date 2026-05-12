@@ -16,6 +16,7 @@ export const sharedPageComponents: SharedLayout = {
       GitHub: "https://github.com/Cyborg-City",
       Discord: "https://discord.com/invite/cyborgcity",
       "RSS Feed": "https://cyborg-city.github.io/Cybernati/index.xml",
+      "Site Map": "https://cyborg-city.github.io/Cybernati/sitemap.xml",
     },
   }),
 }

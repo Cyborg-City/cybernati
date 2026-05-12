@@ -8,8 +8,18 @@ created: 2026-05-11
 description: "🔴  Support the channel and get exclusive content: https://www.patreon.com/MeridianLabsYou were taught the double slit experiment has two layers. Light is a ..."
 tags:
   - clippings
-modified: 2026-05-11T00:52:37-05:00
+modified: 2026-05-12T00:06:57-05:00
 duration: 7030
+related:
+  - "[[DOS-0002-slit-experiment]]"
+  - "[[PER-0002-thomas-young]]"
+  - "[[PER-0003-albert-einstein]]"
+  - "[[PER-0004-niels-bohr]]"
+  - "[[EVT-0002-young-double-slit-1801]]"
+  - "[[EVT-0003-einstein-bohr-debate-1927]]"
+  - "[[EVT-0005-steinberg-negative-time]]"
+  - "[[PER-0005-aephraim-steinberg]]"
+  - "[[EVT-0004-mit-2025-complementarity]]"
 ---
 ![](https://www.youtube.com/watch?v=HNgbTWHMqKE)
 

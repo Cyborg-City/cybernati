@@ -8,8 +8,18 @@ created: 2026-05-11
 description: "🔴  Support the channel and get exclusive content: https://www.patreon.com/MeridianLabsYou were taught that observation collapses the wave function. That whe..."
 tags:
   - clippings
-modified: 2026-05-11T00:51:14-05:00
+modified: 2026-05-12T00:08:01-05:00
 duration: 8627
+related:
+  - "[[DOS-0002-slit-experiment]]"
+  - "[[EVT-0002-young-double-slit-1801]]"
+  - "[[EVT-0003-einstein-bohr-debate-1927]]"
+  - "[[EVT-0004-mit-2025-complementarity]]"
+  - "[[EVT-0005-steinberg-negative-time]]"
+  - "[[PER-0002-thomas-young]]"
+  - "[[PER-0003-albert-einstein]]"
+  - "[[PER-0004-niels-bohr]]"
+  - "[[PER-0005-aephraim-steinberg]]"
 ---
 ![](https://www.youtube.com/watch?v=PBZwDwQPzfY)
 

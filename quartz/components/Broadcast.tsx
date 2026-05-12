@@ -239,7 +239,11 @@ export default (() => {
                         };
 
                         const embedBtn = document.getElementById('embed-trigger');
-                        if (embedBtn) embedBtn.onclick = () => { document.getElementById('embed-modal').style.display = 'flex'; };
+                        if (embedBtn) embedBtn.onclick = () => {
+                            const embedCode = '<iframe src="' + self.basePath + '" width="100%" height="400" frameborder="0" allowfullscreen></iframe>';
+                            document.getElementById('embed-code').value = embedCode;
+                            document.getElementById('embed-modal').style.display = 'flex';
+                        };
                         const closeEmbed = document.getElementById('close-embed-btn');
                         if (closeEmbed) closeEmbed.onclick = () => { document.getElementById('embed-modal').style.display = 'none'; };
                     },
@@ -472,7 +476,7 @@ export default (() => {
   .modal-content { background: #050505; border: 1px solid #0f0; padding: 1.5rem; width: 90%; max-width: 500px; color: #0f0; box-shadow: 0 0 40px rgba(0,255,0,0.2); box-sizing: border-box; }
   .modal-header { font-size: 0.7rem; margin-bottom: 0.5rem; border-bottom: 1px solid #040; }
   #embed-code { width: 100%; height: 80px; background: #000; color: #0c0; border: 1px solid #040; font-family: inherit; font-size: 0.6rem; padding: 0.5rem; margin-bottom: 1rem; resize: none; }
-  .handshake-btn { background: transparent; border: 1px solid #0f0; color: #0f0; padding: 0.4rem 1rem; cursor: pointer; font-family: inherit; font-size: 0.7rem; text-transform: uppercase; }
+  .handshake-btn { background: #111; border: 1px solid #fff; color: #fff; padding: 6px 16px 4px 16px; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; font-family: inherit; font-size: 0.75rem; border-radius: 4px; line-height: 1; text-transform: uppercase; }
   .handshake-btn:hover { background: #0f0; color: #000; }
 
   .signal-initializing { height: 100%; display: flex; align-items: center; justify-content: center; background: #000; color: #0f0; }

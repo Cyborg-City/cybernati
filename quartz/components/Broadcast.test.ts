@@ -240,12 +240,16 @@ describe("Broadcast.tsx Structural Integrity", () => {
       assert.ok(matches && matches.length >= 2, "volume slider oninput must also toggle 'muted' class")
     })
 
-    test("embed-trigger uses desync-action-btn class", () => {
-      const hasEmbedTrigger = /id="embed-trigger"/.test(source)
-      assert.strictEqual(hasEmbedTrigger, true, "embed-trigger button missing")
+    test("embed-trigger populates embed-code textarea on click", () => {
+      const hasPopulate = /document\.getElementById\('embed-code'\)\.value\s*=\s*embedCode/.test(source)
+      assert.strictEqual(hasPopulate, true, "embed trigger must populate embed-code textarea with iframe HTML")
+    })
 
-      const usesCorrectClass = /id="embed-trigger"[^>]*class="desync-action-btn"/.test(source)
-      assert.strictEqual(usesCorrectClass, true, "embed-trigger must use desync-action-btn class")
+    test("handshake-btn shares desync-action-btn styling", () => {
+      const hasBg = /\.handshake-btn\s*\{[^}]*background:\s*#111/.test(source)
+      assert.strictEqual(hasBg, true, ".handshake-btn must have #111 background")
+      const hasBorder = /\.handshake-btn\s*\{[^}]*border:\s*1px\s+solid\s+#fff/.test(source)
+      assert.strictEqual(hasBorder, true, ".handshake-btn must have white border")
     })
   })
 })

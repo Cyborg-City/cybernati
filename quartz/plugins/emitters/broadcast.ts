@@ -891,6 +891,7 @@ export function generatePlayerHtml(): string {
             };
           }
 
+          const desyncBtn = document.getElementById('desync-btn');
           const root = document.getElementById('broadcast-root');
           if (desyncBtn) desyncBtn.onclick = () => {
             self.isDesynced = !self.isDesynced;

@@ -911,6 +911,9 @@ describe("Player Page Generator", () => {
 
     const hasEllipsis = /\.next-title\s*\{[^}]*text-overflow:\s*ellipsis/.test(html)
     assert.strictEqual(hasEllipsis, true, ".next-title must have text-overflow: ellipsis")
+
+    const hasMaxWidth = /\.next-title\s*\{[^}]*max-width/.test(html)
+    assert.strictEqual(hasMaxWidth, true, ".next-title must have max-width for truncation")
   })
 
   test("player page has black body background for embedding", () => {

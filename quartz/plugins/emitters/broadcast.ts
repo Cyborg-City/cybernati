@@ -660,7 +660,7 @@ export function generatePlayerHtml(): string {
       font-size: 0.75rem; transition: all 0.1s ease; line-height: 1;
     }
     .vault-link:hover { background: #0f0; color: #000; }
-    .next-title { color: #0f0; font-weight: bold; font-family: system-ui, sans-serif; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px; }
+    .next-title { color: #0f0; font-weight: bold; font-family: system-ui, sans-serif; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 320px; }
     .mute-btn { background: transparent; border: none; color: #060; cursor: pointer; padding: 2px; display: flex; align-items: center; }
     .mute-btn:hover { color: #0f0; }
     .mute-btn.muted { color: #0f0; animation: blink 1s infinite; }

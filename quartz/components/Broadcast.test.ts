@@ -240,12 +240,39 @@ describe("Broadcast.tsx Structural Integrity", () => {
       assert.ok(matches && matches.length >= 2, "volume slider oninput must also toggle 'muted' class")
     })
 
+    test("embed-trigger uses window.location.href (not basePath) for iframe src", () => {
+      // Why: self.basePath is just '/Cybernati/' — an iframe needs a full URL.
+      // window.location.href gives the exact page the user is viewing.
+      const usesHref = /window\.location\.href/.test(source)
+      assert.strictEqual(usesHref, true, "embed trigger must use window.location.href for iframe src")
+
+      const notBasePath = /embedCode\s*=\s*'<iframe[^>]*src="'\s*\+\s*self\.basePath/.test(source)
+      assert.strictEqual(notBasePath, false, "embed trigger must NOT use self.basePath — it's not a full URL")
+    })
+
     test("embed-trigger populates embed-code textarea on click", () => {
+      // Why: The textarea starts empty. Clicking embed-trigger must fill it
+      // with valid iframe HTML before showing the modal.
       const hasPopulate = /document\.getElementById\('embed-code'\)\.value\s*=\s*embedCode/.test(source)
       assert.strictEqual(hasPopulate, true, "embed trigger must populate embed-code textarea with iframe HTML")
     })
 
+    test("copy-embed-btn has onclick handler with clipboard API", () => {
+      // Why: Users expect the COPY_CODE button to actually copy.
+      // Modern browsers have navigator.clipboard; we also provide a fallback.
+      const hasCopyHandler = /copyEmbedBtn\.onclick/.test(source)
+      assert.strictEqual(hasCopyHandler, true, "copy-embed-btn must have an onclick handler")
+
+      const usesClipboardAPI = /navigator\.clipboard\.writeText/.test(source)
+      assert.strictEqual(usesClipboardAPI, true, "copy handler must use navigator.clipboard.writeText")
+
+      const hasFallback = /document\.execCommand\('copy'\)/.test(source)
+      assert.strictEqual(hasFallback, true, "copy handler must have execCommand fallback for older browsers")
+    })
+
     test("handshake-btn shares desync-action-btn styling", () => {
+      // Why: Modal buttons (COPY_CODE, CLOSE) should look identical to
+      // DESYNC and EMBED_SIGNAL for visual consistency.
       const hasBg = /\.handshake-btn\s*\{[^}]*background:\s*#111/.test(source)
       assert.strictEqual(hasBg, true, ".handshake-btn must have #111 background")
       const hasBorder = /\.handshake-btn\s*\{[^}]*border:\s*1px\s+solid\s+#fff/.test(source)

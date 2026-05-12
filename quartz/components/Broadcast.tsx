@@ -240,9 +240,25 @@ export default (() => {
 
                         const embedBtn = document.getElementById('embed-trigger');
                         if (embedBtn) embedBtn.onclick = () => {
-                            const embedCode = '<iframe src="' + self.basePath + '" width="100%" height="400" frameborder="0" allowfullscreen></iframe>';
+                            // Use the current page URL so embedders get exactly what they see.
+                            // self.basePath is just '/Cybernati/' — not enough for an iframe src.
+                            const pageUrl = window.location.href;
+                            const embedCode = '<iframe src="' + pageUrl + '" width="100%" height="400" frameborder="0" allowfullscreen style="border:none;"></iframe>';
                             document.getElementById('embed-code').value = embedCode;
                             document.getElementById('embed-modal').style.display = 'flex';
+                        };
+                        const copyEmbedBtn = document.getElementById('copy-embed-btn');
+                        if (copyEmbedBtn) copyEmbedBtn.onclick = () => {
+                            const textarea = document.getElementById('embed-code');
+                            if (textarea && textarea.value) {
+                                if (navigator.clipboard && navigator.clipboard.writeText) {
+                                    navigator.clipboard.writeText(textarea.value);
+                                } else {
+                                    // Fallback for browsers without clipboard API
+                                    textarea.select();
+                                    document.execCommand('copy');
+                                }
+                            }
                         };
                         const closeEmbed = document.getElementById('close-embed-btn');
                         if (closeEmbed) closeEmbed.onclick = () => { document.getElementById('embed-modal').style.display = 'none'; };

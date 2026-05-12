@@ -822,7 +822,7 @@ export function generatePlayerHtml(): string {
           const versionLink = document.getElementById('terminal-version');
           if (versionLink) {
             versionLink.href = self.basePath;
-            versionLink.target = '_blank';
+            versionLink.target = '_top';
             versionLink.rel = 'noopener noreferrer';
           }
 

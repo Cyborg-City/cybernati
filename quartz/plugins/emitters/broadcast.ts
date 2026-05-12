@@ -1021,6 +1021,12 @@ export function generatePlayerHtml(): string {
         findRandomVideo: function(timeline) {
           if (timeline.length === 0) return null;
           return timeline[Math.floor(Math.random() * timeline.length)];
+        },
+
+        truncateWords: function(text, maxWords) {
+          const words = text.split(/\s+/);
+          if (words.length <= maxWords) return text;
+          return words.slice(0, maxWords).join(' ') + '...';
         }
       };
 

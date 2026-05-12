@@ -349,9 +349,14 @@ export default (() => {
                         const mount = document.getElementById('player-mount');
                         if (!mount) return;
                         
+                        const intFile = this.basePath + interstitials[Math.floor(Date.now() / 10000) % interstitials.length].replace(/^\\//, '');
+                        
+                        // Only recreate if interstitial changed or no video exists
+                        const existing = mount.querySelector('video');
+                        if (existing && existing.getAttribute('src') === intFile) return;
+                        
                         if (this.player && this.player.destroy) { this.player.destroy(); this.player = null; this.currentVideoId = null; }
                         
-                        const intFile = this.basePath + interstitials[Math.floor(Date.now() / 10000) % interstitials.length].replace(/^\\//, '');
                         mount.innerHTML = '<video src="' + intFile + '" autoplay muted loop style="width:100%; height:100%; background:black; object-fit: cover;"></video>';
                     }
                 };

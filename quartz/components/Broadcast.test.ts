@@ -155,6 +155,14 @@ describe("Broadcast.tsx Structural Integrity", () => {
       assert.strictEqual(hasColumn, true, ".terminal-header must use flex-direction: column")
     })
 
+    test("mountStandby checks existing video src before recreating", () => {
+      const hasExistingCheck = /const\s+existing\s*=\s*mount\.querySelector\('video'\)/.test(source)
+      assert.strictEqual(hasExistingCheck, true, "mountStandby must check existing video element")
+
+      const hasSrcGuard = /if\s*\(\s*existing\s*&&\s*existing\.getAttribute\('src'\)\s*===\s*intFile\s*\)\s*return/.test(source)
+      assert.strictEqual(hasSrcGuard, true, "mountStandby must return early if same interstitial is already playing")
+    })
+
     test("sync-progress bar exists", () => {
       const hasProgressBar = /id="sync-progress"/.test(source)
       assert.strictEqual(hasProgressBar, true, "sync-progress bar missing")

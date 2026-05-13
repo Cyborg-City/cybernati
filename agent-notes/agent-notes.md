@@ -4,7 +4,7 @@
 
 ## Backlog
 
-*Nothing in backlog.*
+- **Kenneth Arnold Sequence**: Forensic extraction of Mt. Rainier sighting (1947). Staging area created at `Clippings/INGEST-20260512-Kenneth-Arnold/findings.md`.
 
 ---
 
@@ -48,3 +48,4 @@
 - The Quartz dev server question (2026-05-11) — user resolved it themselves. I was unfamiliar with the Quartz CLI flags. Different static site generators have different dev commands.
   - **User-corrected**: The correct Quartz dev server command is **`npx quartz build --serve`**. Do not use `npx quartz dev` — it is not a valid Quartz CLI command.
   - **Internet Archive CLI**: The `ia` tool on Windows requires `pip install internetarchive`. Authentication is managed via `ia configure`, which creates a config file in `%USERPROFILE%\.ia`. All AI-driven requests must use a custom User-Agent suffix to comply with IA's bot policy.
+  - **Signal Discovery**: IA is a superior source for raw historical signals (e.g., Kenneth Arnold 1947 interview) that have been scrubbed or smoothed over by modern platforms. Direct metadata queries (`ia metadata <id>`) provide deep context on curation and provenance.

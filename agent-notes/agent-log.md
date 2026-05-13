@@ -170,3 +170,21 @@
   - scripts/generate-playlist.mjs - already deleted (Phase 1)
   - quartz/static/video_playlist.json - already deleted (Phase 2)
 - **Status**: COMPLETE - Pure native Quartz implementation
+
+## [2026-05-12] Kenneth Arnold Ingestion
+- **Source**: Clippings/kenneth arnold/ (Wikipedia, Think Anomalous, IA).
+- **Entities Extracted**:
+  - PER-0006: Kenneth Arnold
+  - EVT-0006: Mt. Rainier Sighting (1947)
+  - EVT-0007: Maury Island Incident
+  - PAT-0002: Space Animal Hypothesis
+  - ORG-0002: Air Material Command
+  - ORG-0003: Project Sign
+- **Status**: /ingest COMPLETE. Staged in Clippings/INGEST-20260512-Kenneth-Arnold/.
+
+## [2026-05-12] Phenomena Layer Initialization
+- **Action**: Created content/Phenomena/ directory.
+- **Entry Created**: PHE-0001: Jellyfish UAP.
+- **Link Logic**: Connected [[PAT-0002]] (Space Animal Hypothesis) to [[PHE-0001]].
+- **Status**: Structural foundation for anomaly cataloging established.
+  - ORG-0004: AARO (Modern Redaction Root)

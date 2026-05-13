@@ -29,7 +29,8 @@
 
 ### System Configuration
 
-- **2026-05-11**: User added "Agent Notes Protocol" to GEMINI.md — mandates pro-active reading/updating of `agent-notes/agent-notes.md` with Backlog, Doing, Done, and Thoughts & Learnings sections. Note: I previously confused `agent-log.md` with `agent-notes.md`. These are two separate files. The log tracks lifecycle sequences. The note file tracks tactical state.
+- **2026-05-11**: User added "Agent Notes Protocol" to GEMINI.md — mandates pro-active reading/updating of `agent-notes/agent-notes.md` with Backlog, Doing, Done, and Thoughts & Learnings sections.
+- **2026-05-12**: Integrated Internet Archive (IA) CLI. Installed `internetarchive` v5.8.0. Created `internet-archive` skill in both `.gemini/SKILLS/` and `.pi/SKILLS/`. Established mandatory User-Agent protocol for archival operations. Awaiting user `ia configure` for authentication.
 
 ### Roanoke Sequence (Prior Session)
 
@@ -46,3 +47,4 @@
 - Quantum mechanics flavor angle: "lazy rendering" and "measurement as compile step" are strong metaphors. The user responded well to this framing.
 - The Quartz dev server question (2026-05-11) — user resolved it themselves. I was unfamiliar with the Quartz CLI flags. Different static site generators have different dev commands.
   - **User-corrected**: The correct Quartz dev server command is **`npx quartz build --serve`**. Do not use `npx quartz dev` — it is not a valid Quartz CLI command.
+  - **Internet Archive CLI**: The `ia` tool on Windows requires `pip install internetarchive`. Authentication is managed via `ia configure`, which creates a config file in `%USERPROFILE%\.ia`. All AI-driven requests must use a custom User-Agent suffix to comply with IA's bot policy.

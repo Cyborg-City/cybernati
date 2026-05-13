@@ -43,6 +43,8 @@ It is a primary tactical requirement that our activities—and the objectives of
 
 As long as the public and rival agencies are occupied with debating the "mystery" of an event (e.g., the ||ROANOKE|| occurrence), the actual objectives of the plan proceed without friction. Chaos is not a lack of order; it is a higher level of order that has been ||MASKED|| to ensure the success of the underlying directive.
 
+Use the [[CH-0000|CYBERNATI™ Player BETA]] to traverse archived intelligence, monitor signal drift, and identify cross-referenced entities within the vault.
+
 ### III. SUCCESS CRITERIA
 Success is defined by the absolute invisibility of the plan’s objective. If the plan succeeds while the external narrative remains fragmented and chaotic, the System is performing as intended.
 

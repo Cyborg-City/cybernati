@@ -1,10 +1,19 @@
 @use "./base.scss";
 
+// Load fallback font
+@import url('https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&display=swap');
+
 // put your custom CSS here!
 
 body {
   // Add a subtle paper texture if you want, but for now just clean
   -webkit-font-smoothing: antialiased;
+  font-family: 'Courier Prime', 'Newsreader', serif;
+}
+
+// Ensure paragraphs and lists specifically use the body font
+p, li, blockquote, table {
+  font-family: 'Courier Prime', 'Newsreader', serif;
 }
 
 // Redacted text styling

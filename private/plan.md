@@ -1,14 +1,15 @@
 ---
 created: 2026-05-12T04:35:23-05:00
-modified: 2026-05-12T17:58:57-05:00
+modified: 2026-05-13T22:44:14-05:00
 ---
-- [x] Cybernati player is not playing interstitials correctly. it plays all of them and not fully. it only plays a peice of the video and plays all 3. it should choose 1 at random and play it on a loop until the 30 seconds are up.
+- [ ] add PIP to the cybernati player
+- [ ] add disclaimer link to the footer of the site.
 
 
 Internet Archive is the best long term storage for video and large files. this can also be a good way to back up links in the vault... maybe.
 
 # Internet Archive LLM Skill. uses CLI
-- [ ] 
+- [x] 
 ```cardlink
 url: https://github.com/internetarchive/internet-archive-skills
 title: "GitHub - internetarchive/internet-archive-skills: Claude Code skill for uploading to, downloading from, and searching the Internet Archive (archive.org)"

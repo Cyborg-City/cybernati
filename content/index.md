@@ -2,7 +2,7 @@
 title: Cybernati Vault
 draft: false
 description: Classified Conspiracy Archive & Database. LEVEL 4 ACCESS REQUIRED.
-modified: 2026-05-12T19:33:07-05:00
+modified: 2026-05-13T21:00:39-05:00
 ---
 <iframe src="./player.html" width="100%" height="500" frameborder="0" allowfullscreen style="border:none;"></iframe>
 
@@ -21,3 +21,7 @@ The archive expands continuously.
 The pattern is still forming.
 
 Search carefully.
+
+
+> [!DISCLAIMER] Disclaimer
+> "The appearance of U.S. Department of Defense (DoD) visual information does not imply or constitute DoD endorsement."

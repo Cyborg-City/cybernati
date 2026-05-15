@@ -1,6 +1,6 @@
 ---
 created: 2026-05-14T09:00:35-05:00
-modified: 2026-05-14T10:27:06-05:00
+modified: 2026-05-14T20:39:50-05:00
 ---
 things i want to capture:
 
@@ -12,3 +12,7 @@ things i want to capture:
 	- https://www.youtube.com/watch?v=j2KKUcxAdjc
 3. Scientology
 	1. https://www.youtube.com/watch?v=GgZyjR2SOuE&pp=ygUZc2NpZW50b2xvZ3kgdGFrZSBvdmVyIGZiaQ%3D%3D
+
+
+
+

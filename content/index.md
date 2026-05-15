@@ -14,11 +14,15 @@ The vault contains fragmented intelligence gathered from broadcasts, documents, 
 
 Use the [[CH-0000|CYBERNATI™ Player BETA]] to scan both the archive and the wider internet for emerging patterns and hidden relationships.
 
-Every file connects to another.  
+Every file connects to another.
 Every signal leaves residue.
 
-The archive expands continuously.  
-The pattern is still forming.
+### Active Dossiers
+- [[DOS-0003-arnold-case|The 1947 Kenneth Arnold UFO Sighting & The Birth of the UFO Era]]
+- [[DOS-0002-slit-experiment|The Slit Experiment: Reality Rendering Anomaly]]
+- [[DOS-0001-roanoke-de-indexing|Roanoke: Systemic De-indexing & Administrative Erasure]]
+
+The archive expands continuously.The pattern is still forming.
 
 Search carefully.
 

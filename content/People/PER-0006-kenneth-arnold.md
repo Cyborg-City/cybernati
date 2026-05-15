@@ -1,4 +1,4 @@
-﻿---
+---
 title: Kenneth Arnold
 aliases:
   - Ken Arnold
@@ -15,7 +15,7 @@ confidence: absolute
 mechanism: aviation
 primary_beneficiary: public-mythology
 created: 2026-05-12
-modified: 2026-05-14T18:40:34-05:00
+modified: 2026-05-15T00:45:51-05:00
 narrative_volatility: moderate
 source_provenance: 1947 sighting testimony; Wikipedia; The Coming of the Saucers (1952)
 description: American aviator and businessman whose 1947 sighting near Mt. Rainier triggered the modern UFO era and popularized the term 'flying saucer'.
@@ -37,6 +37,11 @@ In his later years, Arnold diverged from the mainstream "extraterrestrial craft"
 
 ## Strategic Anomaly
 Arnold's family reported significant government intimidation following his investigation into the [[EVT-0007-maury-island-incident]]. His daughter, Kim Arnold, claimed the family felt "threatened for the rest of their lives" by government operatives.
+
+<video controls="">
+<source src="https://archive.org/download/youtube-E0D8eAm8h2Y/E0D8eAm8h2Y.webm" type="video/mp4">
+<source src="[https://archive.org/download/youtube-E0D8eAm8h2Y/E0D8eAm8h2Y.webm](https://archive.org/download/youtube-E0D8eAm8h2Y/E0D8eAm8h2Y.mp4)" type="video/mp4">
+</video>
 
 ## Citations & Sources
 - [Wikipedia: Kenneth Arnold](https://en.wikipedia.org/wiki/Kenneth_Arnold)

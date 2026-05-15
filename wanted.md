@@ -1,6 +1,6 @@
 ---
 created: 2026-05-14T09:00:35-05:00
-modified: 2026-05-14T20:39:50-05:00
+modified: 2026-05-14T21:01:49-05:00
 ---
 things i want to capture:
 

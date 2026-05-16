@@ -79,6 +79,23 @@ The delayed-choice quantum eraser is pop physics' most enduring myth: Bob measur
 
 **2026 (April)** — Curt Jaimungal interviews Steinberg on Theories of Everything. Discusses negative time, weak measurements, and unresolved interpretational questions.
 
+```mermaid
+timeline TD
+    title The Double Slit: Full Chronology
+    section Wave Theory
+        1801 : Young's Experiment : Light as Wave
+    section Quantum Foundations
+        1927 : Solvay Conference : Wave-Particle Duality Debated
+        1999 : Kim et al. : Quantum Eraser Demonstrated
+    section Modern Anomalies
+        2010 : U of T Experiment : Negative Time Measured
+        2024 : Nature Physics : "Time" Double Slit Achievement
+    section Systemic Synthesis
+        2025 : MIT Experiment : Single Photon Complementarity
+             : The "Clerk" Assessment : Measurement as Compile Step
+             : Cybernati Protocol : Observability Mandate Enacted
+```
+
 ## HOW — The Mechanism Beneath
 
 Imagine the universe as a render engine in a video game. While your back is turned, the world is not drawn leaf-by-leaf. It exists as probabilities — a wavefunction, a superposition of all possible states. Only when you turn around — when you *measure* — does the engine commit to a single frame.

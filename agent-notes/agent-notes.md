@@ -33,8 +33,8 @@
 
 ### System Configuration
 
-- **2026-05-11**: User added "Agent Notes Protocol" to GEMINI.md — mandates pro-active reading/updating of `agent-notes/agent-notes.md` with Backlog, Doing, Done, and Thoughts & Learnings sections.
-- **2026-05-12**: Integrated Internet Archive (IA) CLI. Installed `internetarchive` v5.8.0. Created `internet-archive` skill in both `.gemini/SKILLS/` and `.pi/SKILLS/`. Established mandatory User-Agent protocol for archival operations. Awaiting user `ia configure` for authentication.
+- **2026-05-15**: Integrated Internet Archive (IA) CLI and established operator-specific User-Agent protocol.
+- **2026-05-15**: Created `mermaid-timeline-diagram` skill in `.gemini/SKILLS/`. Established mandatory interaction protocol for direction and style preferences.
 
 ### Roanoke Sequence (Prior Session)
 

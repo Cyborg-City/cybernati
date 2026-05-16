@@ -1,4 +1,4 @@
-﻿---
+---
 title: Air Material Command
 aliases:
   - AMC

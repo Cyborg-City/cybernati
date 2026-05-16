@@ -15,7 +15,7 @@ confidence: confirmed
 mechanism: bureaucratic-redaction
 primary_beneficiary: national-security-state
 created: 2026-05-12
-modified: 2026-05-14
+modified: 2026-05-15T10:17:11-05:00
 ---
 
 # AARO (All-domain Anomaly Resolution Office)
@@ -27,6 +27,9 @@ In early 2024, AARO released a historical review of UAP sightings since 1945. Th
 
 ## Strategic Observations
 Critics argue that AARO serves as a modern extension of the "Project Grudge" philosophy, focusing on debunking rather than investigation to maintain institutional secrecy.
+
+## LAW:
+[50 USC 3373: Establishment of All-domain Anomaly Resolution Office](https://web.archive.org/web/20260515150506/https://uscode.house.gov/view.xhtml?hl=false&edition=prelim&req=granuleid%3AUSC-prelim-title50-section3373&num=0&saved=%7CZ3JhbnVsZWlkOlVTQy1wcmVsaW0tdGl0bGU1MC1zZWN0aW9uMzM3Mw%3D%3D%7C%7C%7C0%7Cfalse%7Cprelim)
 
 ## Citations & Sources
 - [AARO Official Website](https://www.aaro.mil/)

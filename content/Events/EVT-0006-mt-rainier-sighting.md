@@ -1,4 +1,4 @@
-﻿---
+---
 title: Mt. Rainier Sighting
 aliases:
   - The Arnold Sighting
@@ -15,7 +15,7 @@ confidence: confirmed
 mechanism: visual-observation
 primary_beneficiary: public-consciousness
 created: 2026-05-12
-modified: 2026-05-14T18:39:13-05:00
+modified: 2026-05-15T22:41:03-05:00
 narrative_volatility: low
 source_provenance: Pilot Kenneth Arnold testimony
 description: Foundational 1947 sighting of nine high-speed, delta-shaped objects by pilot Kenneth Arnold, leading to the coining of the term 'flying saucer'.
@@ -37,7 +37,7 @@ The U.S. Army Air Forces (now USAF) originally attributed the sighting to a "viv
 
 ## Media Reports
 
-â€œThe Case for the Flying Saucersâ€ was a landmark CBS radio documentary that aired on April 7, 1950. Hosted by Edward R. Murrow, the 30-minute program explored the growing fascination with UFO sightings through interviews with figures such as [[PER-0006-kenneth-arnold|Kenneth Arnold]] and astronomer Donald Menzel. Set against the tense backdrop of the Cold War, the broadcast examined both eyewitness accounts and skeptical explanations surrounding the â€œflying saucerâ€ phenomenon.
+**The Case for the Flying Saucers** was a landmark CBS radio documentary that aired on April 7, 1950. Hosted by Edward R. Murrow, the 30-minute program explored the growing fascination with UFO sightings through interviews with figures such as [[PER-0006-kenneth-arnold|Kenneth Arnold]] and astronomer Donald Menzel. Set against the tense backdrop of the Cold War, the broadcast examined both eyewitness accounts and skeptical explanations surrounding the flying saucerphenomenon.
 
 ![[a0a49dde18125d8b11a96e8ab722f597_MD5.webp]]
 <audio controls>

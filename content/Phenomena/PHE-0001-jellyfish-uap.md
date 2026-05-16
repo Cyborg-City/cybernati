@@ -1,4 +1,4 @@
-﻿---
+---
 title: Jellyfish UAP
 aliases:
   - The Iraq Jellyfish
@@ -7,6 +7,7 @@ draft: false
 tags:
   - phenomenon
   - uap-classification
+  - uap
 ID: PHE-0001
 type: aerial-anomaly
 status: active
@@ -15,7 +16,7 @@ confidence: confirmed-observation
 mechanism: spectral-cloaking
 primary_beneficiary: unknown
 created: 2026-05-12
-modified: 2026-05-13T03:44:03-05:00
+modified: 2026-05-15T08:13:53-05:00
 narrative_volatility: high
 source_provenance: US military sensor leak (2024); Jeremy Corbell release
 description: A class of unidentified aerial phenomena characterized by stiff, dangling appendages and visibility only within the infrared spectrum.

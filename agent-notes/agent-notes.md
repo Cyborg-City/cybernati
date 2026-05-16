@@ -8,9 +8,13 @@
 
 ---
 
-## Doing
+## Done
 
-*Nothing currently in progress.*
+### DOD UAP Archival (Release 1)
+- **2026-05-15**: Successfully established archival item `dod-aaro-uap-declassified-release-1`. 
+- **Structure**: Recursive upload of `Release_1/` and `uapvideos/`. 
+- **Protocol**: Implemented operator-specific User-Agent suffix for human-led uploads. 
+- **Finalization**: Triggered manual `derive.php` task to initiate OCR on all PDFs. Item is now processing on IA servers.
 
 ---
 

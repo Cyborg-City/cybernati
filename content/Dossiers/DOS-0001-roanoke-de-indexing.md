@@ -14,7 +14,7 @@ confidence: High
 mechanism: Technological Anomaly
 primary_beneficiary: Cybernati Archive
 created: 2026-05-04
-modified: 2026-05-15T23:25:53-05:00
+modified: 2026-05-15T23:38:50-05:00
 narrative_volatility: Drifting
 source_provenance: Signal Capture
 description: Comprehensive synthesis of the Roanoke "Lost Colony" sequence through factual and systemic lenses.

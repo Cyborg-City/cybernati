@@ -1,6 +1,6 @@
 {
   "alwaysUpdateLinks": true,
-  "attachmentFolderPath": "_resources",
+  "attachmentFolderPath": "content/_resources",
   "userIgnoreFilters": null,
   "readableLineLength": true
 }

@@ -46,7 +46,7 @@ export const defaultContentPageLayout: PageLayout = {
       ],
     }),
     Component.Explorer({
-      filterFn: (node) => node.slugSegment !== "tags" && !node.slugSegment.startsWith("_"),
+      filterFn: (node) => node.slugSegment !== "tags" && node.slugSegment !== "resources",
     }),
   ],
   right: [
@@ -72,7 +72,7 @@ export const defaultListPageLayout: PageLayout = {
       ],
     }),
     Component.Explorer({
-      filterFn: (node) => node.slugSegment !== "tags" && !node.slugSegment.startsWith("_"),
+      filterFn: (node) => node.slugSegment !== "tags" && node.slugSegment !== "resources",
     }),
   ],
   right: [

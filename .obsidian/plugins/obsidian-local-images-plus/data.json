@@ -1,6 +1,6 @@
 {
   "processCreated": true,
-  "ignoredExt": "cnt|php|htm|html",
+  "ignoredExt": "cnt|php|htm|html|mp4|mp3|pdf",
   "processAll": true,
   "useCaptions": true,
   "pathInTags": "onlyRelative",

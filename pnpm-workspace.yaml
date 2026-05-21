@@ -1,3 +1,7 @@
+packages:
+  - '.'
+  - 'cli'
+
 onlyBuiltDependencies:
   - esbuild
   - sharp

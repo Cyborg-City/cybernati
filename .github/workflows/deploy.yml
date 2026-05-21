@@ -36,7 +36,7 @@ jobs:
         run: pnpm install
 
       - name: Build
-        run: DEPLOYMENT_PLATFORM=github-pages pnpm build
+        run: rm -f public/_headers && DEPLOYMENT_PLATFORM=github-pages pnpm build
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3

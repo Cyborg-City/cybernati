@@ -1,5 +1,5 @@
 {
-  "runWizardOnStartup": true,
+  "runWizardOnStartup": false,
   "currentTemplate": "standard",
   "currentTheme": "charcoal",
   "customThemeFile": "custom",
@@ -12,7 +12,7 @@
     }
   },
   "siteInfo": {
-    "site": "https://astro-modular.netlify.app",
+    "site": "https://cyborg-city.github.io/cybernati/",
     "title": "Cybernati",
     "description": "The CYBERNATI is a decentralized archival initiative dedicated to the preservation and analysis of anomalous records, corrupted media, restricted documents, and culturally significant transmissions.",
     "author": "LoFi Monk",
@@ -188,13 +188,13 @@
     "headingFont": "Inter",
     "proseFont": "Inter",
     "monoFont": "JetBrains Mono",
-    "fontSource": "local",
+    "fontSource": "cdn",
     "fontDisplay": "swap",
     "customFonts": {
-      "heading": "",
-      "prose": "",
-      "mono": "",
-      "urls": ""
+      "heading": "special elite",
+      "prose": "courier prime",
+      "mono": "jetbrains mono",
+      "urls": "https://fonts.googleapis.com/css2?family=Special+Elite&family=Courier+Prime&display=swap"
     }
   },
   "optionalFeatures": {

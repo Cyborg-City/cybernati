@@ -57,11 +57,11 @@ function prefixBaseHtml(basePrefix) {
         const pathKeywords = [
           'posts', 'projects', 'docs', 'api', 'special', '_assets',
           'about', 'contact', 'privacy-policy', 'thank-you',
-          'favicon', 'profile', 'open-graph', 'feed', 'rss', 'sitemap', 'robots', 'llms', 'graph'
+          'favicon', 'profile', 'open-graph', 'feed', 'rss', 'sitemap', 'robots', 'llms'
         ];
         
-        const pathRegex = new RegExp("(?<=[\"'\`])\\\\/(" + pathKeywords.join('|') + ")(?=[/?\"'\`]|\\\\b)", 'g');
-        const rootRegex = /(?<=["'`])\/(?=["'`])/g;
+        const pathRegex = new RegExp(`(?<=["'])\\/(${pathKeywords.join('|')})(?=[/?"']|\\b)`, 'g');
+        const rootRegex = /(?<=["'])\/(?=["'])/g;
         
         async function walkAndPrefix(currentDir) {
           const entries = await fs.readdir(currentDir, { withFileTypes: true });

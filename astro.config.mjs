@@ -216,8 +216,7 @@ image: {
     },
     optimizeDeps: {
       exclude: ['astro:content']
-    },
-    exclude: ['**/_redirects']
+    }
   },
   build: {
     assets: '_assets'

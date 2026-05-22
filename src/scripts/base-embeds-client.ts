@@ -10,19 +10,22 @@ type BaseConfig = {
 };
 
 function getApiUrlForSource(source: string): string | null {
+  const baseUrl = import.meta.env.BASE_URL;
+  const cleanBase = baseUrl.endsWith('/') ? baseUrl : baseUrl + '/';
   switch (source) {
     case 'posts':
-      return '/api/posts.json';
+      return cleanBase + 'api/posts.json';
     case 'pages':
-      return '/api/pages.json';
+      return cleanBase + 'api/pages.json';
     case 'projects':
-      return '/api/projects.json';
+      return cleanBase + 'api/projects.json';
     case 'docs':
-      return '/api/docs.json';
+      return cleanBase + 'api/docs.json';
     default:
       return null;
   }
 }
+
 
 function buildTableHTML(columns: string[], rows: Record<string, any>[], headerLabels?: string[]): string {
   const headers = (headerLabels && headerLabels.length === columns.length) ? headerLabels : columns;
@@ -75,7 +78,9 @@ async function renderBaseEmbeds() {
         let items: any[] = [];
         if (!source && cfg.files) {
           // V1: enumerate files (all types) for file name list parity with Bases
-          const res = await fetch('/api/files.json', { cache: 'no-store' });
+          const baseUrl = import.meta.env.BASE_URL;
+          const cleanBase = baseUrl.endsWith('/') ? baseUrl : baseUrl + '/';
+          const res = await fetch(cleanBase + 'api/files.json', { cache: 'no-store' });
           if (!res.ok) { throw new Error(`Failed to fetch files.json: ${res.status} ${res.statusText}`); }
           const names: string[] = await res.json();
           // Sort alphabetically and limit to 36 to match Obsidian default

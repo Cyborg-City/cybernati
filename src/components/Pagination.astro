@@ -1,13 +1,15 @@
 ---
 import type { PaginationInfo } from '@/types';
 import Icon from './Icon.astro';
+import { resolveUrl } from '@/utils/url-helpers';
 
 export interface Props {
   pagination: PaginationInfo;
   baseUrl?: string;
 }
 
-const { pagination, baseUrl = '/posts' } = Astro.props;
+const { pagination, baseUrl: rawBaseUrl = '/posts' } = Astro.props;
+const baseUrl = resolveUrl(rawBaseUrl);
 const { currentPage, totalPages, hasNext, hasPrev } = pagination;
 
 // Generate page numbers to show

@@ -428,7 +428,7 @@ const shouldShowGraph = true;
       }
     }
     
-      fetch('/graph/graph-data.json')
+      fetch(import.meta.env.BASE_URL + 'graph/graph-data.json')
         .then(response => response.json())
         .then((data) => {
         
@@ -723,7 +723,7 @@ const shouldShowGraph = true;
     const container = document.getElementById('local-graph-content');
     if (container && localGraphInitialized) {
       // Get fresh data and re-render
-      fetch('/graph/graph-data.json')
+      fetch(import.meta.env.BASE_URL + 'graph/graph-data.json')
         .then(response => response.json())
         .then(data => {
           const currentPath = window.location.pathname;
@@ -801,7 +801,7 @@ const shouldShowGraph = true;
           }
         }
 
-        fetch('/graph/graph-data.json')
+        fetch(import.meta.env.BASE_URL + 'graph/graph-data.json')
           .then(response => response.json())
           .then(data => {
             const filteredData = filterLocalGraphData(data, currentSlug);

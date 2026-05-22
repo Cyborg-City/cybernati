@@ -349,8 +349,9 @@ export async function getImageDimensions(
 
 // Get the default OG image
 export function getDefaultOGImage(): OpenGraphImage {
+  const baseUrl = siteConfig.site.endsWith('/') ? siteConfig.site.slice(0, -1) : siteConfig.site;
   return {
-    url: "/open-graph.png",
+    url: `${baseUrl}/open-graph.png`,
     alt: siteConfig.defaultOgImageAlt,
     width: 1200,
     height: 630,

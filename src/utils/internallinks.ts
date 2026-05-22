@@ -1,5 +1,6 @@
 import type { Post, WikilinkMatch } from "@/types";
 import { visit } from "unist-util-visit";
+import { resolveUrl } from "./url-helpers.ts";
 
 // Global posts cache for build-time wikilink resolution
 let globalPostsCache: any[] = [];
@@ -968,6 +969,12 @@ export function remarkStandardLinks() {
               : [existingClasses, "wikilink"].filter(Boolean);
           }
         }
+
+        // Resolve internal paths relative to BASE_URL
+        node.url = resolveUrl(node.url);
+        if (node.data && node.data.hProperties && node.data.hProperties.href) {
+          node.data.hProperties.href = resolveUrl(node.data.hProperties.href);
+        }
       }
     });
   };
@@ -1815,6 +1822,9 @@ export function remarkFolderImages() {
         finalUrl = convertToWebP(finalUrl);
         node.url = finalUrl;
       }
+
+      // Resolve image path relative to BASE_URL
+      node.url = resolveUrl(node.url);
 
       // Also update the hProperties if they exist (for wikilink images)
       if (node.data && node.data.hProperties) {

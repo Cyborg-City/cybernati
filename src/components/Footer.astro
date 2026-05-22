@@ -1,6 +1,7 @@
 ---
 import { siteConfig } from '@/config';
 import Icon from './Icon.astro';
+import { resolveUrl } from '../utils/url-helpers';
 
 const currentYear = new Date().getFullYear();
 const socialLinks = (siteConfig.navigation.social || []).filter((social) => social && social.url && social.icon);
@@ -39,20 +40,20 @@ const getProfilePictureClasses = (size: string, style: string) => {
       <div class="mb-4 flex justify-start">
         {profilePicture.url ? (
           <a 
-            href={profilePicture.url}
+            href={resolveUrl(profilePicture.url)}
             class="inline-block hover:opacity-80 transition-opacity"
             target={profilePicture.url.startsWith('http') ? '_blank' : undefined}
             rel={undefined}
           >
             <img
-              src={profilePicture.image}
+              src={resolveUrl(profilePicture.image)}
               alt={profilePicture.alt}
               class={getProfilePictureClasses(profilePicture.size, profilePicture.style)}
             />
           </a>
         ) : (
           <img
-            src={profilePicture.image}
+            src={resolveUrl(profilePicture.image)}
             alt={profilePicture.alt}
             class={getProfilePictureClasses(profilePicture.size, profilePicture.style)}
           />
@@ -111,20 +112,20 @@ const getProfilePictureClasses = (size: string, style: string) => {
           <div class="flex justify-start">
             {profilePicture.url ? (
               <a 
-                href={profilePicture.url}
+                href={resolveUrl(profilePicture.url)}
                 class="inline-block hover:opacity-80 transition-opacity"
                 target={profilePicture.url.startsWith('http') ? '_blank' : undefined}
                 rel={undefined}
               >
                 <img
-                  src={profilePicture.image}
+                  src={resolveUrl(profilePicture.image)}
                   alt={profilePicture.alt}
                   class={getProfilePictureClasses(profilePicture.size, profilePicture.style)}
                 />
               </a>
             ) : (
               <img
-                src={profilePicture.image}
+                src={resolveUrl(profilePicture.image)}
                 alt={profilePicture.alt}
                 class={getProfilePictureClasses(profilePicture.size, profilePicture.style)}
               />

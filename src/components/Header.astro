@@ -2,6 +2,7 @@
 import { siteConfig } from '../config';
 import ThemeToggle from './ThemeToggle.astro';
 import Icon from './Icon.astro';
+import { resolveUrl } from '../utils/url-helpers';
 
 const showProfilePicture = siteConfig.profilePicture.enabled && siteConfig.profilePicture.placement === 'header';
 const profilePicture = siteConfig.profilePicture;
@@ -35,10 +36,10 @@ const paletteIcon = allSectionsDisabled ? 'search' : 'command';
     <div class="flex items-center justify-between h-16">
       <!-- Logo / Site Title / Profile Picture -->
       <div class="flex items-center">
-        <a href="/" class="hover:opacity-75 transition-opacity">
+        <a href={resolveUrl('/')} class="hover:opacity-75 transition-opacity">
           {showProfilePicture ? (
             <img
-              src={profilePicture.image}
+              src={resolveUrl(profilePicture.image)}
               alt={profilePicture.alt}
               class={getHeaderProfilePictureClasses(profilePicture.style)}
             />
@@ -67,7 +68,7 @@ const paletteIcon = allSectionsDisabled ? 'search' : 'command';
                     {hasUrl ? (
                       // Clickable parent with dropdown
                       <a 
-                        href={page.url}
+                        href={resolveUrl(page.url)}
                         class={
                           siteConfig.navigation.style === 'minimal' 
                             ? `flex items-center space-x-1 text-xs font-normal transition-colors hover:text-highlight-600 dark:hover:text-highlight-400 text-primary-500 dark:text-primary-400`
@@ -104,7 +105,7 @@ const paletteIcon = allSectionsDisabled ? 'search' : 'command';
                     <div class="nav-dropdown-menu absolute top-full left-0 mt-1 hidden bg-white dark:bg-primary-900 border border-primary-200 dark:border-primary-700 rounded-lg shadow-lg py-2 min-w-[200px] z-50">
                       {page.children.map(child => (
                         <a
-                          href={child.url || '#'}
+                          href={child.url ? resolveUrl(child.url) : '#'}
                           class="block px-4 py-2 text-sm text-primary-700 dark:text-primary-200 hover:text-highlight-600 dark:hover:text-highlight-400 transition-colors"
                           target={child.url?.startsWith('http') ? '_blank' : undefined}
                           aria-label={`Navigate to ${child.title}`}
@@ -122,7 +123,7 @@ const paletteIcon = allSectionsDisabled ? 'search' : 'command';
                 // Regular navigation item without children
                 return (
                   <a 
-                    href={page.url || '#'}
+                    href={page.url ? resolveUrl(page.url) : '#'}
                     class={
                       siteConfig.navigation.style === 'minimal' 
                         ? `flex items-center space-x-1 text-xs font-normal transition-colors hover:text-highlight-600 dark:hover:text-highlight-400 text-primary-500 dark:text-primary-400`
@@ -222,7 +223,7 @@ const paletteIcon = allSectionsDisabled ? 'search' : 'command';
                     {hasUrl ? (
                       // Clickable parent with expand button
                       <a 
-                        href={page.url}
+                        href={resolveUrl(page.url)}
                         class="flex-1 flex items-center justify-between px-3 py-2 text-primary-600 dark:text-primary-300 hover:text-highlight-600 dark:hover:text-highlight-400 hover:bg-primary-50 dark:hover:bg-primary-800 transition-colors font-medium rounded-md"
                         target={page.url.startsWith('http') ? '_blank' : undefined}
                         aria-label={`Navigate to ${page.title}`}
@@ -251,7 +252,7 @@ const paletteIcon = allSectionsDisabled ? 'search' : 'command';
                   <div class="mobile-nav-children hidden pl-4 pt-1">
                     {page.children.map(child => (
                       <a
-                        href={child.url || '#'}
+                        href={child.url ? resolveUrl(child.url) : '#'}
                         class="block px-3 py-2 text-sm text-primary-600 dark:text-primary-300 hover:text-highlight-600 dark:hover:text-highlight-400 hover:bg-primary-50 dark:hover:bg-primary-800 transition-colors font-medium rounded-md"
                         target={child.url?.startsWith('http') ? '_blank' : undefined}
                         aria-label={`Navigate to ${child.title}`}
@@ -269,7 +270,7 @@ const paletteIcon = allSectionsDisabled ? 'search' : 'command';
               // Regular navigation item without children
               return (
                 <a 
-                  href={page.url || '#'}
+                  href={page.url ? resolveUrl(page.url) : '#'}
                   class="flex items-center justify-between px-3 py-2 text-primary-600 dark:text-primary-300 hover:text-highlight-600 dark:hover:text-highlight-400 hover:bg-primary-50 dark:hover:bg-primary-800 transition-colors font-medium rounded-md"
                   target={page.url?.startsWith('http') ? '_blank' : undefined}
                   aria-label={`Navigate to ${page.title}`}

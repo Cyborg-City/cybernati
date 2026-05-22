@@ -11,6 +11,7 @@ import ProjectCard from '@/components/ProjectCard.astro';
 import DocumentationCard from '@/components/DocumentationCard.astro';
 import Icon from '@/components/Icon.astro';
 import { optimizePostImagePath } from '@/utils/images';
+import { resolveUrl } from '@/utils/url-helpers';
 
 // Get all posts and filter by visibility
 const allPosts = await getCollection('posts');
@@ -227,7 +228,7 @@ const structuredData = {
                     Recent Posts
                   </h2>
                   <a
-                    href="/posts"
+                    href={resolveUrl('/posts')}
                     class="text-primary-600 dark:text-primary-300 hover:text-highlight-600 dark:hover:text-highlight-400 font-medium transition-colors"
                   >
                     View all posts →
@@ -244,7 +245,7 @@ const structuredData = {
               {useSpecialTreatment && (
                 <div class="mt-8 text-center">
                   <a
-                    href="/posts"
+                    href={resolveUrl('/posts')}
                     class="text-primary-600 dark:text-primary-300 hover:text-highlight-600 dark:hover:text-highlight-400 font-medium transition-colors"
                   >
                     View all posts →
@@ -263,7 +264,7 @@ const structuredData = {
                     Projects
                   </h2>
                   <a
-                    href="/projects"
+                    href={resolveUrl('/projects')}
                     class="text-primary-600 dark:text-primary-300 hover:text-highlight-600 dark:hover:text-highlight-400 font-medium transition-colors"
                   >
                     View all projects →
@@ -280,7 +281,7 @@ const structuredData = {
               {useSpecialTreatment && (
                 <div class="mt-8 text-center">
                   <a
-                    href="/projects"
+                    href={resolveUrl('/projects')}
                     class="text-primary-600 dark:text-primary-300 hover:text-highlight-600 dark:hover:text-highlight-400 font-medium transition-colors"
                   >
                     View all projects →
@@ -299,7 +300,7 @@ const structuredData = {
                     Documentation
                   </h2>
                   <a
-                    href="/docs"
+                    href={resolveUrl('/docs')}
                     class="text-primary-600 dark:text-primary-300 hover:text-highlight-600 dark:hover:text-highlight-400 font-medium transition-colors"
                   >
                     View all docs →
@@ -316,7 +317,7 @@ const structuredData = {
               {useSpecialTreatment && (
                 <div class="mt-8 text-center">
                   <a
-                    href="/docs"
+                    href={resolveUrl('/docs')}
                     class="text-primary-600 dark:text-primary-300 hover:text-highlight-600 dark:hover:text-highlight-400 font-medium transition-colors"
                   >
                     View all docs →

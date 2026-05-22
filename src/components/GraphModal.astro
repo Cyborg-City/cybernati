@@ -224,7 +224,7 @@ import Icon from './Icon.astro';
       </div>
     `;
 
-    fetch('/graph/graph-data.json')
+    fetch(import.meta.env.BASE_URL + 'graph/graph-data.json')
       .then(response => response.json())
       .then((data: any) => {
         // Transform data to match D3 format
@@ -709,7 +709,7 @@ import Icon from './Icon.astro';
     const overlay = document.getElementById('graph-modal-overlay');
     if (overlay && !overlay.classList.contains('hidden') && svg) {
       // Get fresh data and re-render
-      fetch('/graph/graph-data.json')
+      fetch(import.meta.env.BASE_URL + 'graph/graph-data.json')
         .then(response => response.json())
         .then(data => {
           const container = document.getElementById('graph-modal-content');

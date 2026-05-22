@@ -25,80 +25,18 @@ import { siteConfig } from './src/config.ts';
 import swup from '@swup/astro';
 import refreshContentOnChange from './src/integrations/refresh-content-on-change.ts';
 import { fileURLToPath } from 'node:url';
-import { promises as fs } from 'node:fs';
-import * as path from 'node:path';
 
 // Deployment platform configuration
 const DEPLOYMENT_PLATFORM = process.env.DEPLOYMENT_PLATFORM || 'netlify';
 
-const getBaseOption = () => {
-  if (DEPLOYMENT_PLATFORM === 'github-pages') {
-    try {
-      const url = new URL(siteConfig.site);
-      const pathname = url.pathname.replace(/\/$/, '');
-      return pathname || undefined;
-    } catch (e) {
-      return undefined;
-    }
-  }
-  return undefined;
-};
-
-const basePrefix = getBaseOption(); // e.g. "/cybernati"
-
-function prefixBaseHtml(basePrefix) {
-  return {
-    name: 'prefix-base-html',
-    hooks: {
-      'astro:build:done': async ({ dir }) => {
-        if (!basePrefix) return;
-        
-        const buildDir = fileURLToPath(dir);
-        const pathKeywords = [
-          'posts', 'projects', 'docs', 'api', 'special', '_assets',
-          'about', 'contact', 'privacy-policy', 'thank-you',
-          'favicon', 'profile', 'open-graph', 'feed', 'rss', 'sitemap', 'robots', 'llms'
-        ];
-        
-        const pathRegex = new RegExp(`(?<=["'])\\/(${pathKeywords.join('|')})(?=[/?"']|\\b)`, 'g');
-        const rootRegex = /(?<=["'])\/(?=["'])/g;
-        
-        async function walkAndPrefix(currentDir) {
-          const entries = await fs.readdir(currentDir, { withFileTypes: true });
-          for (const entry of entries) {
-            const fullPath = path.join(currentDir, entry.name);
-            if (entry.isDirectory()) {
-              await walkAndPrefix(fullPath);
-            } else if (entry.isFile()) {
-              const ext = path.extname(entry.name).toLowerCase();
-              if (['.html', '.js', '.json', '.xml', '.txt'].includes(ext)) {
-                let content = await fs.readFile(fullPath, 'utf8');
-                
-                let updated = content.replace(pathRegex, (match, p1) => {
-                  return `${basePrefix}/${p1}`;
-                });
-                
-                updated = updated.replace(rootRegex, `${basePrefix}/`);
-                
-                if (updated !== content) {
-                  await fs.writeFile(fullPath, updated, 'utf8');
-                }
-              }
-            }
-          }
-        }
-        
-        console.log(`[prefix-base-html] Walking build directory: ${buildDir}`);
-        await walkAndPrefix(buildDir);
-        console.log(`[prefix-base-html] Successfully prefixed absolute URLs with "${basePrefix}"`);
-      }
-    }
-  };
-}
+// Parse site and base from siteConfig.site (e.g. "https://username.github.io/repo/")
+const siteUrl = new URL(siteConfig.site);
+const siteOrigin = siteUrl.origin;
+const basePath = siteUrl.pathname === '/' ? undefined : siteUrl.pathname.replace(/\/$/, '');
 
 export default defineConfig({
-  site: siteConfig.site,
-  base: basePrefix,
+  site: siteOrigin,
+  base: basePath,
   deployment: {
     platform: DEPLOYMENT_PLATFORM
   },
@@ -201,8 +139,7 @@ image: {
       },
       // Simplified link selector for better compatibility
       linkSelector: 'a[href]:not([data-no-swup]):not([href^="mailto:"]):not([href^="tel:"])'
-    }),
-    prefixBaseHtml(basePrefix)
+    })
   ],
   markdown: {
       remarkPlugins: [

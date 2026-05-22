@@ -1715,8 +1715,48 @@ function convertToWebP(imagePath: string): string {
 export function remarkFolderImages() {
   return function transformer(tree: any, file: any) {
     visit(tree, "image", (node: any) => {
-      // Skip if already absolute or external URL
-      if (!node.url || node.url.startsWith("/") || node.url.startsWith("http")) {
+      if (!node.url) return;
+
+      // Skip external URLs — nothing to rewrite
+      if (node.url.startsWith("http")) {
+        return;
+      }
+
+      // --- Handle absolute paths that match content-collection patterns ---
+      // Some Obsidian plugins (e.g. Image Inserter / Unsplash) insert images
+      // with absolute vault paths like `/posts/attachments/mountains.png`.
+      // The original code skipped ALL absolute paths, so these never got:
+      //   1. WebP conversion  (mountains.png → mountains.webp)
+      //   2. Base-URL prepend (/posts/… → /cybernati/posts/…)
+      // We now detect these and process them. Truly unknown absolute paths
+      // are still skipped.
+      if (node.url.startsWith("/")) {
+        const knownCollectionPrefixes = ["/posts/", "/projects/", "/docs/", "/pages/"];
+        const matchesCollection = knownCollectionPrefixes.some(
+          prefix => node.url.startsWith(prefix)
+        );
+
+        if (matchesCollection) {
+          // Skip non-image files even in absolute paths — let remarkObsidianEmbeds handle them
+          const urlLower = node.url.toLowerCase();
+          const nonImageExtensions = ['.mp3', '.wav', '.ogg', '.m4a', '.3gp', '.flac', '.aac',
+                                      '.mp4', '.webm', '.ogv', '.mov', '.mkv', '.avi',
+                                      '.pdf'];
+          if (nonImageExtensions.some(ext => urlLower.endsWith(ext))) {
+            return;
+          }
+
+          // Convert to WebP and prepend base URL — the path structure is already correct,
+          // it just needs the deployment subpath and format conversion.
+          node.url = resolveUrl(convertToWebP(node.url));
+
+          if (node.data && node.data.hProperties) {
+            node.data.hProperties.src = node.url;
+          }
+          return;
+        }
+
+        // Unknown absolute path — leave it alone
         return;
       }
 

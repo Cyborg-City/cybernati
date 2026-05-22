@@ -264,7 +264,7 @@ const shouldShowGraph = true;
               document.body.style.overflow = '';
               resetLocalGraph();
 
-              const url = `/posts/${d.slug}`;
+              const url = cleanBase + 'posts/' + d.slug + '/';
               if ((window as any).swup) {
                 (window as any).swup.navigate(url);
               } else {

@@ -401,13 +401,14 @@ import Icon from './Icon.astro';
               if (dist < CLICK_DISTANCE && d.slug) {
                 closeModal();
 
+                const targetUrl = cleanBase + 'posts/' + d.slug + '/';
                 if ((window as any).swup) {
                   if ((window as any).resetLocalGraph) {
                     (window as any).resetLocalGraph();
                   }
-                  (window as any).swup.navigate(`/posts/${d.slug}`);
+                  (window as any).swup.navigate(targetUrl);
                 } else {
-                  window.location.href = `/posts/${d.slug}`;
+                  window.location.href = targetUrl;
                 }
               }
             }) as any,
@@ -715,9 +716,23 @@ import Icon from './Icon.astro';
       fetch(cleanBase + 'graph/graph-data.json')
         .then(response => response.json())
         .then(data => {
-          const container = document.getElementById('graph-modal-content');
+          const container = document.getElementById('graph-modal-container') as HTMLElement;
           if (container) {
-            renderGraph(container, data);
+            const graphData: GraphData = {
+              nodes: data.nodes.map((node: any) => ({
+                id: node.id,
+                name: node.title || node.name,
+                slug: node.slug,
+                radius: Math.max(5, Math.min(15, (node.connections || 0) + 5)),
+                group: node.type
+              })),
+              links: data.connections.map((conn: any) => ({
+                source: conn.source,
+                target: conn.target,
+                value: 1
+              }))
+            };
+            renderGraph(container, graphData);
           }
         })
         .catch(error => {

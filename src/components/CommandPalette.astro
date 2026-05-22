@@ -247,6 +247,22 @@ import Icon from './Icon.astro';
     tags?: string[]; // Tags for posts
   }
 
+  const baseUrl = import.meta.env.BASE_URL;
+  const cleanBase = baseUrl.endsWith('/') ? baseUrl : baseUrl + '/';
+
+  function resolveClientUrl(url: string): string {
+    if (!url) return '';
+    if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('mailto:') || url.startsWith('#')) {
+      return url;
+    }
+    const baseWithoutTrailing = cleanBase.endsWith('/') ? cleanBase.slice(0, -1) : cleanBase;
+    if (url === baseWithoutTrailing || url === cleanBase || url.startsWith(cleanBase) || (baseWithoutTrailing && url.startsWith(baseWithoutTrailing + '/'))) {
+      return url;
+    }
+    const cleanPath = url.startsWith('/') ? url.slice(1) : url;
+    return cleanBase + cleanPath;
+  }
+
   // Command Palette Class Definition
   class CommandPalette {
     private overlay: HTMLElement;
@@ -977,8 +993,9 @@ import Icon from './Icon.astro';
     }
 
     private createResultItem(item: CommandPaletteItem, index: number): HTMLElement {
+      const resolvedUrl = resolveClientUrl(item.url);
       const anchor = document.createElement('a');
-      anchor.href = item.url;
+      anchor.href = resolvedUrl;
       anchor.dataset.index = index.toString();
       anchor.className = `command-palette-item w-full flex items-start space-x-3 px-3 py-3 hover:bg-primary-50 dark:hover:bg-primary-800 rounded-lg transition-colors group ${index === this.selectedIndex ? 'bg-primary-50 dark:bg-primary-800' : ''}`;
       
@@ -989,15 +1006,15 @@ import Icon from './Icon.astro';
         
         // Navigate after a small delay to ensure the palette closes first
         setTimeout(() => {
-          if (item.url.startsWith('http') && !item.url.includes(window.location.hostname)) {
+          if (resolvedUrl.startsWith('http') && !resolvedUrl.includes(window.location.hostname)) {
             // External link - open in new tab
-            window.open(item.url, '_blank');
+            window.open(resolvedUrl, '_blank');
           } else {
             // Internal link - use Swup if available, otherwise regular navigation
             if ((window as any).swup) {
-              (window as any).swup.navigate(item.url);
+              (window as any).swup.navigate(resolvedUrl);
             } else {
-              window.location.href = item.url;
+              window.location.href = resolvedUrl;
             }
           }
         }, 50);

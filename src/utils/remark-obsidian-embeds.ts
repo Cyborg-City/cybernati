@@ -3,6 +3,8 @@ import type { Plugin } from 'unified';
 import type { Root, Image, Link } from 'mdast';
 import fs from 'node:fs';
 import path from 'node:path';
+import { resolveUrl } from './url-helpers.ts';
+
 function parseViewsFromBase(content: string) {
   const lines = content.split(/\r?\n/);
   const views: any[] = [];
@@ -157,6 +159,7 @@ function createHtmlNode(html: string): any {
 
 export const remarkObsidianEmbeds: Plugin<[], Root> = () => {
   return async (tree, file: any) => {
+    console.log("REMARK_PLUGIN_RUNNING for:", file.path);
     // Visit image nodes (covers ![[file]] syntax)
     visit(tree, 'image', (node: Image, index, parent) => {
       if (!node.url || !parent || typeof index !== 'number') return;
@@ -394,6 +397,10 @@ export const remarkObsidianEmbeds: Plugin<[], Root> = () => {
             resolvedUrl = `/${collection}/${contentSlug}/${url}`;
           }
         }
+
+        // Apply Astro base subpath if needed
+        resolvedUrl = resolveUrl(resolvedUrl);
+        console.log("REMARK_EMBEDS_BASE:", resolvedUrl);
 
       // Handle audio files
       if (AUDIO_EXTENSIONS.includes(extension)) {

@@ -1,16 +1,20 @@
 import { siteConfig } from '../config';
 
 export function getBaseUrl(): string {
-  // Try import.meta.env first (runtime/Vite context)
-  if (typeof import.meta.env !== 'undefined' && import.meta.env.BASE_URL) {
-    return import.meta.env.BASE_URL;
-  }
-  // Fallback to parsing siteConfig.site (static/config context)
+  // Parse base from siteConfig.site as the single source of truth
   try {
     const url = new URL(siteConfig.site);
     const base = url.pathname;
-    return base.endsWith('/') ? base : base + '/';
+    const resolvedBase = base.endsWith('/') ? base : base + '/';
+    // If siteConfig doesn't have a subpath but Vite says it does, fallback to Vite
+    if (resolvedBase === '/' && typeof import.meta.env !== 'undefined' && import.meta.env.BASE_URL) {
+      return import.meta.env.BASE_URL;
+    }
+    return resolvedBase;
   } catch {
+    if (typeof import.meta.env !== 'undefined' && import.meta.env.BASE_URL) {
+      return import.meta.env.BASE_URL;
+    }
     return '/';
   }
 }

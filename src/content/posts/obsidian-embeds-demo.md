@@ -486,4 +486,4 @@ The diagrams should automatically adapt to the current theme (light/dark) and us
 
 ### Responsive Design
 
-All diagrams should be responsive and work well on mobile devices, with proper scaling and overflow handling.
+All diagrams should be responsive and work well on mobile devices, with proper scaling and overflow handling. 

@@ -159,7 +159,6 @@ function createHtmlNode(html: string): any {
 
 export const remarkObsidianEmbeds: Plugin<[], Root> = () => {
   return async (tree, file: any) => {
-    console.log("REMARK_PLUGIN_RUNNING for:", file.path);
     // Visit image nodes (covers ![[file]] syntax)
     visit(tree, 'image', (node: Image, index, parent) => {
       if (!node.url || !parent || typeof index !== 'number') return;

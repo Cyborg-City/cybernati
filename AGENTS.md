@@ -461,6 +461,13 @@ Colors come from `src/utils/graph-theme-colors.ts`, which reads CSS custom prope
 and converts RGB to hex. Both components listen for `themechange` events and
 re-render on theme switch. Use `getGraphThemeColors()` — never hardcode graph colors.
 
+### Graph Click Navigation & Routing
+- When implementing or updating graph node clicking, always prepend the base path (`cleanBase`) and append a **trailing slash** (e.g. `cleanBase + 'posts/' + d.slug + '/'`). 
+- On subdirectory static hosts (such as GitHub Pages), Swup's client-side AJAX requests return a **404 Not Found** if the trailing slash is missing.
+- When re-rendering the Graph Modal on theme changes, make sure the event handler:
+  1. Targets `#graph-modal-container` (NOT `#graph-modal-content`).
+  2. Mapped raw JSON connections to D3-compatible `GraphData` nodes and links before calling `renderGraph()`.
+
 Graph nodes are **posts only**, filtered by `isPostLink`. Don't add other content
 types without thinking carefully about scope.
 

@@ -2,6 +2,7 @@
 import path from "node:path";
 import { Image } from "astro:assets";
 import { devConfig, isDev } from "@/config/dev";
+import { resolveUrl } from "../utils/url-helpers";
 
 interface Props {
   id?: string;
@@ -157,7 +158,7 @@ const imageStyle = `object-position: ${position}`;
     />
   ) : isPublic ? (
     <img 
-      src={isSyncedFolder ? `${basePath}${cleanSrc}` : cleanSrc} 
+      src={resolveUrl(isSyncedFolder ? `${basePath}${cleanSrc}` : cleanSrc)} 
       alt={alt} 
       class={imageClass} 
       style={imageStyle}
@@ -173,7 +174,7 @@ const imageStyle = `object-position: ${position}`;
     null
   ) : (
     <img 
-      src={cleanSrc} 
+      src={resolveUrl(cleanSrc)} 
       alt={alt} 
       class={imageClass} 
       style={imageStyle}

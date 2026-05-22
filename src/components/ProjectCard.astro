@@ -6,6 +6,7 @@ import { normalizeStatus, getStatusDisplayText, hasStatusStyling, getStatusClass
 import { optimizeContentImagePath, getOptimizedFormat } from '../utils/images';
 import ImageWrapper from './ImageWrapper.astro';
 import Icon from './Icon.astro';
+import { resolveUrl } from '../utils/url-helpers';
 
 interface Props {
   project: CollectionEntry<'projects'>;
@@ -65,7 +66,7 @@ const shouldShowCoverImage = true;
 ---
 
 <div class="group relative bg-white dark:bg-primary-800 rounded-xl border border-primary-200 dark:border-primary-700 overflow-hidden hover:shadow-xl transition-all duration-300 aspect-[4/3]" data-project-categories={categories.join(',')}>
-  <a href={`/projects/${project.id}`} class="block h-full" aria-label={`View project: ${title}`}>
+  <a href={resolveUrl(`/projects/${project.id}`)} class="block h-full" aria-label={`View project: ${title}`}>
     <!-- Background Image or Fallback -->
     {image && shouldShowCoverImage && (
       <div class="absolute inset-0">

@@ -17,6 +17,7 @@ import ImageWrapper from '@/components/ImageWrapper.astro';
 import { devConfig } from '@/config/dev';
 import { readFileSync } from 'fs';
 import { join } from 'path';
+import { resolveUrl } from '@/utils/url-helpers';
 
 export interface Props {
   post: Post;
@@ -246,7 +247,7 @@ if (siteConfig.postOptions.graphView.enabled && siteConfig.postOptions.graphView
             <div class="flex flex-wrap gap-2 mb-8">
               {post.data.tags.map(tag => (
                 <a
-                  href={`/posts/tag/${encodeURIComponent(tag)}`}
+                  href={resolveUrl(`/posts/tag/${encodeURIComponent(tag)}`)}
                   class="text-xs text-primary-600 dark:text-primary-300 bg-primary-100 dark:bg-primary-800 px-2.5 py-1 rounded-full border border-primary-200 dark:border-primary-700 transition-colors hover:bg-highlight-100 dark:hover:bg-highlight-800"
                 >
                   {tag}
@@ -272,7 +273,7 @@ if (siteConfig.postOptions.graphView.enabled && siteConfig.postOptions.graphView
               {prevPost && (
                 <div class="text-left">
                   <a
-                    href={`/posts/${prevPost.id}`}
+                    href={resolveUrl(`/posts/${prevPost.id}`)}
                     class="group block p-4 rounded-lg border border-primary-200 dark:border-primary-700 hover:border-highlight-300 dark:hover:border-highlight-600 transition-all duration-200 hover:shadow-md"
                   >
                     <h3 class="font-semibold text-primary-900 dark:text-primary-50 group-hover:text-highlight-600 dark:group-hover:text-highlight-400 transition-colors">
@@ -288,7 +289,7 @@ if (siteConfig.postOptions.graphView.enabled && siteConfig.postOptions.graphView
               {nextPost && (
                 <div class={`text-right ${!prevPost ? 'md:col-start-2' : ''}`}>
                   <a
-                    href={`/posts/${nextPost.id}`}
+                    href={resolveUrl(`/posts/${nextPost.id}`)}
                     class="group block p-4 rounded-lg border border-primary-200 dark:border-primary-700 hover:border-highlight-300 dark:hover:border-highlight-600 transition-all duration-200 hover:shadow-md"
                   >
                     <h3 class="font-semibold text-primary-900 dark:text-primary-50 group-hover:text-highlight-600 dark:group-hover:text-highlight-400 transition-colors">
@@ -385,10 +386,13 @@ if (siteConfig.postOptions.graphView.enabled && siteConfig.postOptions.graphView
             const anchorMatch = currentHref.match(/#(.+)$/);
             const anchor = anchorMatch ? anchorMatch[1] : null;
             
+            const baseUrlAttr = document.documentElement.dataset.baseUrl || '/';
+            const cleanBase = baseUrlAttr.endsWith('/') ? baseUrlAttr : baseUrlAttr + '/';
+            
             if (anchor) {
-              link.href = `/posts/${post.id}#${anchor}`;
+              link.href = `${cleanBase}posts/${post.id}#${anchor}`;
             } else {
-              link.href = `/posts/${post.id}`;
+              link.href = `${cleanBase}posts/${post.id}`;
             }
 
             // Simple logic:

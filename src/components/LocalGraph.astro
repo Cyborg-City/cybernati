@@ -60,6 +60,9 @@ const shouldShowGraph = true;
   import * as d3 from "d3";
   import { getGraphThemeColors } from '@/utils/graph-theme-colors';
 
+  const baseUrl = import.meta.env.BASE_URL;
+  const cleanBase = baseUrl.endsWith('/') ? baseUrl : baseUrl + '/';
+
   interface GraphNode {
     id: string;
     name: string;
@@ -428,7 +431,7 @@ const shouldShowGraph = true;
       }
     }
     
-      fetch(import.meta.env.BASE_URL + 'graph/graph-data.json')
+      fetch(cleanBase + 'graph/graph-data.json')
         .then(response => response.json())
         .then((data) => {
         
@@ -723,7 +726,7 @@ const shouldShowGraph = true;
     const container = document.getElementById('local-graph-content');
     if (container && localGraphInitialized) {
       // Get fresh data and re-render
-      fetch(import.meta.env.BASE_URL + 'graph/graph-data.json')
+      fetch(cleanBase + 'graph/graph-data.json')
         .then(response => response.json())
         .then(data => {
           const currentPath = window.location.pathname;
@@ -801,7 +804,7 @@ const shouldShowGraph = true;
           }
         }
 
-        fetch(import.meta.env.BASE_URL + 'graph/graph-data.json')
+        fetch(cleanBase + 'graph/graph-data.json')
           .then(response => response.json())
           .then(data => {
             const filteredData = filterLocalGraphData(data, currentSlug);

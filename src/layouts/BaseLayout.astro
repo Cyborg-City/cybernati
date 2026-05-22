@@ -1,6 +1,7 @@
 ---
 import { siteConfig, getFontFamily, getGoogleFontsUrl, shouldLoadLocalFonts, shouldLoadCdnFonts, getFontDisplay, getThemeDisplayName } from '@/config';
 import type { SEOData } from '@/types';
+import { resolveUrl } from '@/utils/url-helpers';
 import Header from '@/components/Header.astro';
 import Footer from '@/components/Footer.astro';
 import CommandPalette from '@/components/CommandPalette.astro';
@@ -76,7 +77,7 @@ const scrollbarClass = siteConfig.hideScrollBar ? '' : 'show-scrollbars';
     </>
   ) : (
     <>
-      <meta property="og:image" content={new URL((import.meta.env.BASE_URL || "/") + "open-graph.png", Astro.site || siteConfig.site).toString()}>
+      <meta property="og:image" content={new URL(resolveUrl("open-graph.png"), Astro.site || siteConfig.site).toString()}>
       <meta property="og:image:alt" content={siteConfig.defaultOgImageAlt}>
       {/* Assuming default image dimensions, adjust if known */}
       <meta property="og:image:width" content="1200">
@@ -95,7 +96,7 @@ const scrollbarClass = siteConfig.hideScrollBar ? '' : 'show-scrollbars';
     </>
   ) : (
     <>
-      <meta name="twitter:image" content={new URL((import.meta.env.BASE_URL || "/") + "open-graph.png", Astro.site || siteConfig.site).toString()}>
+      <meta name="twitter:image" content={new URL(resolveUrl("open-graph.png"), Astro.site || siteConfig.site).toString()}>
       <meta name="twitter:image:alt" content={siteConfig.defaultOgImageAlt}>
     </>
   )}
@@ -116,7 +117,7 @@ const scrollbarClass = siteConfig.hideScrollBar ? '' : 'show-scrollbars';
   )}
 
   <!-- Default favicon (will be updated by JavaScript) -->
-  <link rel="icon" href={import.meta.env.BASE_URL + "favicon.png"} />
+  <link rel="icon" href={resolveUrl("favicon.png")} />
 
   <!-- Command Palette Config for Client Script -->
   <meta name="command-palette-shortcut" content={siteConfig.commandPalette.shortcut || ''}>

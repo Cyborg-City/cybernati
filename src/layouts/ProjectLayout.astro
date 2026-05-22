@@ -19,6 +19,7 @@ import { Image } from 'astro:assets';
 import { devConfig } from '@/config/dev';
 import { getOptimizedFormat } from '@/utils/images';
 import ImageWrapper from '@/components/ImageWrapper.astro';
+import { resolveUrl } from '@/utils/url-helpers';
 
 export interface Props {
   project: CollectionEntry<'projects'>;
@@ -298,7 +299,7 @@ const { prev: prevProject, next: nextProject } = getAdjacentPosts(visibleProject
                 {prevProject && (
                   <div class="text-left">
                     <a
-                      href={`/projects/${prevProject.id}`}
+                      href={resolveUrl(`/projects/${prevProject.id}`)}
                       class="group block p-4 rounded-lg border border-primary-200 dark:border-primary-700 hover:border-highlight-300 dark:hover:border-highlight-600 transition-all duration-200 hover:shadow-md"
                     >
                       <h3 class="font-semibold text-primary-900 dark:text-primary-50 group-hover:text-highlight-600 dark:group-hover:text-highlight-400 transition-colors">
@@ -314,7 +315,7 @@ const { prev: prevProject, next: nextProject } = getAdjacentPosts(visibleProject
                 {nextProject && (
                   <div class={`text-right ${!prevProject ? 'md:col-start-2' : ''}`}>
                     <a
-                      href={`/projects/${nextProject.id}`}
+                      href={resolveUrl(`/projects/${nextProject.id}`)}
                       class="group block p-4 rounded-lg border border-primary-200 dark:border-primary-700 hover:border-highlight-300 dark:hover:border-highlight-600 transition-all duration-200 hover:shadow-md"
                     >
                       <h3 class="font-semibold text-primary-900 dark:text-primary-50 group-hover:text-highlight-600 dark:group-hover:text-highlight-400 transition-colors">
@@ -462,7 +463,9 @@ const { prev: prevProject, next: nextProject } = getAdjacentPosts(visibleProject
 
           if (post) {
             // Update href
-            link.href = `/posts/${post.id}`;
+            const baseUrlAttr = document.documentElement.dataset.baseUrl || '/';
+            const cleanBase = baseUrlAttr.endsWith('/') ? baseUrlAttr : baseUrlAttr + '/';
+            link.href = `${cleanBase}posts/${post.id}`;
 
             // Simple logic:
             // - If displayOverride exists and is not null, it's a wikilink with custom text [[link|display]] - use it

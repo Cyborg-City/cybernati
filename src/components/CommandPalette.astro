@@ -1,6 +1,7 @@
 ---
 import { siteConfig, getThemeDisplayName } from '../config';
 import Icon from './Icon.astro';
+import { resolveUrl } from '../utils/url-helpers';
 ---
 
 <!-- Make site configuration available to client-side JavaScript -->
@@ -134,7 +135,7 @@ import Icon from './Icon.astro';
                       {/* Parent item */}
                       {hasUrl ? (
                         <a 
-                          href={page.url}
+                          href={resolveUrl(page.url)}
                           class="w-full flex items-center space-x-3 px-3 py-2 hover:bg-primary-50 dark:hover:bg-primary-800 rounded-lg transition-colors group"
                           target={page.url.startsWith('http') ? '_blank' : undefined}
                         >
@@ -153,7 +154,7 @@ import Icon from './Icon.astro';
                       {/* Children items (indented) */}
                       {page.children.map(child => (
                         <a 
-                          href={child.url || '#'}
+                          href={child.url ? resolveUrl(child.url) : '#'}
                           class="w-full flex items-center space-x-3 px-3 py-2 pl-8 hover:bg-primary-50 dark:hover:bg-primary-800 rounded-lg transition-colors group"
                           target={child.url?.startsWith('http') ? '_blank' : undefined}
                         >
@@ -170,7 +171,7 @@ import Icon from './Icon.astro';
                   // Regular navigation item without children
                   return (
                     <a 
-                      href={page.url || '#'}
+                      href={page.url ? resolveUrl(page.url) : '#'}
                       class="w-full flex items-center space-x-3 px-3 py-2 hover:bg-primary-50 dark:hover:bg-primary-800 rounded-lg transition-colors group"
                       target={page.url?.startsWith('http') ? '_blank' : undefined}
                     >

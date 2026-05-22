@@ -18,7 +18,7 @@
     "author": "LoFi Monk",
     "language": "en",
     "faviconThemeAdaptive": true,
-    "defaultOgImageAlt": "Astro Modular logo."
+    "defaultOgImageAlt": "Cybernati. The System is performing as intended."
   },
   "layout": {
     "contentWidth": "45rem"
@@ -33,7 +33,7 @@
     "showSocialIconsInFooter": true
   },
   "seo": {
-    "defaultOgImageAlt": "Astro Modular logo."
+    "defaultOgImageAlt": "Cybernati. The System is performing as intended."
   },
   "navigation": {
     "showNavigation": true,

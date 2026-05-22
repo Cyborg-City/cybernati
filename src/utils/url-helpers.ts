@@ -43,3 +43,22 @@ export function resolveUrl(path: string | undefined | null): string {
   const cleanPath = path.startsWith('/') ? path.slice(1) : path;
   return cleanBase + cleanPath;
 }
+
+/**
+ * Formats a graph node slug into a web URL with a base path and a trailing slash.
+ * Directory-based static hosts like GitHub Pages require trailing slashes for Swup
+ * AJAX-based page transitions to prevent 404s when fetching route index documents.
+ * 
+ * @param slug The slug of the post.
+ * @returns The formatted URL (e.g. "/cybernati/posts/my-post/").
+ */
+export function getGraphNodeUrl(slug: string): string {
+  const base = getBaseUrl();
+  const cleanBase = base.endsWith('/') ? base : base + '/';
+  
+  // Normalize the slug by removing any leading or trailing slashes to prevent malformed double slashes.
+  const cleanSlug = slug.replace(/^\/+|\/+$/g, '');
+  
+  return `${cleanBase}posts/${cleanSlug}/`;
+}
+

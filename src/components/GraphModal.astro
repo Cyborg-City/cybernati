@@ -33,6 +33,7 @@ import Icon from './Icon.astro';
 <script>
   import * as d3 from "d3";
   import { getGraphThemeColors } from '@/utils/graph-theme-colors';
+  import { getGraphNodeUrl } from '@/utils/url-helpers';
   
   const baseUrl = import.meta.env.BASE_URL;
   const cleanBase = baseUrl.endsWith('/') ? baseUrl : baseUrl + '/';
@@ -292,7 +293,7 @@ import Icon from './Icon.astro';
       .force("collision", d3.forceCollide().radius((d: any) => d.radius + 5));
 
     // Create SVG
-    let svg = d3
+    svg = d3
       .select(container)
       .append("svg")
       .attr("width", width)
@@ -401,7 +402,10 @@ import Icon from './Icon.astro';
               if (dist < CLICK_DISTANCE && d.slug) {
                 closeModal();
 
-                const targetUrl = cleanBase + 'posts/' + d.slug + '/';
+                // We use getGraphNodeUrl which formats the path correctly with the base path and trailing slash.
+                // Directory-based static hosts like GitHub Pages require trailing slashes for Swup
+                // AJAX-based page transitions to prevent 404s when fetching route index documents.
+                const targetUrl = getGraphNodeUrl(d.slug);
                 if ((window as any).swup) {
                   if ((window as any).resetLocalGraph) {
                     (window as any).resetLocalGraph();
@@ -716,8 +720,11 @@ import Icon from './Icon.astro';
       fetch(cleanBase + 'graph/graph-data.json')
         .then(response => response.json())
         .then(data => {
+          // Fix container query from 'graph-modal-content' to the actual 'graph-modal-container'.
           const container = document.getElementById('graph-modal-container') as HTMLElement;
           if (container) {
+            // Map raw JSON connections to D3-compatible nodes/links (GraphData format) before re-rendering
+            // to avoid rendering crashes or incorrect structures under theme switch changes.
             const graphData: GraphData = {
               nodes: data.nodes.map((node: any) => ({
                 id: node.id,

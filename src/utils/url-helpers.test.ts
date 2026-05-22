@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { resolveUrl, getBaseUrl } from './url-helpers';
+import { resolveUrl, getBaseUrl, getGraphNodeUrl } from './url-helpers';
+import { siteConfig } from '../config';
 
 vi.mock('../config', () => ({
   siteConfig: {
@@ -59,4 +60,30 @@ describe('url-helpers', () => {
     import.meta.env.BASE_URL = '';
     expect(getBaseUrl()).toBe('/cybernati/');
   });
+
+  describe('getGraphNodeUrl', () => {
+    it('should prepend base URL and append trailing slash to standard slugs', () => {
+      expect(getGraphNodeUrl('my-awesome-post')).toBe('/cybernati/posts/my-awesome-post/');
+    });
+
+    it('should normalize slugs with leading and trailing slashes correctly', () => {
+      expect(getGraphNodeUrl('/my-awesome-post/')).toBe('/cybernati/posts/my-awesome-post/');
+      expect(getGraphNodeUrl('my-awesome-post///')).toBe('/cybernati/posts/my-awesome-post/');
+      expect(getGraphNodeUrl('///my-awesome-post')).toBe('/cybernati/posts/my-awesome-post/');
+    });
+
+    it('should respect root base URL correctly', () => {
+      // Temporarily change siteConfig.site to a root site and restore it afterward
+      const originalSite = siteConfig.site;
+      (siteConfig as any).site = 'https://cyborg-city.github.io';
+      import.meta.env.BASE_URL = '/';
+      
+      try {
+        expect(getGraphNodeUrl('my-awesome-post')).toBe('/posts/my-awesome-post/');
+      } finally {
+        (siteConfig as any).site = originalSite;
+      }
+    });
+  });
 });
+

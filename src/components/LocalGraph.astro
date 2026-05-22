@@ -59,6 +59,7 @@ const shouldShowGraph = true;
 <script>
   import * as d3 from "d3";
   import { getGraphThemeColors } from '@/utils/graph-theme-colors';
+  import { getGraphNodeUrl } from '@/utils/url-helpers';
 
   const baseUrl = import.meta.env.BASE_URL;
   const cleanBase = baseUrl.endsWith('/') ? baseUrl : baseUrl + '/';
@@ -264,7 +265,10 @@ const shouldShowGraph = true;
               document.body.style.overflow = '';
               resetLocalGraph();
 
-              const url = cleanBase + 'posts/' + d.slug + '/';
+              // We use getGraphNodeUrl which formats the path correctly with the base path and trailing slash.
+              // Directory-based static hosts like GitHub Pages require trailing slashes for Swup
+              // AJAX-based page transitions to prevent 404s when fetching route index documents.
+              const url = getGraphNodeUrl(d.slug);
               if ((window as any).swup) {
                 (window as any).swup.navigate(url);
               } else {

@@ -125,6 +125,10 @@ export interface SiteConfig {
       enabled: boolean;
       count: number;
     };
+    vault: {
+      enabled: boolean;
+      count: number;
+    };
     blurb: {
       placement: "above" | "below" | "none";
     };
@@ -173,6 +177,7 @@ export interface SiteConfig {
     projects: boolean;
     docs: boolean;
     dossier: boolean;
+    vault: boolean;
   };
 }
 
@@ -358,6 +363,8 @@ export const siteConfig: SiteConfig = {
     docs: false, // Enable documentation section
     // [CONFIG:OPTIONAL_CONTENT_TYPES_DOSSIER]
     dossier: true, // Enable dossier section
+    // [CONFIG:OPTIONAL_CONTENT_TYPES_VAULT]
+    vault: true, // Enable vault section
   },
 
   // Home Options
@@ -393,6 +400,12 @@ export const siteConfig: SiteConfig = {
       enabled: true, // Show featured docs on homepage
       // [CONFIG:HOME_OPTIONS_DOCS_COUNT]
       count: 3, // Number of docs to show
+    },
+    vault: {
+      // [CONFIG:HOME_OPTIONS_VAULT_ENABLED]
+      enabled: true, // Show recent vault entries on homepage
+      // [CONFIG:HOME_OPTIONS_VAULT_COUNT]
+      count: 2, // Number of vault entries to show
     },
     blurb: {
       // [CONFIG:HOME_OPTIONS_BLURB_PLACEMENT]
@@ -701,6 +714,9 @@ function validateSiteConfig(config: SiteConfig): { isValid: boolean; errors: str
   }
   if (config.homeOptions.docs.count < 1) {
     errors.push('Documentation count must be at least 1. Adjust homeOptions.docs.count.');
+  }
+  if (config.homeOptions.vault.count < 1) {
+    errors.push('Vault count must be at least 1. Adjust homeOptions.vault.count.');
   }
 
   // Content width validation

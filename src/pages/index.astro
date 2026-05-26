@@ -92,6 +92,21 @@ if (siteConfig.homeOptions.dossier.enabled && siteConfig.optionalContentTypes.do
     .slice(0, siteConfig.homeOptions.dossier.count);
 }
 
+// Get featured vault entries if enabled
+let featuredVault: any[] = [];
+if (siteConfig.homeOptions.vault.enabled && siteConfig.optionalContentTypes.vault) {
+  const allVault = await getCollection('vault');
+  const visibleVault = allVault.filter(entry => shouldShowContent(entry, isDev));
+
+  featuredVault = visibleVault
+    .sort((a, b) => {
+      const dateA = isValidDate(a.data.date) ? a.data.date : new Date(0);
+      const dateB = isValidDate(b.data.date) ? b.data.date : new Date(0);
+      return dateB.getTime() - dateA.getTime();
+    })
+    .slice(0, siteConfig.homeOptions.vault.count);
+}
+
 // Get featured docs if enabled
 let featuredDocs: any[] = [];
 if (siteConfig.homeOptions.docs.enabled && siteConfig.optionalContentTypes.docs) {
@@ -145,9 +160,10 @@ const hasRecentPosts = siteConfig.homeOptions.recentPosts.enabled && previewPost
 const hasProjects = siteConfig.homeOptions.projects.enabled && featuredProjects.length > 0;
 const hasDossier = siteConfig.homeOptions.dossier.enabled && featuredDossier.length > 0;
 const hasDocs = siteConfig.homeOptions.docs.enabled && featuredDocs.length > 0;
+const hasVault = siteConfig.homeOptions.vault.enabled && featuredVault.length > 0;
 
 // Count how many content types are being displayed
-const contentTypesCount = [hasFeaturedPost, hasRecentPosts, hasProjects, hasDossier, hasDocs].filter(Boolean).length;
+const contentTypesCount = [hasFeaturedPost, hasRecentPosts, hasProjects, hasDossier, hasDocs, hasVault].filter(Boolean).length;
 
 // Determine if we should use special treatment (only one content type is displayed)
 const useSpecialTreatment = contentTypesCount === 1;
@@ -315,7 +331,7 @@ const structuredData = {
               {!useSpecialTreatment && (
                 <div class="flex items-center justify-between mb-6">
                   <h2 class="text-lg font-semibold text-primary-900 dark:text-primary-50">
-                    Dossier
+                    Recent Dossier Entries
                   </h2>
                   <a
                     href={resolveUrl('/dossier')}
@@ -339,6 +355,42 @@ const structuredData = {
                     class="text-primary-600 dark:text-primary-300 hover:text-highlight-600 dark:hover:text-highlight-400 font-medium transition-colors"
                   >
                     View all dossiers →
+                  </a>
+                </div>
+              )}
+            </section>
+          )}
+
+          <!-- Recent Vault Entries -->
+          {siteConfig.homeOptions.vault.enabled && featuredVault.length > 0 && (
+            <section class="mb-12">
+              {!useSpecialTreatment && (
+                <div class="flex items-center justify-between mb-6">
+                  <h2 class="text-lg font-semibold text-primary-900 dark:text-primary-50">
+                    Recent Vault Entries
+                  </h2>
+                  <a
+                    href={resolveUrl('/vault')}
+                    class="text-primary-600 dark:text-primary-300 hover:text-highlight-600 dark:hover:text-highlight-400 font-medium transition-colors"
+                  >
+                    View all vault entries →
+                  </a>
+                </div>
+              )}
+
+              <div class="space-y-4">
+                {featuredVault.map((entry, index) => (
+                  <PostCard post={entry} eager={index === 0} context="recent" collection="vault" />
+                ))}
+              </div>
+
+              {useSpecialTreatment && (
+                <div class="mt-8 text-center">
+                  <a
+                    href={resolveUrl('/vault')}
+                    class="text-primary-600 dark:text-primary-300 hover:text-highlight-600 dark:hover:text-highlight-400 font-medium transition-colors"
+                  >
+                    View all vault entries →
                   </a>
                 </div>
               )}

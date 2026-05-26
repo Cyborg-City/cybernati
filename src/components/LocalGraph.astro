@@ -27,7 +27,7 @@ const shouldShowGraph = true;
 ---
 
 {shouldShowGraph && (
-  <div id="local-graph-container" class="relative w-full bg-primary-50 dark:bg-primary-800 rounded-xl border border-primary-200 dark:border-primary-700 shadow-lg backdrop-blur-sm bg-opacity-95 dark:bg-opacity-95 overflow-hidden" style="width: 280px; max-width: 280px; height: 280px;">
+  <div id="local-graph-container" data-slug={currentSlug} class="relative w-full bg-primary-50 dark:bg-primary-800 rounded-xl border border-primary-200 dark:border-primary-700 shadow-lg backdrop-blur-sm bg-opacity-95 dark:bg-opacity-95 overflow-hidden" style="width: 280px; max-width: 280px; height: 280px;">
 
     <!-- Icons in top right corner -->
     <div class="absolute top-3 right-3 z-20 flex items-center gap-2">
@@ -409,31 +409,7 @@ const shouldShowGraph = true;
       </div>
     `;
 
-    const currentPath = window.location.pathname;
-    let currentSlug = '';
-    
-    // Try multiple patterns to match the current post
-    const patterns = [
-      /\/posts\/([^\/]+)/,           // /posts/slug
-      /\/posts\/([^\/]+)\/$/,        // /posts/slug/
-      /\/posts\/([^\/]+)\/index/,   // /posts/slug/index
-    ];
-    
-    for (const pattern of patterns) {
-      const match = currentPath.match(pattern);
-      if (match) {
-        currentSlug = match[1];
-        break;
-      }
-    }
-    
-    // If no match, try to extract from the last segment
-    if (!currentSlug) {
-      const segments = currentPath.split('/').filter(Boolean);
-      if (segments.length >= 2 && segments[0] === 'posts') {
-        currentSlug = segments[1];
-      }
-    }
+    let currentSlug = outerContainer.dataset.slug || '';
     
       fetch(cleanBase + 'graph/graph-data.json')
         .then(response => response.json())
@@ -733,23 +709,8 @@ const shouldShowGraph = true;
       fetch(cleanBase + 'graph/graph-data.json')
         .then(response => response.json())
         .then(data => {
-          const currentPath = window.location.pathname;
-          let currentSlug = '';
-          
-          // Try multiple patterns to match the current post
-          const patterns = [
-            /\/posts\/([^\/]+)/,           // /posts/slug
-            /\/posts\/([^\/]+)\/$/,        // /posts/slug/
-            /\/posts\/([^\/]+)\/index/,   // /posts/slug/index
-          ];
-          
-          for (const pattern of patterns) {
-            const match = currentPath.match(pattern);
-            if (match) {
-              currentSlug = match[1];
-              break;
-            }
-          }
+          const outerContainer = document.getElementById('local-graph-container');
+          let currentSlug = outerContainer ? (outerContainer.dataset.slug || '') : '';
           
           const filteredData = filterLocalGraphData(data, currentSlug);
           renderLocalGraph(container, filteredData);
@@ -791,23 +752,7 @@ const shouldShowGraph = true;
         renderLocalGraph(container, cachedFilteredData);
       } else {
         // Fetch fresh data if cache is not available
-        const currentPath = window.location.pathname;
-        let currentSlug = '';
-        
-        const patterns = [
-          /\/posts\/([^\/]+)/,
-          /\/posts\/([^\/]+)\/$/,
-          /\/posts\/([^\/]+)\/index/,
-        ];
-        
-        for (const pattern of patterns) {
-          const match = currentPath.match(pattern);
-          if (match) {
-            currentSlug = match[1];
-            break;
-          }
-        }
-
+        let currentSlug = outerContainer.dataset.slug || '';
         fetch(cleanBase + 'graph/graph-data.json')
           .then(response => response.json())
           .then(data => {

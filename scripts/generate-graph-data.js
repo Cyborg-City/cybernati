@@ -39,6 +39,7 @@ const projectRoot = join(__dirname, "..");
 // Configuration
 const OUTPUT_DIR = join(projectRoot, "public", "graph");
 const OUTPUT_FILE = join(OUTPUT_DIR, "graph-data.json");
+const COLLECTIONS = ["posts", "dossier", "vault"];
 
 /**
  * Read maxNodes from config file
@@ -151,15 +152,17 @@ function extractStandardLinks(content) {
     if (isInternalLink(url)) {
       const { linkText } = extractLinkTextFromUrl(url);
       if (linkText) {
-        // Only include posts in graph data - this includes:
-        // - posts/ prefixed links
-        // - /posts/ relative links
-        // - .md files (assumed to be posts)
-        // - Simple slugs (assumed to be posts for backward compatibility)
+        // Only include configured collections in graph data:
+        // - prefix/ links
+        // - /prefix/ relative links
+        // - .md files
+        // - Simple slugs
         const isPostLink =
-          linkText.startsWith("posts/") ||
-          url.startsWith("/posts/") ||
-          url.startsWith("posts/") ||
+          COLLECTIONS.some(col => 
+            linkText.startsWith(`${col}/`) ||
+            url.startsWith(`/${col}/`) ||
+            url.startsWith(`${col}/`)
+          ) ||
           url.endsWith(".md") ||
           (!linkText.includes("/") && !url.startsWith("/"));
 
@@ -203,12 +206,11 @@ function isInternalLink(url) {
 
   // Check if it's an internal link:
   // - Ends with .md (markdown files)
-  // - Starts with /posts/ or posts/ (post relative URLs)
-  // - Is just a slug (no slashes) - assumes posts for backward compatibility
+  // - Starts with /collection/ or collection/ (relative URLs)
+  // - Is just a slug (no slashes) - assumes internal for backward compatibility
   const isInternal =
     url.endsWith(".md") ||
-    url.startsWith("/posts/") ||
-    url.startsWith("posts/") ||
+    COLLECTIONS.some(col => url.startsWith(`/${col}/`) || url.startsWith(`${col}/`)) ||
     !url.includes("/");
 
   return isInternal;
@@ -225,30 +227,23 @@ function extractLinkTextFromUrl(url) {
   const link = anchorIndex === -1 ? url : url.substring(0, anchorIndex);
   const anchor = anchorIndex === -1 ? null : url.substring(anchorIndex + 1);
 
-  // Handle posts/ prefixed links
-  if (link.startsWith("posts/")) {
-    let linkText = link.replace("posts/", "").replace(/\.md$/, "");
-    // Remove /index for folder-based posts
-    if (linkText.endsWith("/index") && linkText.split("/").length === 2) {
-      linkText = linkText.replace("/index", "");
+  // Handle collection prefixed links
+  for (const col of COLLECTIONS) {
+    if (link.startsWith(`${col}/`)) {
+      let linkText = link.replace(`${col}/`, "").replace(/\.md$/, "");
+      if (linkText.endsWith("/index") && linkText.split("/").length === 2) {
+        linkText = linkText.replace("/index", "");
+      }
+      return { linkText, anchor };
     }
-    return {
-      linkText: linkText,
-      anchor: anchor,
-    };
-  }
-
-  // Handle /posts/ URLs (relative links)
-  if (link.startsWith("/posts/")) {
-    let linkText = link.replace("/posts/", "").replace(/\.md$/, "");
-    // Remove /index for folder-based posts
-    if (linkText.endsWith("/index") && linkText.split("/").length === 2) {
-      linkText = linkText.replace("/index", "");
+    
+    if (link.startsWith(`/${col}/`)) {
+      let linkText = link.replace(`/${col}/`, "").replace(/\.md$/, "");
+      if (linkText.endsWith("/index") && linkText.split("/").length === 2) {
+        linkText = linkText.replace("/index", "");
+      }
+      return { linkText, anchor };
     }
-    return {
-      linkText: linkText,
-      anchor: anchor,
-    };
   }
 
   // Handle .md files
@@ -417,12 +412,17 @@ async function generateGraphData() {
     // Get configuration values
     const maxNodes = getMaxNodesFromConfig();
 
-    // Read all posts from the content directory
-    const postsDir = join(projectRoot, "src", "content", "posts");
-    log.info("📁 Reading posts from:", postsDir);
-
-    const posts = readContentFiles(postsDir);
-    log.info(`📄 Found ${posts.length} posts`);
+    // Read all configured collections from the content directory
+    let posts = [];
+    for (const col of COLLECTIONS) {
+      const dirPath = join(projectRoot, "src", "content", col);
+      if (existsSync(dirPath)) {
+        log.info(`📁 Reading from: ${dirPath}`);
+        const items = readContentFiles(dirPath);
+        posts.push(...items);
+      }
+    }
+    log.info(`📄 Found ${posts.length} items total`);
 
     // Filter out draft posts in production
     const isDev = process.env.NODE_ENV !== "production" && !process.argv.includes("--production");

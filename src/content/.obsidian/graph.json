@@ -1,6 +1,6 @@
 {
-  "collapse-filter": true,
-  "search": "path:posts/",
+  "collapse-filter": false,
+  "search": "",
   "showTags": false,
   "showAttachments": false,
   "hideUnresolved": false,
@@ -25,6 +25,6 @@
   "repelStrength": 10,
   "linkStrength": 1,
   "linkDistance": 250,
-  "scale": 1.0147822288211767,
+  "scale": 0.18735240556699945,
   "close": true
 }

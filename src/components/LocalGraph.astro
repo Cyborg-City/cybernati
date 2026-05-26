@@ -268,7 +268,7 @@ const shouldShowGraph = true;
               // We use getGraphNodeUrl which formats the path correctly with the base path and trailing slash.
               // Directory-based static hosts like GitHub Pages require trailing slashes for Swup
               // AJAX-based page transitions to prevent 404s when fetching route index documents.
-              const url = getGraphNodeUrl(d.slug);
+              const url = getGraphNodeUrl(d.slug, d.group);
               if ((window as any).swup) {
                 (window as any).swup.navigate(url);
               } else {

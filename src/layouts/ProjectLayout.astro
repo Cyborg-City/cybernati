@@ -95,8 +95,8 @@ const { Content, headings } = await processPost(project as any);
 
 // Generate table of contents if enabled - global setting, then hideTOC frontmatter (default true for projects)
 const hideTOC = project.data.hideTOC === true;
-const shouldShowTOC = siteConfig.tableOfContents.enabled && !hideTOC && headings.length > 0;
-const toc = shouldShowTOC ? await generateTOC(headings) : [];
+const toc = (siteConfig.tableOfContents.enabled && !hideTOC) ? await generateTOC(headings) : [];
+const shouldShowTOC = toc.length > 1;
 
 // Get adjacent projects for navigation
 const { prev: prevProject, next: nextProject } = getAdjacentPosts(visibleProjectsForCategories as any, project.id);

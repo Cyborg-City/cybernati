@@ -45,12 +45,12 @@
         "url": "/posts/"
       },
       {
-        "title": "Projects",
-        "url": "/projects/"
+        "title": "Vault",
+        "url": "/vault/"
       },
       {
-        "title": "Docs",
-        "url": "/docs/"
+        "title": "Dossier",
+        "url": "/dossier/"
       },
       {
         "title": "About",
@@ -243,8 +243,8 @@
     }
   },
   "optionalContentTypes": {
-    "projects": true,
-    "docs": true
+    "projects": false,
+    "docs": false
   },
   "availableThemes": "default",
   "customThemes": "",

@@ -71,6 +71,13 @@
       "mode": "desktop",
       "toggleIcon": "lucide-panel-top-close",
       "showOnFileTypes": "md"
+    },
+    {
+      "id": "theme:toggle-light-dark",
+      "icon": "lucide-sun-moon",
+      "name": "Toggle light/dark mode",
+      "displayName": "Toggle light/dark mode",
+      "mode": "any"
     }
   ],
   "statusBarItems": [
@@ -160,7 +167,15 @@
       "sticky": "right"
     }
   ],
-  "explorerCommands": [],
+  "explorerCommands": [
+    {
+      "id": "lean-terminal:open-terminal",
+      "icon": "lucide-terminal-square",
+      "name": "Lean Terminal: Open terminal",
+      "displayName": "Lean Terminal: Open terminal",
+      "mode": "any"
+    }
+  ],
   "explorerButtonItems": [
     {
       "id": "native-newNote",
@@ -202,6 +217,17 @@
       "name": "Toggle focus",
       "ariaLabel": "Toggle focus",
       "type": "external",
+      "hidden": false
+    },
+    {
+      "id": "custom-lean-terminal:open-terminal",
+      "name": "Lean Terminal: Open terminal",
+      "ariaLabel": "Lean Terminal: Open terminal",
+      "type": "custom",
+      "commandId": "lean-terminal:open-terminal",
+      "icon": "lucide-terminal-square",
+      "displayName": "Lean Terminal: Open terminal",
+      "mode": "any",
       "hidden": false
     }
   ],

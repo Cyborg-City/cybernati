@@ -403,13 +403,16 @@ import { resolveUrl } from '../utils/url-helpers';
           posts: true,
           pages: false,
           projects: false,
-          docs: false
+          docs: false,
+          dossier: false,
+          vault: false
         };
 
         // Get optional content types configuration
         const optionalContentTypes = (window as any).siteConfig?.optionalContentTypes || {
           projects: true,
-          docs: true
+          docs: true,
+          dossier: true
         };
 
         const baseUrl = import.meta.env.BASE_URL;
@@ -465,11 +468,37 @@ import { resolveUrl } from '../utils/url-helpers';
           promises.push(Promise.resolve([]));
         }
 
+        // Load dossier if enabled in search config AND dossier content type is enabled
+        if (searchConfig.dossier && optionalContentTypes.dossier) {
+          promises.push(
+            fetch(cleanBase + 'api/dossier.json').then(response => {
+              return response.ok ? response.json() : [];
+            }).catch(error => {
+              return [];
+            })
+          );
+        } else {
+          promises.push(Promise.resolve([]));
+        }
+
+        // Load vault if enabled in search config
+        if (searchConfig.vault) {
+          promises.push(
+            fetch(cleanBase + 'api/vault.json').then(response => {
+              return response.ok ? response.json() : [];
+            }).catch(error => {
+              return [];
+            })
+          );
+        } else {
+          promises.push(Promise.resolve([]));
+        }
+
         // Wait for all API calls to complete
-        const [posts, pages, projects, docs] = await Promise.all(promises);
+        const [posts, pages, projects, docs, dossier, vault] = await Promise.all(promises);
 
         // Add items to the array
-        allItems.push(...posts, ...pages, ...projects, ...docs);
+        allItems.push(...posts, ...pages, ...projects, ...docs, ...dossier, ...vault);
 
         this.items = allItems;
         // Don't initialize Fuse.js immediately - wait until first search
@@ -858,13 +887,16 @@ import { resolveUrl } from '../utils/url-helpers';
         posts: true,
         pages: false,
         projects: false,
-        docs: false
+        docs: false,
+        dossier: false,
+        vault: false
       };
 
       // Get optional content types configuration
       const optionalContentTypes = (window as any).siteConfig?.optionalContentTypes || {
         projects: true,
-        docs: true
+        docs: true,
+        dossier: true
       };
 
       // Filter items by enabled content types
@@ -873,6 +905,8 @@ import { resolveUrl } from '../utils/url-helpers';
       if (searchConfig.pages) enabledTypes.push('page');
       if (searchConfig.projects && optionalContentTypes.projects) enabledTypes.push('project');
       if (searchConfig.docs && optionalContentTypes.docs) enabledTypes.push('docs', 'documentation');
+      if (searchConfig.dossier && optionalContentTypes.dossier) enabledTypes.push('dossier');
+      if (searchConfig.vault) enabledTypes.push('vault');
 
       const filteredByType = this.filteredItems.filter((item: CommandPaletteItem) => enabledTypes.includes(item.type));
 
@@ -885,7 +919,9 @@ import { resolveUrl } from '../utils/url-helpers';
         posts: filteredByType.filter(item => item.type === 'post'),
         pages: filteredByType.filter(item => item.type === 'page'),
         projects: filteredByType.filter(item => item.type === 'project'),
-        docs: filteredByType.filter(item => item.type === 'docs' || item.type === 'documentation')
+        docs: filteredByType.filter(item => item.type === 'docs' || item.type === 'documentation'),
+        dossier: filteredByType.filter(item => item.type === 'dossier'),
+        vault: filteredByType.filter(item => item.type === 'vault')
       };
 
       // Render each content type section
@@ -902,7 +938,9 @@ import { resolveUrl } from '../utils/url-helpers';
             posts: 'Posts',
             pages: 'Pages', 
             projects: 'Projects',
-            docs: 'Documentation'
+            docs: 'Documentation',
+            dossier: 'Dossier',
+            vault: 'Vault'
           };
           
           header.textContent = `${sectionTitles[type as keyof typeof sectionTitles]} (${items.length})`;

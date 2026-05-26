@@ -21,10 +21,11 @@
       "linkBasePath": "/posts/",
       "template": "---\ntitle: \"{{title}}\"\ndate: {{date}}\ndescription: \"\"\ntags: []\nimage: \"\"\nimageAlt: \"\"\nimageOG: false\nhideCoverImage: false\nhideTOC: false\ntargetKeyword: \"\"\ndraft: false\n---\n",
       "enabled": true,
-      "creationMode": "file",
+      "creationMode": "folder",
       "indexFileName": "index",
       "ignoreSubfolders": false,
-      "enableUnderscorePrefix": false
+      "enableUnderscorePrefix": false,
+      "collapsed": true
     },
     {
       "id": "pages-1765432337485",
@@ -33,10 +34,11 @@
       "linkBasePath": "/",
       "template": "---\ntitle: \"{{title}}\"\ndescription: \"\"\nnoIndex: false\nhideTOC: false\ndraft: false\n---\n",
       "enabled": true,
-      "creationMode": "file",
+      "creationMode": "folder",
       "indexFileName": "index",
       "ignoreSubfolders": false,
-      "enableUnderscorePrefix": false
+      "enableUnderscorePrefix": false,
+      "collapsed": true
     },
     {
       "id": "content-1765432392567",
@@ -45,10 +47,11 @@
       "linkBasePath": "/projects/",
       "template": "---\ntitle: \"{{title}}\"\ndescription: \"\"\ndate: {{date}}\ncategories: []\nrepositoryUrl:\nprojectUrl: \"\"\nstatus: \"\"\nimage: \"\"\nimageAlt: \"\"\nhideCoverImage: false\nhideTOC: false\ndraft: true\nfeatured: false\n---\n",
       "enabled": true,
-      "creationMode": "file",
+      "creationMode": "folder",
       "indexFileName": "index",
       "ignoreSubfolders": false,
-      "enableUnderscorePrefix": false
+      "enableUnderscorePrefix": false,
+      "collapsed": true
     },
     {
       "id": "content-1765432406133",
@@ -57,11 +60,41 @@
       "linkBasePath": "/docs/",
       "template": "---\ntitle: \"{{title}}\"\ndescription: \"\"\ncategory: \"\"\norder: \nversion: \"\"\nlastModified: {{date}}\nimage: \"\"\nimageAlt: \"\"\nhideCoverImage: false\nhideTOC: false\ndraft: false\nfeatured: false\n---\n",
       "enabled": true,
-      "creationMode": "file",
+      "creationMode": "folder",
       "indexFileName": "index",
       "ignoreSubfolders": false,
       "enableUnderscorePrefix": false,
-      "modifiedDateField": "lastModified"
+      "modifiedDateField": "lastModified",
+      "collapsed": true
+    },
+    {
+      "id": "content-1779739374555",
+      "name": "Dossier",
+      "folder": "dossier",
+      "linkBasePath": "/dossier/",
+      "template": "---\ntitle: \"{{title}}\"\ndate: {{date}}\ndescription: \"\"\ntags: []\nimage: \"\"\nimageAlt: \"\"\nimageOG: false\nhideCoverImage: false\nhideTOC: false\ntargetKeyword: \"\"\ndraft: false\n---",
+      "enabled": true,
+      "creationMode": "folder",
+      "indexFileName": "",
+      "ignoreSubfolders": false,
+      "enableUnderscorePrefix": false,
+      "useMdxExtension": false,
+      "modifiedDateField": "",
+      "collapsed": false
+    },
+    {
+      "id": "content-1779770104454",
+      "name": "Vault",
+      "folder": "vault",
+      "linkBasePath": "/vault/",
+      "template": "---\ntitle: \"{{title}}\"\ndate: {{date}}\ndescription: \"\"\ntags: []\nimage: \"\"\nimageAlt: \"\"\nimageOG: false\nhideCoverImage: false\nhideTOC: false\ntargetKeyword: \"\"\ndraft: false\n---\n",
+      "enabled": true,
+      "creationMode": "folder",
+      "indexFileName": "",
+      "ignoreSubfolders": false,
+      "enableUnderscorePrefix": false,
+      "useMdxExtension": false,
+      "modifiedDateField": ""
     }
   ],
   "migrationCompleted": true,

@@ -8,6 +8,7 @@ import { hasProjectCategories } from '@/utils/categories';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import PostCard from '@/components/PostCard.astro';
 import ProjectCard from '@/components/ProjectCard.astro';
+import DossierCard from '@/components/DossierCard.astro';
 import DocumentationCard from '@/components/DocumentationCard.astro';
 import Icon from '@/components/Icon.astro';
 import { optimizePostImagePath } from '@/utils/images';
@@ -75,6 +76,22 @@ if (siteConfig.homeOptions.projects.enabled && siteConfig.optionalContentTypes.p
 
 }
 
+// Get featured dossiers if enabled
+let featuredDossier: any[] = [];
+if (siteConfig.homeOptions.dossier.enabled && siteConfig.optionalContentTypes.dossier) {
+  const allDossiers = await getCollection('dossier');
+  const visibleDossiers = allDossiers.filter(dossier => shouldShowContent(dossier, isDev));
+
+  // Fallback to most recent dossiers if no featured ones
+  featuredDossier = visibleDossiers
+    .sort((a, b) => {
+      const dateA = isValidDate(a.data.date) ? a.data.date : new Date(0);
+      const dateB = isValidDate(b.data.date) ? b.data.date : new Date(0);
+      return dateB.getTime() - dateA.getTime();
+    })
+    .slice(0, siteConfig.homeOptions.dossier.count);
+}
+
 // Get featured docs if enabled
 let featuredDocs: any[] = [];
 if (siteConfig.homeOptions.docs.enabled && siteConfig.optionalContentTypes.docs) {
@@ -126,10 +143,11 @@ if (siteConfig.homeOptions.blurb.placement !== 'none') {
 const hasFeaturedPost = siteConfig.homeOptions.featuredPost.enabled && featuredPost;
 const hasRecentPosts = siteConfig.homeOptions.recentPosts.enabled && previewPosts.length > 0;
 const hasProjects = siteConfig.homeOptions.projects.enabled && featuredProjects.length > 0;
+const hasDossier = siteConfig.homeOptions.dossier.enabled && featuredDossier.length > 0;
 const hasDocs = siteConfig.homeOptions.docs.enabled && featuredDocs.length > 0;
 
 // Count how many content types are being displayed
-const contentTypesCount = [hasFeaturedPost, hasRecentPosts, hasProjects, hasDocs].filter(Boolean).length;
+const contentTypesCount = [hasFeaturedPost, hasRecentPosts, hasProjects, hasDossier, hasDocs].filter(Boolean).length;
 
 // Determine if we should use special treatment (only one content type is displayed)
 const useSpecialTreatment = contentTypesCount === 1;
@@ -285,6 +303,42 @@ const structuredData = {
                     class="text-primary-600 dark:text-primary-300 hover:text-highlight-600 dark:hover:text-highlight-400 font-medium transition-colors"
                   >
                     View all projects →
+                  </a>
+                </div>
+              )}
+            </section>
+          )}
+
+          <!-- Featured Dossier -->
+          {siteConfig.homeOptions.dossier.enabled && featuredDossier.length > 0 && (
+            <section class="mb-12">
+              {!useSpecialTreatment && (
+                <div class="flex items-center justify-between mb-6">
+                  <h2 class="text-lg font-semibold text-primary-900 dark:text-primary-50">
+                    Dossier
+                  </h2>
+                  <a
+                    href={resolveUrl('/dossier')}
+                    class="text-primary-600 dark:text-primary-300 hover:text-highlight-600 dark:hover:text-highlight-400 font-medium transition-colors"
+                  >
+                    View all dossiers →
+                  </a>
+                </div>
+              )}
+
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {featuredDossier.map((dossier, index) => (
+                  <DossierCard dossier={dossier} eager={false} context="home" showTags={true} />
+                ))}
+              </div>
+
+              {useSpecialTreatment && (
+                <div class="mt-8 text-center">
+                  <a
+                    href={resolveUrl('/dossier')}
+                    class="text-primary-600 dark:text-primary-300 hover:text-highlight-600 dark:hover:text-highlight-400 font-medium transition-colors"
+                  >
+                    View all dossiers →
                   </a>
                 </div>
               )}

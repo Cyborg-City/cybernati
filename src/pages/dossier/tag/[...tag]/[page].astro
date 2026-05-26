@@ -1,0 +1,161 @@
+---
+import type { GetStaticPaths } from 'astro';
+import { getCollection, getEntry, render } from 'astro:content';
+import { siteConfig } from '@/config';
+import { generatePostsListSEO } from '@/utils/seo';
+import { shouldShowContent, sortPostsByDate, isValidDate, extractTags } from '@/utils/markdown';
+import { resolveUrl } from '@/utils/url-helpers';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import DossierCard from '@/components/DossierCard.astro';
+import DossierTags from '@/components/DossierTags.astro';
+import Pagination from '@/components/Pagination.astro';
+import Icon from '@/components/Icon.astro';
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  const isDev = import.meta.env.DEV;
+  
+  try {
+    const allDossiers = await getCollection('dossier');
+    const visibleDossiers = allDossiers.filter(post => shouldShowContent(post, isDev));
+    const sortedDossiers = sortPostsByDate(visibleDossiers);
+    const allTags = extractTags(sortedDossiers);
+
+    const dossiersPerPage = siteConfig.postOptions.postsPerPage;
+    const paths: any[] = [];
+
+    for (const tag of allTags) {
+      try {
+        const tagPosts = sortedDossiers.filter(post => {
+          if (!post.data.tags) return false;
+          const postTags = Array.isArray(post.data.tags) ? post.data.tags : [post.data.tags];
+          return postTags.some((postTag: any) => 
+            postTag && typeof postTag === 'string' && postTag.trim() === tag.trim()
+          );
+        });
+        const totalPages = Math.ceil(tagPosts.length / dossiersPerPage);
+
+        for (let page = 2; page <= totalPages; page++) {
+          paths.push({
+            params: { tag: tag, page: page.toString() },
+            props: { tag, allDossiers: sortedDossiers, allTags, currentPage: page }
+          });
+        }
+      } catch (error) {
+        // Continue with other tags
+      }
+    }
+
+    return paths;
+  } catch (error) {
+    return [];
+  }
+};
+
+const { tag, allDossiers, allTags, currentPage } = Astro.props as {
+  tag: string;
+  allDossiers: any[];
+  allTags: string[];
+  currentPage: number;
+};
+
+// Filter dossiers by tag
+const filteredDossiers = allDossiers.filter((post: any) => {
+  if (!post.data.tags) return false;
+  const postTags = Array.isArray(post.data.tags) ? post.data.tags : [post.data.tags];
+  return postTags.some((postTag: any) => 
+    postTag && typeof postTag === 'string' && postTag.trim() === tag.trim()
+  );
+});
+
+// Pagination config
+const dossiersPerPage = siteConfig.postOptions.postsPerPage;
+const totalDossiers = filteredDossiers.length;
+const totalPages = Math.ceil(totalDossiers / dossiersPerPage);
+const startIndex = (currentPage - 1) * dossiersPerPage;
+const endIndex = Math.min(startIndex + dossiersPerPage, totalDossiers);
+const paginatedDossiers = filteredDossiers.slice(startIndex, endIndex);
+
+// Generate SEO data
+const seoData = generatePostsListSEO(import.meta.env.SITE || '', undefined);
+seoData.title = `Dossiers tagged "${tag}" - Page ${currentPage} | ${siteConfig.title}`;
+seoData.description = `Page ${currentPage} of dossiers tagged with "${tag}" on ${siteConfig.title}`;
+
+// Pagination Info
+const baseUrl = resolveUrl(`/dossier/tag/${encodeURIComponent(tag)}`);
+const pagination = {
+  currentPage,
+  totalPages,
+  hasNext: currentPage < totalPages,
+  hasPrev: currentPage > 1,
+  nextUrl: currentPage < totalPages ? `${baseUrl}/${currentPage + 1}` : undefined,
+  prevUrl: currentPage > 1 ? (currentPage === 2 ? baseUrl : `${baseUrl}/${currentPage - 1}`) : undefined
+};
+---
+
+<BaseLayout seoData={seoData}>
+  <div class="pt-4 pb-8 md:py-8 relative">
+    <div class="mx-auto px-4 sm:px-6 lg:px-8 mb-8 md:mb-12" style={`max-width: ${siteConfig.layout.contentWidth}`}>
+      <!-- Page header -->
+      <header class="mb-6 md:mb-8">
+        <h1 class="text-lg font-bold text-primary-900 dark:text-primary-50 mb-3 flex items-center">
+          <Icon name="tag" class="w-5 h-5 mr-2" />
+          dossiers tagged "{tag}"
+        </h1>
+        <p class="text-primary-600 dark:text-primary-300">
+          Page {currentPage} of {totalPages} • Showing {filteredDossiers.length} dossiers
+        </p>
+      </header>
+
+      <div class="relative">
+        <!-- Main content -->
+        <div class="max-w-none">
+          {paginatedDossiers.length > 0 ? (
+            <>
+              <!-- Dossiers grid -->
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12 justify-items-center md:justify-items-stretch">
+                {paginatedDossiers.map((dossier, index) => (
+                  <DossierCard
+                    dossier={dossier}
+                    eager={index < 4}
+                    context="dossier"
+                  />
+                ))}
+              </div>
+
+              <!-- Pagination component -->
+              <Pagination pagination={pagination} baseUrl={baseUrl} />
+            </>
+          ) : (
+            <div class="text-center py-12">
+              <Icon name="folder-open" class="w-12 h-12 text-primary-300 dark:text-primary-600 mx-auto mb-4" />
+              <h3 class="text-lg font-medium text-primary-900 dark:text-primary-50 mb-2">
+                No dossiers on this page
+              </h3>
+              <p class="text-primary-600 dark:text-primary-300">
+                Check back soon!
+              </p>
+            </div>
+          )}
+        </div>
+
+        <!-- Mobile sidebar - appears below content on mobile/tablet -->
+        <div class="xl:hidden mt-12 space-y-6">
+          <!-- Tags -->
+          {allTags.length > 0 && (
+            <DossierTags tags={allTags} currentTag={tag} />
+          )}
+        </div>
+
+        <!-- Desktop sidebar - floats to the right of the content container -->
+        <div class="hidden xl:block absolute top-0 left-full ml-8 w-64 h-full">
+          <div class="sticky top-24 pb-6 overflow-x-hidden overflow-y-auto" id="tags-sidebar" style="max-height: 60vh;">
+            <!-- Tags -->
+            {allTags.length > 0 && (
+              <DossierTags tags={allTags} currentTag={tag} />
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</BaseLayout>

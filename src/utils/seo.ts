@@ -3,6 +3,7 @@ import type {
   Page,
   Project,
   Docs,
+  Dossier,
   SEOData,
   OpenGraphImage,
 } from "@/types";
@@ -194,6 +195,54 @@ export function generateProjectSEO(project: Project, url: string): SEOData {
     modifiedTime: date.toISOString(),
     tags: project.data.categories?.filter((cat) => cat !== null) || undefined,
     noIndex: project.data.noIndex || false,
+  };
+}
+
+// Generate SEO data for dossiers
+export function generateDossierSEO(dossier: Dossier, url: string): SEOData {
+  const { title, description, image, date } = dossier.data;
+
+  let ogImage: OpenGraphImage | undefined;
+
+  if (image) {
+    const imagePath = extractImagePath(image);
+
+    let imageUrl: string;
+    if (imagePath.startsWith("http")) {
+      imageUrl = imagePath;
+    } else {
+      const optimizedPath = optimizeContentImagePath(
+        imagePath,
+        "dossier",
+        dossier.id,
+        dossier.id
+      );
+      imageUrl = `${siteConfig.site}${optimizedPath}`;
+    }
+    ogImage = {
+      url: imageUrl,
+      alt: dossier.data.imageAlt || `Featured image for dossier: ${title}`,
+      width: 1200,
+      height: 630,
+    };
+  } else {
+    ogImage = getDefaultOGImage();
+    ogImage = {
+      ...ogImage,
+      url: `${siteConfig.site}${ogImage.url}`,
+    };
+  }
+
+  return {
+    title: `${title} | ${siteConfig.title}`,
+    description: description || `Dossier: ${title}`,
+    canonical: url,
+    ogImage,
+    ogType: "article",
+    publishedTime: date.toISOString(),
+    modifiedTime: date.toISOString(),
+    tags: dossier.data.tags?.filter((tag: any) => tag !== null) || undefined,
+    noIndex: dossier.data.noIndex || false,
   };
 }
 

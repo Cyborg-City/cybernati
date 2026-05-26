@@ -419,6 +419,7 @@ async function generateGraphData() {
       if (existsSync(dirPath)) {
         log.info(`📁 Reading from: ${dirPath}`);
         const items = readContentFiles(dirPath);
+        items.forEach(item => item.collection = col);
         posts.push(...items);
       }
     }
@@ -439,7 +440,7 @@ async function generateGraphData() {
       // Add post node
       const postNode = {
         id: post.id,
-        type: "post",
+        type: post.collection || "posts",
         title: post.data.title,
         slug: post.id,
         date: post.data.date

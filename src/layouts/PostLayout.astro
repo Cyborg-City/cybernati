@@ -59,9 +59,17 @@ const structuredData = {
   }
 };
 
-// Get all posts for wikilink resolution
-const allPosts = await getCollection('posts');
-const visiblePosts = allPosts.filter(p => shouldShowPost(p, isDev));
+// Get all posts, dossiers, and vaults for wikilink resolution
+const [allPosts, allDossiers, allVaults] = await Promise.all([
+  getCollection('posts'),
+  getCollection('dossier'),
+  getCollection('vault')
+]);
+const visiblePosts = [
+  ...allPosts.filter(p => shouldShowPost(p, isDev)),
+  ...allDossiers.filter(d => shouldShowPost(d as any, isDev)),
+  ...allVaults.filter(v => shouldShowPost(v as any, isDev))
+];
 
 // Process the post content and get processed data including word count
 const { Content, headings, wordCount, remarkPluginFrontmatter } = await processPost(post);
@@ -69,8 +77,8 @@ const readingTime = calculateReadingTime(post.body || '');
 
 // Generate table of contents if enabled
 const hideTOC = post.data.hideTOC === true;
-const shouldShowTOC = !hideTOC && siteConfig.tableOfContents.enabled && headings.length > 0;
-const toc = shouldShowTOC ? await generateTOC(headings) : [];
+const toc = (!hideTOC && siteConfig.tableOfContents.enabled) ? await generateTOC(headings) : [];
+const shouldShowTOC = toc.length > 1;
 
 // Get adjacent posts for navigation
 const { prev: prevPost, next: nextPost } = getAdjacentPosts(visiblePosts, post.id);
@@ -247,7 +255,7 @@ if (siteConfig.postOptions.graphView.enabled && siteConfig.postOptions.graphView
             <div class="flex flex-wrap gap-2 mb-8">
               {post.data.tags.map(tag => (
                 <a
-                  href={resolveUrl(`/posts/tag/${encodeURIComponent(tag)}`)}
+                  href={resolveUrl(`/${post.collection || 'posts'}/tag/${encodeURIComponent(tag)}`)}
                   class="text-xs text-primary-600 dark:text-primary-300 bg-primary-100 dark:bg-primary-800 px-2.5 py-1 rounded-full border border-primary-200 dark:border-primary-700 transition-colors hover:bg-highlight-100 dark:hover:bg-highlight-800"
                 >
                   {tag}
@@ -273,7 +281,7 @@ if (siteConfig.postOptions.graphView.enabled && siteConfig.postOptions.graphView
               {prevPost && (
                 <div class="text-left">
                   <a
-                    href={resolveUrl(`/posts/${prevPost.id}`)}
+                    href={resolveUrl(`/${prevPost.collection || 'posts'}/${prevPost.id}`)}
                     class="group block p-4 rounded-lg border border-primary-200 dark:border-primary-700 hover:border-highlight-300 dark:hover:border-highlight-600 transition-all duration-200 hover:shadow-md"
                   >
                     <h3 class="font-semibold text-primary-900 dark:text-primary-50 group-hover:text-highlight-600 dark:group-hover:text-highlight-400 transition-colors">
@@ -289,7 +297,7 @@ if (siteConfig.postOptions.graphView.enabled && siteConfig.postOptions.graphView
               {nextPost && (
                 <div class={`text-right ${!prevPost ? 'md:col-start-2' : ''}`}>
                   <a
-                    href={resolveUrl(`/posts/${nextPost.id}`)}
+                    href={resolveUrl(`/${nextPost.collection || 'posts'}/${nextPost.id}`)}
                     class="group block p-4 rounded-lg border border-primary-200 dark:border-primary-700 hover:border-highlight-300 dark:hover:border-highlight-600 transition-all duration-200 hover:shadow-md"
                   >
                     <h3 class="font-semibold text-primary-900 dark:text-primary-50 group-hover:text-highlight-600 dark:group-hover:text-highlight-400 transition-colors">
@@ -389,10 +397,12 @@ if (siteConfig.postOptions.graphView.enabled && siteConfig.postOptions.graphView
             const baseUrlAttr = document.documentElement.dataset.baseUrl || '/';
             const cleanBase = baseUrlAttr.endsWith('/') ? baseUrlAttr : baseUrlAttr + '/';
             
+            const collectionPath = post.collection || 'posts';
+            
             if (anchor) {
-              link.href = `${cleanBase}posts/${post.id}#${anchor}`;
+              link.href = `${cleanBase}${collectionPath}/${post.id}#${anchor}`;
             } else {
-              link.href = `${cleanBase}posts/${post.id}`;
+              link.href = `${cleanBase}${collectionPath}/${post.id}`;
             }
 
             // Simple logic:

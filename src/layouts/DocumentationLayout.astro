@@ -50,7 +50,7 @@ const toc = headings.filter(h => h.depth >= 2 && h.depth <= maxDepth);
 // Check if TOC should be shown - global setting, then hideTOC frontmatter, then showTOC frontmatter (default true for docs)
 const hideTOC = documentation.data.hideTOC === true;
 const showTOC = documentation.data.showTOC !== undefined ? documentation.data.showTOC : true;
-const shouldShowTOC = siteConfig.tableOfContents.enabled && !hideTOC && showTOC && toc.length > 0;
+const shouldShowTOC = siteConfig.tableOfContents.enabled && !hideTOC && showTOC && toc.length > 1;
 
 // Get adjacent docs for navigation (only within same category, sorted by order)
 const { prev: prevDoc, next: nextDoc } = getAdjacentDocs(visibleDocs, documentation.id, currentCategory);

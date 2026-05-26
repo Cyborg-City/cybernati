@@ -1,0 +1,158 @@
+---
+import { getCollection, getEntry, render } from 'astro:content';
+import { siteConfig } from '@/config';
+import { generatePostsListSEO } from '@/utils/seo';
+import { shouldShowContent, sortPostsByDate, isValidDate, extractTags } from '@/utils/markdown';
+import { resolveUrl } from '@/utils/url-helpers';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageLayout from '@/layouts/PageLayout.astro';
+import DossierCard from '@/components/DossierCard.astro';
+import DossierTags from '@/components/DossierTags.astro';
+import Pagination from '@/components/Pagination.astro';
+import Icon from '@/components/Icon.astro';
+
+// Check if dossiers are enabled and handle fallback
+let fallbackPage = null;
+
+if (!siteConfig.optionalContentTypes.dossier) {
+  try {
+    fallbackPage = await getEntry('pages', 'dossier');
+    if (fallbackPage) {
+      // PageLayout will handle the rendering
+    } else {
+      return Astro.redirect('/404');
+    }
+  } catch (error) {
+    return Astro.redirect('/404');
+  }
+}
+
+// Get all dossiers
+const allDossiers = await getCollection('dossier');
+const isDev = import.meta.env.DEV;
+
+// Filter and sort dossiers (newest first)
+const visibleDossiers = allDossiers
+  .filter(dossier => shouldShowContent(dossier, isDev));
+const sortedDossiers = sortPostsByDate(visibleDossiers);
+
+// Pagination config
+const dossiersPerPage = siteConfig.postOptions.postsPerPage;
+const totalDossiers = sortedDossiers.length;
+const totalPages = Math.ceil(totalDossiers / dossiersPerPage);
+const currentPage = 1;
+const startIndex = 0;
+const endIndex = Math.min(dossiersPerPage, totalDossiers);
+const paginatedDossiers = sortedDossiers.slice(startIndex, endIndex);
+
+// Extract all unique tags
+const allTags = extractTags(sortedDossiers);
+
+// Get dossier page content from special collection (optional)
+let dossierPageContent = null;
+let DossierPageContent = null;
+
+try {
+  dossierPageContent = await getEntry('special', 'dossier');
+  if (dossierPageContent) {
+    const { Content } = await render(dossierPageContent);
+    DossierPageContent = Content;
+  }
+} catch (error) {
+  // Fallback to default
+}
+
+// Generate SEO data
+const seoData = generatePostsListSEO(import.meta.env.SITE || '', undefined);
+seoData.title = dossierPageContent?.data.title ? `${dossierPageContent.data.title} | ${siteConfig.title}` : `Dossier | ${siteConfig.title}`;
+seoData.description = dossierPageContent?.data.description || `Browse all ${totalDossiers} dossiers on ${siteConfig.title}`;
+seoData.noIndex = (dossierPageContent?.data as any)?.noIndex || false;
+
+// Pagination Info
+const baseUrl = resolveUrl('/dossier');
+const pagination = {
+  currentPage,
+  totalPages,
+  hasNext: currentPage < totalPages,
+  hasPrev: false,
+  nextUrl: totalPages > 1 ? resolveUrl('/dossier/2') : undefined,
+  prevUrl: undefined
+};
+---
+
+{fallbackPage ? (
+  <PageLayout page={fallbackPage as any} />
+) : (
+<BaseLayout seoData={seoData}>
+  <div class="pt-4 pb-8 md:py-8 relative">
+    <div class="mx-auto px-4 sm:px-6 lg:px-8 mb-8 md:mb-12" style={`max-width: ${siteConfig.layout.contentWidth}`}>
+      <!-- Page header -->
+      <header class="mb-6 md:mb-8">
+        <h1 class="text-lg font-bold text-primary-900 dark:text-primary-50 mb-3">
+          {dossierPageContent?.data.title || 'Dossier'}
+        </h1>
+        {DossierPageContent ? (
+          <div class="prose prose-sm dark:prose-dark max-w-none">
+            <DossierPageContent />
+          </div>
+        ) : (
+          <p class="text-primary-600 dark:text-primary-300">
+            A collection of dossier documents.
+          </p>
+        )}
+      </header>
+
+      <div class="relative">
+        <!-- Main content -->
+        <div class="max-w-none">
+          {paginatedDossiers.length > 0 ? (
+            <>
+              <!-- Dossiers grid -->
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12 justify-items-center md:justify-items-stretch">
+                {paginatedDossiers.map((dossier, index) => (
+                  <DossierCard
+                    dossier={dossier}
+                    eager={index < 4}
+                    context="dossier"
+                  />
+                ))}
+              </div>
+
+              <!-- Pagination component -->
+              <Pagination pagination={pagination} baseUrl={baseUrl} />
+            </>
+          ) : (
+            <div class="text-center py-12">
+              <Icon name="folder-open" class="w-12 h-12 text-primary-300 dark:text-primary-600 mx-auto mb-4" />
+              <h3 class="text-lg font-medium text-primary-900 dark:text-primary-50 mb-2">
+                No dossiers yet
+              </h3>
+              <p class="text-primary-600 dark:text-primary-300">
+                Check back soon for new dossiers!
+              </p>
+            </div>
+          )}
+        </div>
+
+        <!-- Mobile sidebar - appears below content on mobile/tablet -->
+        <div class="xl:hidden mt-12 space-y-6">
+          <!-- Tags -->
+          {allTags.length > 0 && (
+            <DossierTags tags={allTags} />
+          )}
+        </div>
+
+        <!-- Desktop sidebar - floats to the right of the content container -->
+        <div class="hidden xl:block absolute top-0 left-full ml-8 w-64 h-full">
+          <div class="sticky top-24 pb-6 overflow-x-hidden overflow-y-auto" id="tags-sidebar" style="max-height: 60vh;">
+            <!-- Tags -->
+            {allTags.length > 0 && (
+              <DossierTags tags={allTags} />
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+)}

@@ -225,7 +225,7 @@ export const remarkObsidianEmbeds: Plugin<[], Root> = () => {
             const [k, v] = pair.split('=').map((s) => s && s.trim());
             if (!k || !v) return;
             if (k.toLowerCase() === 'source') {
-              if (['posts', 'pages', 'projects', 'docs'].includes(v)) cfg.source = v;
+              if (['posts', 'pages', 'projects', 'docs', 'dossier', 'vault'].includes(v)) cfg.source = v;
             } else if (k.toLowerCase() === 'limit') {
               const n = Number(v);
               if (!Number.isNaN(n) && n > 0) cfg.limit = n;
@@ -267,7 +267,7 @@ export const remarkObsidianEmbeds: Plugin<[], Root> = () => {
           if (chosen) {
             // map folder → source
             if (!cfg.source) {
-              if (['posts','pages','projects','docs','special'].some(p => (chosen.folder || '').startsWith(p))) {
+              if (['posts','pages','projects','docs','special','dossier','vault'].some(p => (chosen.folder || '').startsWith(p))) {
                 cfg.source = (chosen.folder || '').split('/')[0] as any;
               }
             }
@@ -338,8 +338,10 @@ export const remarkObsidianEmbeds: Plugin<[], Root> = () => {
             const isFolderPage = normalizedFilePath.includes('/pages/') && normalizedFilePath.endsWith('/index.md');
             const isFolderProject = normalizedFilePath.includes('/projects/') && normalizedFilePath.endsWith('/index.md');
             const isFolderDoc = normalizedFilePath.includes('/docs/') && normalizedFilePath.endsWith('/index.md');
+            const isFolderDossier = normalizedFilePath.includes('/dossier/') && normalizedFilePath.endsWith('/index.md');
+            const isFolderVault = normalizedFilePath.includes('/vault/') && normalizedFilePath.endsWith('/index.md');
 
-            if (isFolderPost || isFolderPage || isFolderProject || isFolderDoc) {
+            if (isFolderPost || isFolderPage || isFolderProject || isFolderDoc || isFolderDossier || isFolderVault) {
               // Folder-based content: /collection/slug/attachments/file
               const pathParts = normalizedFilePath.split('/');
               let collection = 'posts';
@@ -354,6 +356,12 @@ export const remarkObsidianEmbeds: Plugin<[], Root> = () => {
               } else if (isFolderDoc) {
                 collection = 'docs';
                 contentIndex = pathParts.indexOf('docs');
+              } else if (isFolderDossier) {
+                collection = 'dossier';
+                contentIndex = pathParts.indexOf('dossier');
+              } else if (isFolderVault) {
+                collection = 'vault';
+                contentIndex = pathParts.indexOf('vault');
               }
 
               const contentSlug = pathParts[contentIndex + 1];
@@ -364,6 +372,8 @@ export const remarkObsidianEmbeds: Plugin<[], Root> = () => {
               if (normalizedFilePath.includes('/pages/')) collection = 'pages';
               else if (normalizedFilePath.includes('/projects/')) collection = 'projects';
               else if (normalizedFilePath.includes('/docs/')) collection = 'docs';
+              else if (normalizedFilePath.includes('/dossier/')) collection = 'dossier';
+              else if (normalizedFilePath.includes('/vault/')) collection = 'vault';
 
               resolvedUrl = `/${collection}/${url}`;
             }
@@ -375,8 +385,10 @@ export const remarkObsidianEmbeds: Plugin<[], Root> = () => {
           const isFolderPage = normalizedFilePath.includes('/pages/') && normalizedFilePath.endsWith('/index.md');
           const isFolderProject = normalizedFilePath.includes('/projects/') && normalizedFilePath.endsWith('/index.md');
           const isFolderDoc = normalizedFilePath.includes('/docs/') && normalizedFilePath.endsWith('/index.md');
+          const isFolderDossier = normalizedFilePath.includes('/dossier/') && normalizedFilePath.endsWith('/index.md');
+          const isFolderVault = normalizedFilePath.includes('/vault/') && normalizedFilePath.endsWith('/index.md');
 
-          if (isFolderPost || isFolderPage || isFolderProject || isFolderDoc) {
+          if (isFolderPost || isFolderPage || isFolderProject || isFolderDoc || isFolderDossier || isFolderVault) {
             const pathParts = normalizedFilePath.split('/');
             let collection = 'posts';
             let contentIndex = pathParts.indexOf('posts');
@@ -390,6 +402,12 @@ export const remarkObsidianEmbeds: Plugin<[], Root> = () => {
             } else if (isFolderDoc) {
               collection = 'docs';
               contentIndex = pathParts.indexOf('docs');
+            } else if (isFolderDossier) {
+              collection = 'dossier';
+              contentIndex = pathParts.indexOf('dossier');
+            } else if (isFolderVault) {
+              collection = 'vault';
+              contentIndex = pathParts.indexOf('vault');
             }
 
             const contentSlug = pathParts[contentIndex + 1];

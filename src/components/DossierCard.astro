@@ -1,0 +1,261 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { formatDate, processMarkdown, isValidDate } from '../utils/markdown';
+import { siteConfig } from '../config';
+import { getOptimizedFormat } from '../utils/images';
+import ImageWrapper from './ImageWrapper.astro';
+import { resolveUrl } from '../utils/url-helpers';
+
+interface Props {
+  dossier: CollectionEntry<'dossier'>;
+  featured?: boolean;
+  eager?: boolean;
+  context?: 'featured' | 'recent' | 'dossier' | 'tags' | 'home';
+  showTags?: boolean;
+}
+
+const { dossier, featured = false, eager = false, context = 'dossier', showTags = true } = Astro.props;
+
+// Get excerpt from markdown processing
+const { excerpt } = processMarkdown(dossier.body || '');
+
+const { title, description: rawDescription, date, image: rawImage, imageAlt } = dossier.data;
+
+// Process Obsidian bracket syntax in image field
+const image = (() => {
+  if (!rawImage) return rawImage;
+
+  // Handle case where rawImage is an array (unquoted YAML syntax)
+  let imageValue = rawImage;
+  if (Array.isArray(rawImage)) {
+    // If it's an array, take the first element
+    imageValue = rawImage[0];
+  }
+
+  // Ensure imageValue is a string before calling string methods
+  if (typeof imageValue !== 'string') {
+    console.warn('DossierCard: imageValue is not a string:', imageValue);
+    return imageValue;
+  }
+
+  // Check if it's Obsidian double bracket syntax
+  if (imageValue.startsWith('[[') && imageValue.endsWith(']]')) {
+    // Extract the content inside the double brackets
+    return imageValue.slice(2, -2);
+  }
+
+  return imageValue;
+})();
+
+const description = rawDescription || excerpt;
+const tags = dossier.data.tags || [];
+
+// Determine content availability for layout
+const hasDescription = description && description.trim().length > 0;
+const hasTags = showTags && tags.length > 0;
+const hasHoverContent = hasDescription || hasTags;
+
+const shouldShowCoverImage = true;
+---
+
+<div class="group relative bg-white dark:bg-primary-800 rounded-xl border border-primary-200 dark:border-primary-700 overflow-hidden hover:shadow-xl transition-all duration-300 aspect-[4/3]" data-dossier-tags={tags.join(',')}>
+  <a href={resolveUrl(`/dossier/${dossier.id}`)} class="block h-full" aria-label={`View dossier: ${title}`}>
+    <!-- Background Image or Fallback -->
+    {image && shouldShowCoverImage && (
+      <div class="absolute inset-0">
+        <ImageWrapper
+          src={(() => {
+            // Clean the image path by removing Obsidian brackets
+            let cleanImagePath = image;
+            if (!cleanImagePath || typeof cleanImagePath !== 'string') return '';
+            if (cleanImagePath.startsWith('[[') && cleanImagePath.endsWith(']]')) {
+              cleanImagePath = cleanImagePath.slice(2, -2);
+            }
+
+            // Remove Obsidian subfolder prefixes (images/, attachments/)
+            if (typeof cleanImagePath === 'string') {
+              if (cleanImagePath.startsWith('images/')) {
+                cleanImagePath = cleanImagePath.replace('images/', '');
+              }
+              if (cleanImagePath.startsWith('attachments/')) {
+                cleanImagePath = cleanImagePath.replace('attachments/', '');
+              }
+            }
+
+            const finalSrc = cleanImagePath || '';
+            return getOptimizedFormat(finalSrc);
+          })()}
+          basePath={(() => {
+            if (typeof image === 'string' && image.startsWith('http')) {
+              return '';
+            }
+
+            let cleanImagePath = image;
+            if (typeof cleanImagePath === 'string' && cleanImagePath.startsWith('[[') && cleanImagePath.endsWith(']]')) {
+              cleanImagePath = cleanImagePath.slice(2, -2);
+            }
+
+            if (typeof cleanImagePath === 'string' && cleanImagePath.startsWith('attachments/')) {
+              return "/dossier/attachments/";
+            }
+
+            if (dossier.id) {
+              return `/dossier/${dossier.id}/`;
+            } else {
+              return '/dossier/attachments/';
+            }
+          })()}
+          alt={imageAlt || `Cover image for dossier: ${title}`}
+          width={800}
+          height={600}
+          loading={eager ? 'eager' : 'lazy'}
+          fetchpriority={eager ? 'high' : 'auto'}
+          class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+        />
+        <!-- Dark overlay for better text readability -->
+        <div class="absolute inset-0 bg-black/70 group-hover:bg-black/80 transition-colors duration-300"></div>
+      </div>
+    )}
+
+    {!image && (
+      <!-- Fallback background when no image -->
+      <div class="absolute inset-0 bg-gradient-to-br from-primary-200 to-primary-300 dark:from-primary-700 dark:to-primary-800"></div>
+    )}
+
+    <!-- Date -->
+    {isValidDate(date) && (
+      <div class="absolute top-3 left-3 z-10">
+        <time datetime={date.toISOString()} class={`text-xs font-mono px-2 py-1 rounded backdrop-blur-sm ${
+          image && shouldShowCoverImage
+            ? 'text-white/90 bg-black/20'
+            : 'text-primary-700 dark:text-primary-200 bg-white/80 dark:bg-black/20'
+        }`}>
+          {formatDate(date)}
+        </time>
+      </div>
+    )}
+
+    <!-- Content Overlay -->
+    <div class={`absolute inset-0 flex flex-col p-4 md:p-6 z-10 mobile-centered justify-center items-center`}>
+      <!-- Title - always centered -->
+      <h3 class={`text-xl font-bold transition-colors line-clamp-2 text-center ${
+        image && shouldShowCoverImage
+          ? 'text-white group-hover:text-highlight-300 drop-shadow-lg'
+          : 'text-primary-900 dark:text-primary-50 group-hover:text-highlight-600 dark:group-hover:text-highlight-400'
+      } ${
+        !hasDescription && !hasTags ? 'mb-0' :
+        (hasDescription && !hasTags) ? 'mb-4' :
+        (!hasDescription && hasTags) ? 'mb-4' : 'mb-2'
+      }`}>
+        {title}
+      </h3>
+
+      {hasHoverContent ? (
+        <!-- Hover content for full layout -->
+        <div class="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+          <!-- Description -->
+          {hasDescription && (
+            <p class={`text-sm mb-3 line-clamp-2 text-left ${
+              image && shouldShowCoverImage
+                ? 'text-white/90 drop-shadow-lg'
+                : 'text-primary-700 dark:text-primary-300'
+            }`}>
+              {description}
+            </p>
+          )}
+
+          <!-- Tags -->
+          {hasTags && (
+            <div class="flex flex-wrap gap-1 mb-3 justify-center">
+              {tags.slice(0, 3).map(tag => (
+                <span class={`inline-flex items-center px-2 py-1 text-xs font-medium rounded backdrop-blur-sm ${
+                  image && shouldShowCoverImage
+                    ? 'bg-white/20 text-white/90'
+                    : 'bg-primary-100 dark:bg-primary-700 text-primary-700 dark:text-primary-200'
+                }`}>
+                  #{tag}
+                </span>
+              ))}
+              {tags.length > 3 && (
+                <span class={`inline-flex items-center px-2 py-1 text-xs font-medium rounded backdrop-blur-sm ${
+                  image && shouldShowCoverImage
+                    ? 'bg-white/20 text-white/90'
+                    : 'bg-primary-100 dark:bg-primary-700 text-primary-700 dark:text-primary-200'
+                }`}>
+                  +{tags.length - 3} more
+                </span>
+              )}
+            </div>
+          )}
+        </div>
+      ) : (
+        <!-- Always visible content for minimal layouts -->
+        <div class="flex flex-col items-center">
+          {hasDescription && (
+            <p class={`text-sm line-clamp-2 text-center ${
+              image && shouldShowCoverImage
+                ? 'text-white/90 drop-shadow-lg'
+                : 'text-primary-700 dark:text-primary-300'
+            }`}>
+              {description}
+            </p>
+          )}
+
+          {hasTags && (
+            <div class="flex flex-wrap gap-1 mt-3 justify-center">
+              {tags.slice(0, 3).map(tag => (
+                <span class={`inline-flex items-center px-2 py-1 text-xs font-medium rounded backdrop-blur-sm ${
+                  image && shouldShowCoverImage
+                    ? 'bg-white/20 text-white/90'
+                    : 'bg-primary-100 dark:bg-primary-700 text-primary-700 dark:text-primary-200'
+                }`}>
+                  #{tag}
+                </span>
+              ))}
+              {tags.length > 3 && (
+                <span class={`inline-flex items-center px-2 py-1 text-xs font-medium rounded backdrop-blur-sm ${
+                  image && shouldShowCoverImage
+                    ? 'bg-white/20 text-white/90'
+                    : 'bg-primary-100 dark:bg-primary-700 text-primary-700 dark:text-primary-200'
+                }`}>
+                  +{tags.length - 3} more
+                </span>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  </a>
+</div>
+
+<style>
+  @media (max-width: 768px) {
+    .group[data-dossier-tags] {
+      aspect-ratio: 2/1 !important;
+      max-height: 200px !important;
+      width: 100%;
+      max-width: 100%;
+    }
+    
+    .group[data-dossier-tags] .mobile-centered {
+      justify-content: center !important;
+      align-items: center !important;
+      padding-top: 0 !important;
+      padding: 1rem !important;
+    }
+    
+    .group[data-dossier-tags] h3 {
+      font-size: 1rem !important;
+      margin-bottom: 0 !important;
+    }
+    
+    .group[data-dossier-tags] .opacity-0 {
+      display: none !important;
+    }
+    
+    .group[data-dossier-tags] .absolute.top-3 {
+      position: absolute !important;
+    }
+  }
+</style>

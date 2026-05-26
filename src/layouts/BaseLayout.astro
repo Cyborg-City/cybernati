@@ -2017,6 +2017,10 @@ const scrollbarClass = siteConfig.hideScrollBar ? '' : 'show-scrollbars';
           if (window.initializeProjectCategoryFiltering) {
             window.initializeProjectCategoryFiltering();
           }
+          // Initialize dossier tag filtering after page transition
+          if (window.initializeDossierTagFiltering) {
+            window.initializeDossierTagFiltering();
+          }
           // Initialize collapsible categories after page transition (for docs index page)
           if (window.initializeCollapsibleCategories) {
             setTimeout(() => window.initializeCollapsibleCategories(), 100);
@@ -2071,6 +2075,10 @@ const scrollbarClass = siteConfig.hideScrollBar ? '' : 'show-scrollbars';
           // Initialize project category filtering after page transition is complete
           if (window.initializeProjectCategoryFiltering) {
             window.initializeProjectCategoryFiltering();
+          }
+          // Initialize dossier tag filtering after page transition is complete
+          if (window.initializeDossierTagFiltering) {
+            window.initializeDossierTagFiltering();
           }
           // Initialize Twitter widgets after page transition is complete
           if (window.initializeTwitterWidgets) {

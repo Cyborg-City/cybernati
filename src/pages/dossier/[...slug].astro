@@ -1,0 +1,35 @@
+---
+import { getCollection } from 'astro:content';
+import { shouldShowContent } from '@/utils/markdown';
+import DossierLayout from '@/layouts/DossierLayout.astro';
+
+export async function getStaticPaths() {
+  const dossiers = await getCollection('dossier');
+  const isDev = import.meta.env.DEV;
+  
+  const paths = [];
+  
+  for (const dossier of dossiers) {
+    if (!shouldShowContent(dossier, isDev)) continue;
+    
+    const slug = dossier.id;
+    
+    paths.push({
+      params: { slug: slug },
+      props: { 
+        dossier: dossier 
+      }
+    });
+  }
+  
+  return paths;
+}
+
+const { dossier } = Astro.props;
+
+if (!dossier) {
+  return Astro.redirect('/dossier/', 404);
+}
+---
+
+<DossierLayout dossier={dossier} />

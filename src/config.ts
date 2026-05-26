@@ -66,6 +66,8 @@ export interface SiteConfig {
       pages: boolean;
       projects: boolean;
       docs: boolean;
+      dossier: boolean;
+      vault: boolean;
     };
     sections: {
       quickActions: boolean;
@@ -112,6 +114,10 @@ export interface SiteConfig {
       count: number;
     };
     projects: {
+      enabled: boolean;
+      count: number;
+    };
+    dossier: {
       enabled: boolean;
       count: number;
     };
@@ -166,6 +172,7 @@ export interface SiteConfig {
   optionalContentTypes: {
     projects: boolean;
     docs: boolean;
+    dossier: boolean;
   };
 }
 
@@ -266,6 +273,10 @@ export const siteConfig: SiteConfig = {
       projects: false,
       // [CONFIG:COMMAND_PALETTE_SEARCH_DOCS]
       docs: false,
+      // [CONFIG:COMMAND_PALETTE_SEARCH_DOSSIER]
+      dossier: true,
+      // [CONFIG:COMMAND_PALETTE_SEARCH_VAULT]
+      vault: true,
     },
     sections: {
       // [CONFIG:COMMAND_PALETTE_SECTIONS_QUICK_ACTIONS]
@@ -316,8 +327,8 @@ export const siteConfig: SiteConfig = {
     // [CONFIG:NAVIGATION_PAGES]
     pages: [
       { title: "Posts", url: "/posts/" },
-      { title: "Projects", url: "/projects/" },
-      { title: "Docs", url: "/docs/" },
+      { title: "Vault", url: "/vault/" },
+      { title: "Dossier", url: "/dossier/" },
       { title: "About", url: "/about/",
         children: [
           { title: "Privacy Policy", url: "/privacy-policy/" }
@@ -342,9 +353,11 @@ export const siteConfig: SiteConfig = {
   // Optional Content Types - Enable/disable optional content sections (takes priority over homeOptions)
   optionalContentTypes: {
     // [CONFIG:OPTIONAL_CONTENT_TYPES_PROJECTS]
-    projects: true, // Enable projects section
+    projects: false, // Enable projects section
     // [CONFIG:OPTIONAL_CONTENT_TYPES_DOCS]
-    docs: true, // Enable documentation section
+    docs: false, // Enable documentation section
+    // [CONFIG:OPTIONAL_CONTENT_TYPES_DOSSIER]
+    dossier: true, // Enable dossier section
   },
 
   // Home Options
@@ -368,6 +381,12 @@ export const siteConfig: SiteConfig = {
       enabled: true, // Show featured projects on homepage
       // [CONFIG:HOME_OPTIONS_PROJECTS_COUNT]
       count: 2, // Number of projects to show
+    },
+    dossier: {
+      // [CONFIG:HOME_OPTIONS_DOSSIER_ENABLED]
+      enabled: true, // Show recent dossiers on homepage
+      // [CONFIG:HOME_OPTIONS_DOSSIER_COUNT]
+      count: 2, // Number of dossiers to show
     },
     docs: {
       // [CONFIG:HOME_OPTIONS_DOCS_ENABLED]
@@ -676,6 +695,9 @@ function validateSiteConfig(config: SiteConfig): { isValid: boolean; errors: str
   }
   if (config.homeOptions.projects.count < 1) {
     errors.push('Projects count must be at least 1. Adjust homeOptions.projects.count.');
+  }
+  if (config.homeOptions.dossier.count < 1) {
+    errors.push('Dossier count must be at least 1. Adjust homeOptions.dossier.count.');
   }
   if (config.homeOptions.docs.count < 1) {
     errors.push('Documentation count must be at least 1. Adjust homeOptions.docs.count.');

@@ -140,6 +140,67 @@ const specialCollection = defineCollection({
   }),
 });
 
+// Define schema for dossiers
+const dossierCollection = defineCollection({
+  loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/dossier' }),
+  schema: z.object({
+    title: z.string().default('Untitled Dossier'),
+    description: z.string().nullable().optional().default('No description provided'),
+    date: z.coerce.date().default(() => new Date()),
+    tags: z.array(z.string()).nullable().optional().default([]),
+    image: z.any().nullable().optional().transform((val) => {
+      // Handle various Obsidian syntax formats
+      if (Array.isArray(val)) {
+        // Handle array format from [[...]] syntax - take first element
+        return val[0] || null;
+      }
+      if (typeof val === 'string') {
+        // Handle string format - return as-is
+        return val;
+      }
+      return null;
+    }),
+    imageAlt: z.string().nullable().optional(),
+    imageOG: z.boolean().optional(),
+    hideCoverImage: z.boolean().optional(),
+    hideTOC: z.boolean().optional(),
+    targetKeyword: z.string().nullable().optional(),
+    draft: z.boolean().optional(),
+    noIndex: z.boolean().optional(),
+  }),
+});
+
+// Define schema for vault
+const vaultCollection = defineCollection({
+  loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/vault' }),
+  schema: z.object({
+    title: z.string().default('Untitled Vault'),
+    description: z.string().nullable().optional().default('No description provided'),
+    date: z.coerce.date().default(() => new Date()),
+    tags: z.array(z.string()).nullable().optional().default([]),
+    image: z.any().nullable().optional().transform((val) => {
+      // Handle various Obsidian syntax formats
+      if (Array.isArray(val)) {
+        // Handle array format from [[...]] syntax - take first element
+        return val[0] || null;
+      }
+      if (typeof val === 'string') {
+        // Handle string format - return as-is
+        return val;
+      }
+      return null;
+    }),
+    imageAlt: z.string().nullable().optional(),
+    imageOG: z.boolean().optional(),
+    hideCoverImage: z.boolean().optional(),
+    hideTOC: z.boolean().optional(),
+    targetKeyword: z.string().nullable().optional(),
+    draft: z.boolean().optional(),
+    noIndex: z.boolean().optional(),
+  }),
+});
+
+
 // Export collections
 export const collections = {
   posts: postsCollection,
@@ -147,5 +208,7 @@ export const collections = {
   projects: projectsCollection,
   docs: docsCollection,
   special: specialCollection,
+  dossier: dossierCollection,
+  vault: vaultCollection,
 };
 

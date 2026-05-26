@@ -50,15 +50,16 @@ export function resolveUrl(path: string | undefined | null): string {
  * AJAX-based page transitions to prevent 404s when fetching route index documents.
  * 
  * @param slug The slug of the post.
+ * @param collection The collection the post belongs to (defaults to 'posts').
  * @returns The formatted URL (e.g. "/cybernati/posts/my-post/").
  */
-export function getGraphNodeUrl(slug: string): string {
+export function getGraphNodeUrl(slug: string, collection: string = 'posts'): string {
   const base = getBaseUrl();
   const cleanBase = base.endsWith('/') ? base : base + '/';
   
   // Normalize the slug by removing any leading or trailing slashes to prevent malformed double slashes.
   const cleanSlug = slug.replace(/^\/+|\/+$/g, '');
   
-  return `${cleanBase}posts/${cleanSlug}/`;
+  return `${cleanBase}${collection}/${cleanSlug}/`;
 }
 

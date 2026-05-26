@@ -195,11 +195,15 @@ function isInternalLink(url: string): boolean {
     link.startsWith("/pages/") ||
     link.startsWith("/projects/") ||
     link.startsWith("/docs/") ||
+    link.startsWith("/dossier/") ||
+    link.startsWith("/vault/") ||
     link.startsWith("/special/") ||
     link.startsWith("posts/") ||
     link.startsWith("pages/") ||
     link.startsWith("projects/") ||
     link.startsWith("docs/") ||
+    link.startsWith("dossier/") ||
+    link.startsWith("vault/") ||
     link.startsWith("special/") ||
     !link.includes("/");
 
@@ -366,6 +370,102 @@ function extractLinkTextFromUrlWithAnchor(
     };
   }
 
+  // Handle dossier/ prefixed links
+  if (link.startsWith("dossier/")) {
+    let linkText = link.replace("dossier/", "").replace(/\.md$/, "");
+    if (linkText.endsWith("/index") && linkText.split("/").length === 2) {
+      linkText = linkText.replace("/index", "");
+    }
+    return {
+      linkText: linkText,
+      anchor: anchor,
+    };
+  }
+
+  // Handle /dossier/ URLs (relative links)
+  if (link.startsWith("/dossier/")) {
+    let linkText = link.replace("/dossier/", "").replace(/\.md$/, "");
+    if (linkText.endsWith("/index") && linkText.split("/").length === 2) {
+      linkText = linkText.replace("/index", "");
+    }
+    return {
+      linkText: linkText,
+      anchor: anchor,
+    };
+  }
+
+  // Handle vault/ prefixed links
+  if (link.startsWith("vault/")) {
+    let linkText = link.replace("vault/", "").replace(/\.md$/, "");
+    if (linkText.endsWith("/index") && linkText.split("/").length === 2) {
+      linkText = linkText.replace("/index", "");
+    }
+    return {
+      linkText: linkText,
+      anchor: anchor,
+    };
+  }
+
+  // Handle /vault/ URLs (relative links)
+  if (link.startsWith("/vault/")) {
+    let linkText = link.replace("/vault/", "").replace(/\.md$/, "");
+    if (linkText.endsWith("/index") && linkText.split("/").length === 2) {
+      linkText = linkText.replace("/index", "");
+    }
+    return {
+      linkText: linkText,
+      anchor: anchor,
+    };
+  }
+
+  // Handle docs/ prefixed links
+  if (link.startsWith("docs/")) {
+    let linkText = link.replace("docs/", "").replace(/\.md$/, "");
+    if (linkText.endsWith("/index") && linkText.split("/").length === 2) {
+      linkText = linkText.replace("/index", "");
+    }
+    return {
+      linkText: linkText,
+      anchor: anchor,
+    };
+  }
+
+  // Handle /docs/ URLs (relative links)
+  if (link.startsWith("/docs/")) {
+    let linkText = link.replace("/docs/", "").replace(/\.md$/, "");
+    if (linkText.endsWith("/index") && linkText.split("/").length === 2) {
+      linkText = linkText.replace("/index", "");
+    }
+    return {
+      linkText: linkText,
+      anchor: anchor,
+    };
+  }
+
+  // Handle projects/ prefixed links
+  if (link.startsWith("projects/")) {
+    let linkText = link.replace("projects/", "").replace(/\.md$/, "");
+    if (linkText.endsWith("/index") && linkText.split("/").length === 2) {
+      linkText = linkText.replace("/index", "");
+    }
+    return {
+      linkText: linkText,
+      anchor: anchor,
+    };
+  }
+
+  // Handle /projects/ URLs (relative links)
+  if (link.startsWith("/projects/")) {
+    let linkText = link.replace("/projects/", "").replace(/\.md$/, "");
+    if (linkText.endsWith("/index") && linkText.split("/").length === 2) {
+      linkText = linkText.replace("/index", "");
+    }
+    return {
+      linkText: linkText,
+      anchor: anchor,
+    };
+  }
+
   // Handle .md files - these should be treated as post references
   if (link.endsWith(".md")) {
     let linkText = link.replace(/\.md$/, "");
@@ -509,6 +609,24 @@ export function remarkWikilinks() {
                 : postPath;
             url = `/posts/${cleanPath}`;
             wikilinkData = cleanPath;
+          } else if (link.startsWith("dossier/")) {
+            // Handle dossier/path format
+            const dossierPath = link.replace("dossier/", "");
+            const cleanPath =
+              dossierPath.endsWith("/index") && dossierPath.split("/").length === 2
+                ? dossierPath.replace("/index", "")
+                : dossierPath;
+            url = `/dossier/${cleanPath}`;
+            wikilinkData = cleanPath;
+          } else if (link.startsWith("vault/")) {
+            // Handle vault/path format
+            const vaultPath = link.replace("vault/", "");
+            const cleanPath =
+              vaultPath.endsWith("/index") && vaultPath.split("/").length === 2
+                ? vaultPath.replace("/index", "")
+                : vaultPath;
+            url = `/vault/${cleanPath}`;
+            wikilinkData = cleanPath;
           } else if (link.includes("/")) {
             // Handle folder-based post format: folder-name/index
             // In Astro v6, folder-based posts have IDs like 'folder-name' (not 'folder-name/index')
@@ -633,6 +751,20 @@ export function extractWikilinks(content: string): WikilinkMatch[] {
         } else {
           slug = postPath;
         }
+      } else if (baseLink.startsWith("dossier/")) {
+        const dossierPath = baseLink.replace("dossier/", "");
+        if (dossierPath.endsWith("/index") && dossierPath.split("/").length === 2) {
+          slug = dossierPath.replace("/index", "");
+        } else {
+          slug = dossierPath;
+        }
+      } else if (baseLink.startsWith("vault/")) {
+        const vaultPath = baseLink.replace("vault/", "");
+        if (vaultPath.endsWith("/index") && vaultPath.split("/").length === 2) {
+          slug = vaultPath.replace("/index", "");
+        } else {
+          slug = vaultPath;
+        }
       } else if (baseLink.includes("/")) {
         // Handle folder-based post format: folder-name/index
         // In Astro v6, folder-based posts have IDs like 'folder-name' (not 'folder-name/index')
@@ -712,6 +844,7 @@ export function validateWikilinks(
  * - Posts: [Post Title](posts/post-slug) or [Post Title](post-slug)
  * - Pages: [Page Title](pages/page-slug) or [Page Title](page-slug)
  * - Projects: [Project Title](projects/project-slug)
+ * - Dossier: [Dossier Title](dossier/dossier-slug)
  * - Documentation: [Doc Title](docs/doc-slug)
  * - Special pages: [Home](special/home) or [Home](homepage)
  *
@@ -838,6 +971,20 @@ export function remarkStandardLinks() {
                 projectPath = projectPath.replace(/\/index$/, "");
               }
               baseUrl = `/projects/${projectPath}`;
+            } else if (strippedUrl.startsWith("dossier/") || strippedUrl.startsWith("/dossier/")) {
+              // Dossier: /dossier/slug/
+              let dossierPath = strippedUrl.replace(/^\/?dossier\//, "");
+              if (dossierPath.endsWith("/index") && dossierPath.split("/").length === 2) {
+                dossierPath = dossierPath.replace(/\/index$/, "");
+              }
+              baseUrl = `/dossier/${dossierPath}`;
+            } else if (strippedUrl.startsWith("vault/") || strippedUrl.startsWith("/vault/")) {
+              // Vault: /vault/slug/
+              let vaultPath = strippedUrl.replace(/^\/?vault\//, "");
+              if (vaultPath.endsWith("/index") && vaultPath.split("/").length === 2) {
+                vaultPath = vaultPath.replace(/\/index$/, "");
+              }
+              baseUrl = `/vault/${vaultPath}`;
             } else if (strippedUrl.startsWith("docs/") || strippedUrl.startsWith("/docs/")) {
               // Docs: /docs/slug/
               let docPath = strippedUrl.replace(/^\/?docs\//, "");
@@ -853,12 +1000,21 @@ export function remarkStandardLinks() {
                 cleanPath = cleanPath.replace(/\/index$/, "");
               }
               // Determine collection from current file's path; default to posts.
-              let collection: "posts" | "pages" | "projects" | "docs" = "posts";
+              let collection: "posts" | "pages" | "projects" | "docs" | "dossier" | "vault" = "posts";
               if (file && (file as any).path) {
                 const normalizedPath = String((file as any).path).replace(/\\/g, "/");
-                if (normalizedPath.includes("/pages/")) collection = "pages";
-                else if (normalizedPath.includes("/projects/")) collection = "projects";
-                else if (normalizedPath.includes("/docs/")) collection = "docs";
+                const pathParts = normalizedPath.split("/");
+                const contentIndex = pathParts.lastIndexOf("content");
+                let searchParts = pathParts;
+                if (contentIndex !== -1 && contentIndex < pathParts.length - 1) {
+                  searchParts = pathParts.slice(contentIndex + 1);
+                }
+                
+                if (searchParts.includes("pages")) collection = "pages";
+                else if (searchParts.includes("projects")) collection = "projects";
+                else if (searchParts.includes("dossier")) collection = "dossier";
+                else if (searchParts.includes("docs")) collection = "docs";
+                else if (searchParts.includes("vault")) collection = "vault";
               }
               baseUrl = collection === "pages" ? `/${cleanPath}` : `/${collection}/${cleanPath}`;
             } else {
@@ -954,7 +1110,14 @@ export function remarkStandardLinks() {
 
           // Add wikilink styling to internal links for visual consistency
           // Include posts/ prefixed URLs and /posts/ URLs (but not double /posts/posts/)
-          if (node.url.startsWith("/posts/") || (node.url.startsWith("posts/") && !node.url.startsWith("posts/posts/"))) {
+          const isStyledLink = 
+            node.url.startsWith("/posts/") || (node.url.startsWith("posts/") && !node.url.startsWith("posts/posts/")) ||
+            node.url.startsWith("/dossier/") || (node.url.startsWith("dossier/") && !node.url.startsWith("dossier/dossier/")) ||
+            node.url.startsWith("/vault/") || (node.url.startsWith("vault/") && !node.url.startsWith("vault/vault/")) ||
+            node.url.startsWith("/docs/") || (node.url.startsWith("docs/") && !node.url.startsWith("docs/docs/")) ||
+            node.url.startsWith("/projects/") || (node.url.startsWith("projects/") && !node.url.startsWith("projects/projects/"));
+
+          if (isStyledLink) {
             if (!node.data) {
               node.data = {};
             }
@@ -1731,7 +1894,7 @@ export function remarkFolderImages() {
       // We now detect these and process them. Truly unknown absolute paths
       // are still skipped.
       if (node.url.startsWith("/")) {
-        const knownCollectionPrefixes = ["/posts/", "/projects/", "/docs/", "/pages/"];
+        const knownCollectionPrefixes = ["/posts/", "/projects/", "/docs/", "/pages/", "/dossier/", "/vault/"];
         const matchesCollection = knownCollectionPrefixes.some(
           prefix => node.url.startsWith(prefix)
         );
@@ -1779,38 +1942,58 @@ export function remarkFolderImages() {
         const normalizedPath = file.path.replace(/\\/g, "/");
         const pathParts = normalizedPath.split("/");
         
+        const contentIndex = pathParts.lastIndexOf("content");
+        let searchParts = pathParts;
+        if (contentIndex !== -1 && contentIndex < pathParts.length - 1) {
+          searchParts = pathParts.slice(contentIndex + 1);
+        }
+        
         // Check for posts
-        if (normalizedPath.includes("/posts/")) {
+        if (searchParts.includes("posts")) {
           collection = "posts";
-          const postsIndex = pathParts.indexOf("posts");
+          const postsIndex = pathParts.indexOf("posts", contentIndex + 1);
           isFolderBased = normalizedPath.endsWith("/index.md");
           contentSlug = isFolderBased ? pathParts[postsIndex + 1] : null;
         }
         // Check for projects
-        else if (normalizedPath.includes("/projects/")) {
+        else if (searchParts.includes("projects")) {
           collection = "projects";
-          const projectsIndex = pathParts.indexOf("projects");
+          const projectsIndex = pathParts.indexOf("projects", contentIndex + 1);
           isFolderBased = normalizedPath.endsWith("/index.md");
           contentSlug = isFolderBased ? pathParts[projectsIndex + 1] : null;
         }
+        // Check for dossier
+        else if (searchParts.includes("dossier")) {
+          collection = "dossier";
+          const dossierIndex = pathParts.indexOf("dossier", contentIndex + 1);
+          isFolderBased = normalizedPath.endsWith("/index.md");
+          contentSlug = isFolderBased ? pathParts[dossierIndex + 1] : null;
+        }
+        // Check for vault
+        else if (searchParts.includes("vault")) {
+          collection = "vault";
+          const vaultIndex = pathParts.indexOf("vault", contentIndex + 1);
+          isFolderBased = normalizedPath.endsWith("/index.md");
+          contentSlug = isFolderBased ? pathParts[vaultIndex + 1] : null;
+        }
         // Check for docs
-        else if (normalizedPath.includes("/docs/")) {
+        else if (searchParts.includes("docs")) {
           collection = "docs";
-          const docsIndex = pathParts.indexOf("docs");
+          const docsIndex = pathParts.indexOf("docs", contentIndex + 1);
           isFolderBased = normalizedPath.endsWith("/index.md");
           contentSlug = isFolderBased ? pathParts[docsIndex + 1] : null;
         }
         // Check for pages
-        else if (normalizedPath.includes("/pages/")) {
+        else if (searchParts.includes("pages")) {
           collection = "pages";
-          const pagesIndex = pathParts.indexOf("pages");
+          const pagesIndex = pathParts.indexOf("pages", contentIndex + 1);
           isFolderBased = normalizedPath.endsWith("/index.md");
           contentSlug = isFolderBased ? pathParts[pagesIndex + 1] : null;
         }
         // Check for special pages (they also use pages collection paths)
-        else if (normalizedPath.includes("/special/")) {
+        else if (searchParts.includes("special")) {
           collection = "pages"; // Special pages use pages collection paths
-          const specialIndex = pathParts.indexOf("special");
+          const specialIndex = pathParts.indexOf("special", contentIndex + 1);
           isFolderBased = normalizedPath.endsWith("/index.md");
           contentSlug = isFolderBased ? pathParts[specialIndex + 1] : null;
         }

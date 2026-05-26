@@ -80,8 +80,9 @@ const hideTOC = dossier.data.hideTOC === true;
 const toc = (!hideTOC && siteConfig.tableOfContents.enabled) ? await generateTOC(headings) : [];
 const shouldShowTOC = toc.length > 1;
 
-// Get adjacent posts for navigation
-const { prev: prevPost, next: nextPost } = getAdjacentPosts(visiblePosts, dossier.id);
+// Get adjacent posts for navigation (restricted to the same collection)
+const navigationPosts = visiblePosts.filter(p => (p.collection || 'posts') === (dossier.collection || 'dossier'));
+const { prev: prevPost, next: nextPost } = getAdjacentPosts(navigationPosts, dossier.id);
 
 // Check if current post has connections for LocalGraph
 let hasLocalGraphConnections = false;

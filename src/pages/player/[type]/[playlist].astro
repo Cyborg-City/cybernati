@@ -613,29 +613,36 @@ const pageDescription = `Tune into the 24/7 client-synchronized Cybernati broadc
             self.scheduleHideOverlay();
           });
 
-          // Global keyboard shortcuts for premium volume controls
-          window.addEventListener('keydown', (e) => {
-            // Ignore shortcut if user is currently focused inside text input fields
-            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.isContentEditable) {
-              return;
-            }
-
-            if (e.key === 'ArrowUp') {
-              e.preventDefault();
+          // Helper to process keyboard volume controls
+          self.handleGlobalKeydown = (key) => {
+            if (key === 'ArrowUp') {
               const nextVol = Math.min(100, self.currentVolume + 5);
               updateVolumeState(false, nextVol, true);
-            } else if (e.key === 'ArrowDown') {
-              e.preventDefault();
+            } else if (key === 'ArrowDown') {
               const nextVol = Math.max(0, self.currentVolume - 5);
               updateVolumeState(nextVol === 0, nextVol, true);
-            } else if (e.key === 'm' || e.key === 'M') {
-              e.preventDefault();
+            } else if (key === 'm' || key === 'M') {
               const nextMuted = !self.isMuted;
               let nextVol = self.currentVolume;
               if (!nextMuted && self.currentVolume === 0) {
                 nextVol = 25;
               }
               updateVolumeState(nextMuted, nextVol, false);
+            }
+          };
+
+          // Global keyboard shortcuts for premium volume controls inside the iframe itself
+          window.addEventListener('keydown', (e) => {
+            // Ignore shortcut if user is currently focused inside text input fields
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.isContentEditable) {
+              return;
+            }
+
+            if (e.key === 'ArrowUp' || e.key === 'ArrowDown' || e.key === 'm' || e.key === 'M') {
+              if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+                e.preventDefault();
+              }
+              self.handleGlobalKeydown(e.key);
             }
           });
 

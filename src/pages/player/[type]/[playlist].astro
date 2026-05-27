@@ -309,6 +309,16 @@ const pageDescription = `Tune into the 24/7 client-synchronized Cybernati broadc
       // Clean up any existing instances to prevent memory leaks during Swup transitions
       if (window.CyberPlayer) { window.CyberPlayer.destroy(); }
 
+      /**
+       * Logarithmic Audio Curve Converter
+       * Maps a mathematically linear 0-100 UI slider value to an exponential 0-100 audio volume.
+       * 
+       * WHY: Human hearing perception is logarithmic (Weber-Fechner law). If we set volume linearly,
+       * the drop from 100% to 50% is barely audible, whereas 10% to 0% is an extremely steep drop.
+       * Applying a squared audio taper mapping creates a completely natural, smooth perceptual fade.
+       */
+      const toLogVolume = (linear) => Math.round(Math.pow(linear / 100, 2) * 100);
+
       window.CyberPlayer = {
         player: null,
         currentVolume: 0,
@@ -418,33 +428,41 @@ const pageDescription = `Tune into the 24/7 client-synchronized Cybernati broadc
             self.handshakeEstablished = false;
           }
 
-          // Smooth volume fading (logarithmic Cubic Out easing over 150ms)
+          // Smooth volume fading with linear interpolation in slider space (results in logarithmic audio ramp over 300ms)
           let fadeInterval = null;
-          const fadeVolume = (targetVolume, duration = 150, onComplete) => {
+          const fadeVolume = (targetVolume, duration = 300, onComplete) => {
             if (!self.player || !self.player.setVolume) {
               if (onComplete) onComplete();
               return;
             }
             if (fadeInterval) clearInterval(fadeInterval);
-            const startVolume = self.player.getVolume ? self.player.getVolume() : 0;
+            
+            // To ensure smooth fades from the CURRENT mapped volume, we track the last known linear volume
+            const startVolume = typeof self.currentFadeLinear === 'number' ? self.currentFadeLinear : (self.currentVolume || 0);
             const diff = targetVolume - startVolume;
+            
             if (diff === 0) {
+              if (self.player.setVolume) self.player.setVolume(toLogVolume(targetVolume));
               if (onComplete) onComplete();
               return;
             }
+            
             const startTime = performance.now();
             fadeInterval = setInterval(() => {
               const elapsed = performance.now() - startTime;
               const t = Math.min(1, elapsed / duration);
-              // Logarithmic-approximate Cubic Out easing (biological hearing curve representation)
-              const factor = 1 - Math.pow(1 - t, 3);
-              const currentVol = Math.round(startVolume + diff * factor);
+              
+              const currentLinear = startVolume + diff * t;
+              self.currentFadeLinear = currentLinear;
+              
               if (self.player.setVolume) {
-                self.player.setVolume(currentVol);
+                // Apply logarithmic mapping to actual audio output for biological hearing curve representation
+                self.player.setVolume(toLogVolume(currentLinear));
               }
               if (t >= 1) {
                 clearInterval(fadeInterval);
                 fadeInterval = null;
+                self.currentFadeLinear = targetVolume;
                 if (onComplete) onComplete();
               }
             }, 16);
@@ -505,29 +523,45 @@ const pageDescription = `Tune into the 24/7 client-synchronized Cybernati broadc
                   if (self.player.setVolume) self.player.setVolume(0);
                   if (self.player.mute) self.player.mute();
                 } else {
-                  fadeVolume(0, 150, () => {
+                  fadeVolume(0, 300, () => {
                     if (self.player.mute) self.player.mute();
                   });
                 }
               } else {
-                if (self.player.unMute) self.player.unMute();
-                if (skipFade) {
-                  if (self.player.setVolume) self.player.setVolume(self.currentVolume);
+                if (!skipFade) {
+                  // To hear the ramp up, we must force volume to 0 before unmuting
+                  if (self.player.setVolume) self.player.setVolume(0);
+                  if (self.player.unMute) self.player.unMute();
+                  // Reset fade tracker to 0 so we interpolate from 0 to currentVolume
+                  self.currentFadeLinear = 0; 
+                  fadeVolume(self.currentVolume, 300);
                 } else {
-                  fadeVolume(self.currentVolume, 150);
+                  if (self.player.unMute) self.player.unMute();
+                  if (self.player.setVolume) self.player.setVolume(toLogVolume(self.currentVolume));
+                  self.currentFadeLinear = self.currentVolume;
                 }
               }
             }
 
             syncVolumeDOM();
           };
-
           // 1. Interactive User Handshake (To unmute automatically on first click)
-          const handleInteraction = () => {
+          const handleInteraction = (e) => {
             if (self.handshakeEstablished) return;
             self.handshakeEstablished = true;
             localStorage.setItem('cyber-player-handshake', 'true');
             
+            // If the user directly clicked a volume toggle or slider, let their individual click handlers
+            // update the state smoothly rather than overriding with previous session preferences.
+            if (e && e.target && (
+              e.target.closest('#mute-toggle') || 
+              e.target.closest('#volume-control') || 
+              e.target.closest('#pip-mute-toggle') || 
+              e.target.closest('#pip-volume-control')
+            )) {
+              return;
+            }
+
             // Restore unmuted preference from previous session upon first interaction!
             const previouslyMuted = localStorage.getItem('cyber-player-muted') === 'true';
             if (!previouslyMuted) {
@@ -960,7 +994,8 @@ const pageDescription = `Tune into the 24/7 client-synchronized Cybernati broadc
                   e.target.mute();
                 } else {
                   e.target.unMute();
-                  e.target.setVolume(self.currentVolume);
+                  // Apply logarithmic audio curve consistency to initial volume setup as well
+                  e.target.setVolume(toLogVolume(self.currentVolume));
                 }
               },
               onError: (e) => {
@@ -1083,6 +1118,10 @@ const pageDescription = `Tune into the 24/7 client-synchronized Cybernati broadc
           document.body.classList.remove('pip-mode');
         } else if (event.data.type === 'cyber-player-stop') {
           window.CyberPlayer.destroy();
+        } else if (event.data.type === 'cyber-player-keydown') {
+          if (window.CyberPlayer && window.CyberPlayer.handleGlobalKeydown) {
+            window.CyberPlayer.handleGlobalKeydown(event.data.key);
+          }
         } else if (event.data.type === 'cyber-player-parent-mouse-active') {
           if (window.CyberPlayer && window.CyberPlayer.showOverlay) {
             window.CyberPlayer.showOverlay();

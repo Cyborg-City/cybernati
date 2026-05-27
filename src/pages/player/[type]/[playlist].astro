@@ -367,7 +367,6 @@ const pageDescription = `Tune into the 24/7 client-synchronized Cybernati broadc
           // Load volume/mute states from localStorage
           const storedVolume = localStorage.getItem('cyber-player-volume');
           const storedMuted = localStorage.getItem('cyber-player-muted');
-          const storedHandshake = localStorage.getItem('cyber-player-handshake');
 
           // Check if we are inside the floated parent PiP container
           const isPip = window !== window.parent && window.parent.cyberPlayerContainer && window.parent.cyberPlayerContainer.classList.contains('floating-pip-iframe-container');
@@ -378,19 +377,15 @@ const pageDescription = `Tune into the 24/7 client-synchronized Cybernati broadc
             self.currentVolume = 25; // default volume
           }
 
-          if (storedMuted !== null) {
-            self.isMuted = storedMuted === 'true';
-          } else {
-            self.isMuted = true; // start muted for autoplay policy
-          }
-
-          if (storedHandshake !== null) {
-            self.handshakeEstablished = storedHandshake === 'true';
-          }
-
-          // If in PiP mode, the user has already interacted with the parent window, so bypass the handshake!
+          // Strict Autoplay Compliance:
+          // Always initialize as muted on a fresh tab load (non-PiP) to prevent browsers from blocking playback.
+          // In PiP mode, we can safely load the unmuted state because the user interacted by clicking the PiP button!
           if (isPip) {
+            self.isMuted = storedMuted === 'true';
             self.handshakeEstablished = true;
+          } else {
+            self.isMuted = true;
+            self.handshakeEstablished = false;
           }
 
           // Synchronizes all Volume Sliders, Buttons, and Icons in the DOM (Main & PiP controls)
@@ -458,7 +453,14 @@ const pageDescription = `Tune into the 24/7 client-synchronized Cybernati broadc
             if (self.handshakeEstablished) return;
             self.handshakeEstablished = true;
             localStorage.setItem('cyber-player-handshake', 'true');
-            updateVolumeState(false, self.currentVolume || 25);
+            
+            // Restore unmuted preference from previous session upon first interaction!
+            const previouslyMuted = localStorage.getItem('cyber-player-muted') === 'true';
+            if (!previouslyMuted) {
+              updateVolumeState(false, self.currentVolume || 25);
+            } else {
+              updateVolumeState(true, self.currentVolume || 25);
+            }
           };
           window.addEventListener('click', handleInteraction, { once: true });
 

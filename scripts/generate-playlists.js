@@ -215,7 +215,13 @@ async function run() {
         const fm = parseFrontmatter(content);
         if (!fm || fm.draft) continue;
 
-        const fileBasename = path.basename(file, path.extname(file));
+        let fileBasename = path.basename(file, path.extname(file));
+        const parentDirName = path.basename(path.dirname(file));
+        
+        // Handle folder-based entries (e.g. folder-name/index.md)
+        if (fileBasename.toLowerCase() === 'index' && parentDirName.toLowerCase() !== col.toLowerCase()) {
+          fileBasename = parentDirName;
+        }
         
         // Compute relative published Astro URL
         let relativeUrl = '';

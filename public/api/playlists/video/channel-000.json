@@ -5,7 +5,12 @@
       "id": "IBaw2oqVz8w",
       "title": "\"Mystery Airship\" Sightings, 1896 - 1897",
       "duration": 753,
-      "related": [],
+      "related": [
+        {
+          "name": "Test Dossier",
+          "slug": "/dossier/test-dossier/"
+        }
+      ],
       "date": 1500854400000,
       "type": "video",
       "playlist": "uap",
@@ -18,8 +23,8 @@
       "duration": 4324,
       "related": [
         {
-          "name": "second-test-dossier",
-          "slug": "/posts/second-test-dossier/"
+          "name": "Second Test Dossier",
+          "slug": "/dossier/second-test-dossier/"
         }
       ],
       "date": 1751846400000,

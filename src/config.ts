@@ -203,7 +203,7 @@ export const siteConfig: SiteConfig = {
   // [CONFIG:SITE_DESCRIPTION]
   description: "The CYBERNATI is a decentralized archival initiative dedicated to the preservation and analysis of anomalous records, corrupted media, restricted documents, and culturally significant transmissions.",
   // [CONFIG:SITE_AUTHOR]
-  author: "LoFi Monk",
+  author: "Cybernati",
   // [CONFIG:SITE_LANGUAGE]
   language: "en",
   // [CONFIG:FAVICON_THEME_ADAPTIVE]

@@ -5,6 +5,7 @@
  */
 import type { AstroIntegration } from 'astro';
 import path from 'node:path';
+import { exec } from 'node:child_process';
 
 export default function refreshContentOnChange(): AstroIntegration {
   return {
@@ -19,6 +20,19 @@ export default function refreshContentOnChange(): AstroIntegration {
         const handle = async (file: string) => {
           const normalized = path.normalize(file).replace(/\\/g, '/');
           if (!normalized.startsWith(contentDir)) return;
+
+          // Hot-reload playlists: If any file in src/content/ changes, regenerate playlists first
+          await new Promise<void>((resolve) => {
+            exec('node scripts/generate-playlists.js', (err, stdout, stderr) => {
+              if (err) {
+                console.error('⚠️  Failed to auto-regenerate playlists on content change:', err);
+              } else {
+                console.log('📺 Cybernati Playlists auto-regenerated successfully.');
+              }
+              resolve();
+            });
+          });
+
           try {
             await refreshContent({});
           } catch (_) {

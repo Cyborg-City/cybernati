@@ -531,6 +531,9 @@ const pageDescription = `Tune into the 24/7 client-synchronized Cybernati broadc
           }
         },
 
+        // Start Synchronized Broadcast Loop
+        // WHY: The core feature of Cybernati is that all users visiting a playlist are watching the exact same video at the exact same timestamp.
+        // It's a "live broadcast" simulation. We use the server-generated timeline and compare it against the current Unix time.
         startLoop: function() {
           const { totalLoopDuration, schedule, interstitials } = this.playlistData;
           if (!schedule || schedule.length === 0) return;
@@ -540,6 +543,9 @@ const pageDescription = `Tune into the 24/7 client-synchronized Cybernati broadc
           const update = () => {
             if (self.isDesynced) return;
             
+            // WHY: By using Date.now() / 1000, we get the current Unix timestamp in seconds.
+            // Using modulo (%) with the totalLoopDuration gives us the exact second within the loop that we should be at right now.
+            // Since Unix time is the same across the globe, every single client computes the exact same `pos`.
             const now = Math.floor(Date.now() / 1000);
             const pos = now % totalLoopDuration;
             
@@ -549,15 +555,19 @@ const pageDescription = `Tune into the 24/7 client-synchronized Cybernati broadc
             let offset = 0;
             let nextIndex = 0;
             
+            // Find which video should be playing based on the current position `pos`
             for (let i = 0; i < schedule.length; i++) {
               const p = schedule[i];
+              // If `pos` falls within the video's start and end times, it should be actively playing.
               if (pos >= p.start && pos < p.end) {
                 active = p;
                 standby = false;
-                offset = pos - p.start;
+                offset = pos - p.start; // Calculate how many seconds into the video we should seek to.
                 nextIndex = (i + 1) % schedule.length;
                 break;
               }
+              // If `pos` is after this video, but before the next video starts (or we're at the end of the loop),
+              // we are in a "standby" / interstitial gap.
               if (pos >= p.end && (i === schedule.length - 1 || pos < schedule[i+1].start)) {
                 standby = true;
                 wait = (i === schedule.length - 1) ? (totalLoopDuration - pos) : (schedule[i+1].start - pos);
@@ -575,13 +585,17 @@ const pageDescription = `Tune into the 24/7 client-synchronized Cybernati broadc
               if (titleEl) titleEl.innerHTML = active.title.toUpperCase();
               if (nextEl) nextEl.innerHTML = schedule[nextIndex].title.toUpperCase();
               
+              // Only load the YouTube iframe if the video ID has changed, to avoid reloading the iframe every second.
               if (self.currentVideoId !== active.id) {
                 self.mountVideo(active, offset);
               } else if (self.player && self.player.getCurrentTime) {
+                // WHY: Drift correction. If the client's player gets out of sync (due to buffering or lag),
+                // we force it to seek to the mathematically correct timestamp if it drifts by more than 3 seconds.
                 const drift = Math.abs(self.player.getCurrentTime() - offset);
                 if (drift > 3) self.player.seekTo(offset, true);
               }
             } else {
+              // During interstitial gaps, display a countdown / standby message.
               if (progressBar) progressBar.style.width = `${Math.min(100, (wait / 30) * 100)}%`;
               if (titleEl) titleEl.innerHTML = "SIGNAL LOST: TRANSMITTING STANDBY...";
               if (nextEl) nextEl.innerHTML = schedule[nextIndex].title.toUpperCase();
@@ -591,10 +605,14 @@ const pageDescription = `Tune into the 24/7 client-synchronized Cybernati broadc
           };
 
           if (this.updateTimer) clearInterval(this.updateTimer);
+          // Run the update logic every 1 second to keep the progress bar moving and correct for drift.
           this.updateTimer = setInterval(update, 1000);
           update();
         },
 
+        // Start Desynchronized Mode (On-Demand shuffle)
+        // WHY: Sometimes users don't want to watch the live broadcast, they just want to flip through random videos.
+        // This stops the synchronized `updateTimer` and plays random clips from the playlist.
         startDesyncSequence: function() {
           const { schedule, interstitials } = this.playlistData;
           if (!schedule || schedule.length === 0) return;
@@ -603,8 +621,14 @@ const pageDescription = `Tune into the 24/7 client-synchronized Cybernati broadc
           const playRandom = () => {
             const index = Math.floor(Math.random() * schedule.length);
             const prog = schedule[index];
-            const playWindow = Math.min(prog.duration, 180); // 3 minutes play cap for desync
-            const startAt = Math.floor(Math.random() * Math.max(1, prog.duration - playWindow));
+            
+            // WHY: In desync mode, we don't want to play entire videos. We want it to feel like flipping channels.
+            // We cap the play window to 5 minutes (300 seconds) max.
+            // If the video is longer than 5 minutes, pick a random starting point. If shorter, play from the start.
+            const playWindow = Math.min(prog.duration, 300);
+            const startAt = prog.duration > 300 
+              ? Math.floor(Math.random() * (prog.duration - playWindow)) 
+              : 0;
             
             self.mountVideo(prog, startAt);
             
@@ -628,7 +652,7 @@ const pageDescription = `Tune into the 24/7 client-synchronized Cybernati broadc
                 clearInterval(self.desyncTimer);
                 self.mountStandby(interstitials);
                 
-                // Keep standby interstitial running for 10 seconds before next random clip
+                // Keep standby interstitial running for 10 seconds before flipping to the next random clip
                 setTimeout(playRandom, 10000);
               }
             }, 1000);
@@ -702,20 +726,30 @@ const pageDescription = `Tune into the 24/7 client-synchronized Cybernati broadc
               }).join('');
               
               // Intercept click on related links inside iframe to trigger PiP and navigate parent
+              // WHY: Normally, clicking a link inside an iframe will navigate the iframe itself.
+              // We want clicking a related note to navigate the MAIN site (the parent window),
+              // while simultaneously popping the player into PiP mode so the user can keep watching while reading the note.
               linksEl.querySelectorAll('.cyber-related-link').forEach(linkEl => {
                 linkEl.onclick = (e) => {
                   if (window !== window.parent) {
+                    // Prevent the iframe from navigating
                     e.preventDefault();
                     
-                    // Toggle miniplayer/PiP mode if not already active
+                    // Check if the parent window has already popped us out into PiP mode
+                    // WHY: We reach across the boundary to check window.parent.cyberPlayerContainer.
+                    // This only works because the iframe and the parent share the same origin (localhost or the same domain).
                     const isParentPipActive = window.parent.cyberPlayerContainer && 
                       window.parent.cyberPlayerContainer.classList.contains('floating-pip-iframe-container');
                     
+                    // If we aren't in PiP mode yet, tell the parent to pop us out before navigating.
                     if (!isParentPipActive) {
                       self.triggerPip();
                     }
                     
-                    // Tell parent window to navigate to the note
+                    // Tell parent window to navigate to the note using Swup
+                    // WHY: If we just changed window.parent.location.href, the whole page would hard refresh and destroy the iframe.
+                    // By posting a message, the parent's BaseLayout listener intercepts it and uses Swup.navigate(),
+                    // which fetches the new page via AJAX and smoothly transitions the DOM WITHOUT destroying the floating iframe.
                     const href = linkEl.getAttribute('href');
                     window.parent.postMessage({
                       type: 'cyber-player-navigate',

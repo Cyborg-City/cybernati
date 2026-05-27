@@ -1147,26 +1147,39 @@ const scrollbarClass = siteConfig.hideScrollBar ? '' : 'show-scrollbars';
     if (!window.cyberPlayerPipListenerAdded) {
       window.cyberPlayerPipListenerAdded = true;
       
+      // --- Picture-in-Picture (PiP) Miniplayer Logic ---
+      // WHY: We need a miniplayer that survives Swup page navigations. Standard iframes get destroyed when Swup replaces the DOM.
+      // Our solution is to pop the iframe's container completely out of the normal DOM flow and append it directly to document.body.
+      // This makes it immune to Swup transitions, allowing the user to browse the site while the video plays continuously.
+
       // Snapping/Magnetization Helper
+      // WHY: When dragging a floating player, users expect it to neatly snap to a corner of the screen so it doesn't block the center content.
       function snapToNearestCorner(container) {
         const rect = container.getBoundingClientRect();
         const vw = window.innerWidth;
         const vh = window.innerHeight;
         
+        // Calculate the center point of the dragged container
         const midX = rect.left + rect.width / 2;
         const midY = rect.top + rect.height / 2;
         
+        // Determine which quadrant of the screen the center point lies in
         const isLeft = midX < vw / 2;
         const isTop = midY < vh / 2;
         
+        // Temporarily re-enable CSS transitions to animate the snap movement
         container.style.transition = 'all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)';
+        
+        // Reset all positioning properties before applying the new corner coordinates
         container.style.left = 'auto';
         container.style.top = 'auto';
         container.style.right = 'auto';
         container.style.bottom = 'auto';
         
+        // The distance (in pixels) from the edge of the viewport
         const gap = 20;
         
+        // Apply fixed positioning anchored to the nearest corner
         if (isLeft && isTop) {
           container.style.left = `${gap}px`;
           container.style.top = `${gap}px`;
@@ -1183,7 +1196,9 @@ const scrollbarClass = siteConfig.hideScrollBar ? '' : 'show-scrollbars';
       }
 
       // Drag and Drop Helper
+      // WHY: Users need to be able to move the PiP player out of the way if it's blocking important text.
       function makeContainerDraggable(container, iframe) {
+        // Create a custom drag header that gets injected into the container when it enters PiP mode.
         let header = container.querySelector('.cyber-pip-header');
         if (!header) {
           header = document.createElement('div');
@@ -1197,6 +1212,8 @@ const scrollbarClass = siteConfig.hideScrollBar ? '' : 'show-scrollbars';
           `;
           container.insertBefore(header, container.firstChild);
           
+          // WHY: Iframes consume pointer events. If you try to drag over an iframe, the mouse event is lost to the iframe.
+          // We overlay an invisible div over the iframe while dragging to intercept the pointer events.
           const cover = document.createElement('div');
           cover.className = 'cyber-pip-drag-cover';
           container.appendChild(cover);
@@ -1204,16 +1221,22 @@ const scrollbarClass = siteConfig.hideScrollBar ? '' : 'show-scrollbars';
           const restoreBtn = header.querySelector('.cyber-pip-restore-btn');
           const closeBtn = header.querySelector('.cyber-pip-close-btn');
 
+          // Handle restoring the PiP player back to its original page
           restoreBtn.onclick = (e) => {
             e.stopPropagation();
             const originatingUrl = container.dataset.originatingUrl;
+            
+            // Check if the placeholder element is currently rendered on the screen
             const placeholderExists = document.body.contains(window.cyberPlayerPlaceholder);
             
             if (placeholderExists) {
+              // The user is currently on the same page where the PiP started, just snap it back into place.
               exitPipMode(container);
             } else if (originatingUrl) {
+              // The user navigated away. We need to navigate BACK to the original page to restore the player.
               if (window.swup) {
                 window.swup.navigate(originatingUrl);
+                // Listen for Swup's content replacement to finish, then put the player back into the newly loaded DOM.
                 const restoreOnLoad = () => {
                   const newPlaceholder = document.querySelector('.cyber-player-placeholder');
                   if (newPlaceholder) {
@@ -1229,6 +1252,7 @@ const scrollbarClass = siteConfig.hideScrollBar ? '' : 'show-scrollbars';
             }
           };
 
+          // Handle completely closing the player
           closeBtn.onclick = (e) => {
             e.stopPropagation();
             closePipMode(container);
@@ -1241,57 +1265,75 @@ const scrollbarClass = siteConfig.hideScrollBar ? '' : 'show-scrollbars';
         let startX = 0, startY = 0;
         let elemX = 0, elemY = 0;
 
+        // Initialize Drag
         handle.onmousedown = (e) => {
           isDragging = true;
+          // Activate the iframe cover so mousemove events don't get swallowed by the video
           cover.style.display = 'block';
+          
+          // Record initial cursor position
           startX = e.clientX;
           startY = e.clientY;
           
+          // Record initial element position
           const rect = container.getBoundingClientRect();
           elemX = rect.left;
           elemY = rect.top;
           
+          // Switch positioning logic from 'bottom/right' anchors to absolute 'top/left' for smooth dragging math
           container.style.bottom = 'auto';
           container.style.right = 'auto';
           container.style.left = `${elemX}px`;
           container.style.top = `${elemY}px`;
+          
+          // Disable CSS transitions during drag, otherwise the dragging lags behind the mouse
           container.style.transition = 'none';
           
           e.preventDefault();
         };
 
+        // Perform Drag
         const onMouseMove = (e) => {
           if (!isDragging) return;
+          // Calculate delta and apply it to the recorded starting position
           const dx = e.clientX - startX;
           const dy = e.clientY - startY;
           container.style.left = `${elemX + dx}px`;
           container.style.top = `${elemY + dy}px`;
         };
 
+        // Finalize Drag
         const onMouseUp = () => {
           if (!isDragging) return;
           isDragging = false;
+          // Remove iframe cover so user can interact with the video again
           cover.style.display = 'none';
+          // Auto-magnetize back to the closest corner
           snapToNearestCorner(container);
         };
 
         document.addEventListener('mousemove', onMouseMove);
         document.addEventListener('mouseup', onMouseUp);
         
+        // Store a cleanup function on the DOM element so we can detach the listeners if the player is destroyed
         container._dragCleanup = () => {
           document.removeEventListener('mousemove', onMouseMove);
           document.removeEventListener('mouseup', onMouseUp);
         };
       }
 
+      // Enter Picture-in-Picture
       function enterPipMode(container) {
         if (container.classList.contains('floating-pip-iframe-container')) return;
         
         const iframe = container.querySelector('iframe');
         if (!iframe) return;
 
+        // Save the URL we started on so we can navigate back if the user clicks 'Restore'
         container.dataset.originatingUrl = window.location.href;
 
+        // WHY: When we extract the container from the normal DOM flow, the layout will instantly collapse.
+        // We create a dummy placeholder element of the exact same size to maintain the layout spacing.
         const placeholder = document.createElement('div');
         placeholder.className = 'cyber-player-placeholder';
         placeholder.style.width = container.offsetWidth + 'px';
@@ -1310,33 +1352,42 @@ const scrollbarClass = siteConfig.hideScrollBar ? '' : 'show-scrollbars';
         placeholder.style.gap = '8px';
         placeholder.innerHTML = '<span class="material-symbols-outlined" style="font-size:32px; animation: pulse 2s infinite;">desktop_windows</span><span style="letter-spacing: 0.1em;">PLAYING IN MINI-PLAYER</span>';
         
+        // Inject the placeholder right where the container used to be
         container.parentNode.insertBefore(placeholder, container);
 
+        // Track global state
         window.cyberPlayerPlaceholder = placeholder;
         window.cyberPlayerContainer = container;
 
+        // Add the CSS class that triggers the floating/resizing styles in global.css
         container.classList.add('floating-pip-iframe-container');
+        
+        // Move to body to escape Swup destruction and any CSS transforms that might trap position:fixed elements
         document.body.appendChild(container);
 
         makeContainerDraggable(container, iframe);
         snapToNearestCorner(container);
 
+        // Tell the iframe that it has entered PiP so it can hide its own internal headers/footers
         try {
           iframe.contentWindow.postMessage({ type: 'cyber-player-enter-pip' }, '*');
         } catch (e) {}
       }
 
+      // Exit Picture-in-Picture and restore to original position
       function exitPipMode(container) {
         if (!container.classList.contains('floating-pip-iframe-container')) return;
 
         const iframe = container.querySelector('iframe');
         const placeholder = window.cyberPlayerPlaceholder;
 
+        // Put the container back exactly where the placeholder is
         if (placeholder && placeholder.parentNode) {
           placeholder.parentNode.insertBefore(container, placeholder);
           placeholder.remove();
         }
 
+        // Strip off the floating styles and clean up injected styles
         container.classList.remove('floating-pip-iframe-container');
         container.style.transition = 'none';
         container.style.left = 'auto';
@@ -1346,19 +1397,23 @@ const scrollbarClass = siteConfig.hideScrollBar ? '' : 'show-scrollbars';
         container.style.width = '100%';
         container.style.height = 'auto';
 
+        // Remove the custom drag header and invisible cover
         const header = container.querySelector('.cyber-pip-header');
         if (header) header.remove();
         const cover = container.querySelector('.cyber-pip-drag-cover');
         if (cover) cover.remove();
 
+        // Detach the global mouse event listeners
         if (container._dragCleanup) {
           container._dragCleanup();
           delete container._dragCleanup;
         }
 
+        // Clear global tracking
         window.cyberPlayerPlaceholder = null;
         window.cyberPlayerContainer = null;
 
+        // Tell the iframe to re-enable its internal headers and footers
         if (iframe) {
           try {
             iframe.contentWindow.postMessage({ type: 'cyber-player-exit-pip' }, '*');
@@ -1366,6 +1421,7 @@ const scrollbarClass = siteConfig.hideScrollBar ? '' : 'show-scrollbars';
         }
       }
 
+      // Completely close/destroy the PiP player
       function closePipMode(container) {
         const iframe = container.querySelector('iframe');
         if (iframe) {
@@ -1377,6 +1433,7 @@ const scrollbarClass = siteConfig.hideScrollBar ? '' : 'show-scrollbars';
         container.remove();
       }
 
+      // Message Router: Listens to messages emitted by the iframe player
       window.addEventListener('message', (event) => {
         if (!event.data) return;
 
@@ -1384,6 +1441,8 @@ const scrollbarClass = siteConfig.hideScrollBar ? '' : 'show-scrollbars';
           const playlist = event.data.playlist;
           const mediaType = event.data.mediaType;
           
+          // WHY: The postMessage API only gives us the origin, not the specific iframe element that sent it.
+          // We must iterate over all iframes on the page and match the URL to find out which one needs to be floated.
           const iframes = document.querySelectorAll('iframe');
           for (const iframe of iframes) {
             try {
@@ -1391,6 +1450,7 @@ const scrollbarClass = siteConfig.hideScrollBar ? '' : 'show-scrollbars';
               if (url.pathname.includes(`/player/${mediaType}/${playlist}`)) {
                 const container = iframe.closest('.cyber-player-embed-container');
                 if (container) {
+                  // Toggle state
                   if (container.classList.contains('floating-pip-iframe-container')) {
                     exitPipMode(container);
                   } else {
@@ -1401,6 +1461,8 @@ const scrollbarClass = siteConfig.hideScrollBar ? '' : 'show-scrollbars';
             } catch (e) {}
           }
         } else if (event.data.type === 'cyber-player-navigate') {
+          // WHY: The iframe is sandboxed and cannot change the parent's URL directly without triggering a full page reload.
+          // We intercept this message and use Swup in the parent window so the navigation is seamless and the PiP survives.
           const url = event.data.url;
           if (window.swup) {
             window.swup.navigate(url);

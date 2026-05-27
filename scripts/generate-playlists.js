@@ -50,9 +50,15 @@ function parseISODuration(durationStr) {
   return 0;
 }
 
+// Calculates the synchronized timeline for a list of videos
+// WHY: We want the player to act like a continuous 24/7 TV broadcast.
+// We assign each video a specific 'start' and 'end' second within the total loop duration.
+// The client will use `Date.now() % totalLoopDuration` to figure out exactly what should be playing right now.
 function calculateTimeline(videos) {
   const timeline = [];
   let currentOffset = 0;
+  // WHY: We add a 30-second gap between each video to simulate a commercial break or "standby" period.
+  // During this gap, the client player will show an interstitial looping video.
   const INTERSTITIAL_GAP = 30;
 
   for (let i = 0; i < videos.length; i++) {
@@ -63,6 +69,8 @@ function calculateTimeline(videos) {
       end: currentOffset + video.duration
     };
     timeline.push(entry);
+    
+    // Increment the offset for the next video, including the 30s gap
     if (i < videos.length - 1) {
       currentOffset = entry.end + INTERSTITIAL_GAP;
     }

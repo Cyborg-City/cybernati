@@ -1422,21 +1422,13 @@ const scrollbarClass = siteConfig.hideScrollBar ? '' : 'show-scrollbars';
             } else if (originatingUrl) {
               // The user navigated away. We need to navigate BACK to the original page to restore the player.
               container.style.display = 'none';
+              localStorage.setItem('cyber-player-restoring-pip', 'true');
               if (window.swup) {
                 window.swup.navigate(originatingUrl);
-                // Listen for Swup's content replacement to finish, then put the player back into the newly loaded DOM.
-                const restoreOnLoad = () => {
-                  const newPlaceholder = document.querySelector('.cyber-player-placeholder');
-                  if (newPlaceholder) {
-                    window.cyberPlayerPlaceholder = newPlaceholder;
-                    exitPipMode(container);
-                  }
-                  window.swup.hooks.off('content:replace', restoreOnLoad);
-                };
-                window.swup.hooks.on('content:replace', restoreOnLoad);
               } else {
                 window.location.href = originatingUrl;
               }
+              closePipMode(container);
             }
           };
 
@@ -1665,32 +1657,25 @@ const scrollbarClass = siteConfig.hideScrollBar ? '' : 'show-scrollbars';
 
                 // Toggle state
                 if (container.classList.contains('floating-pip-iframe-container')) {
-                   // Exit PiP mode.
-                   // If we've navigated away from the original page, we must navigate back first!
-                   const originatingUrl = container.dataset.originatingUrl;
-                   const placeholderExists = document.body.contains(window.cyberPlayerPlaceholder);
+                  // Exit PiP mode.
+                  // If we've navigated away from the original page, we must navigate back first!
+                  const originatingUrl = container.dataset.originatingUrl;
+                  const placeholderExists = document.body.contains(window.cyberPlayerPlaceholder);
 
-                   if (placeholderExists) {
-                     exitPipMode(container);
-                   } else if (originatingUrl) {
-                     container.style.display = 'none';
-                     if (window.swup) {
-                       window.swup.navigate(originatingUrl);
-                       const restoreOnLoad = () => {
-                         const newPlaceholder = document.querySelector('.cyber-player-placeholder');
-                         if (newPlaceholder) {
-                           window.cyberPlayerPlaceholder = newPlaceholder;
-                           exitPipMode(container);
-                         }
-                         window.swup.hooks.off('content:replace', restoreOnLoad);
-                       };
-                       window.swup.hooks.on('content:replace', restoreOnLoad);
-                     } else {
-                       window.location.href = originatingUrl;
-                     }
-                   } else {
-                     exitPipMode(container); // Fallback
-                   }
+                  if (placeholderExists) {
+                    exitPipMode(container);
+                  } else if (originatingUrl) {
+                    container.style.display = 'none';
+                    localStorage.setItem('cyber-player-restoring-pip', 'true');
+                    if (window.swup) {
+                      window.swup.navigate(originatingUrl);
+                    } else {
+                      window.location.href = originatingUrl;
+                    }
+                    closePipMode(container);
+                  } else {
+                    exitPipMode(container); // Fallback
+                  }
                 } else {
                   enterPipMode(container);
                 }

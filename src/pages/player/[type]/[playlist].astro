@@ -226,17 +226,13 @@ const pageDescription = `Tune into the 24/7 client-synchronized Cybernati broadc
       </div>
 
       <!-- PiP Hover Controls Overlay -->
-      <div id="pip-controls-overlay" class="absolute bottom-3 left-3 right-3 z-30 flex items-center justify-between rounded-lg border border-zinc-800 bg-zinc-950/90 backdrop-blur-md px-2 py-1.5 opacity-0 pointer-events-none transition-all duration-300 shadow-xl border border-white/5">
+      <div id="pip-controls-overlay" class="absolute bottom-3 left-1/2 -translate-x-1/2 z-30 flex items-center justify-center rounded-lg border border-zinc-800 bg-zinc-950/90 backdrop-blur-md px-2.5 py-1.5 opacity-0 pointer-events-none transition-all duration-300 shadow-xl border border-white/5 w-auto">
         <div class="flex items-center gap-1.5">
           <button id="pip-mute-toggle" class="flex items-center justify-center rounded p-1 text-zinc-400 hover:bg-zinc-800 hover:text-purple-400" aria-label="Toggle mute state">
             <span id="pip-volume-icon-symbol" class="material-symbols-outlined text-base">volume_off</span>
           </button>
           <input type="range" id="pip-volume-control" class="h-1 w-14 cursor-pointer accent-purple-400 bg-zinc-800 rounded-lg appearance-none" min="0" max="100" value="0" aria-label="Volume Slider" />
         </div>
-        
-        <button id="pip-restore-trigger" class="flex items-center justify-center rounded p-1 text-zinc-400 hover:bg-zinc-800 hover:text-purple-400" title="Restore to Page" aria-label="Restore Player to Page">
-          <span class="material-symbols-outlined text-base">pip_exit</span>
-        </button>
       </div>
     </main>
 
@@ -392,9 +388,13 @@ const pageDescription = `Tune into the 24/7 client-synchronized Cybernati broadc
           // Strict Autoplay Compliance:
           // Always initialize as muted on a fresh tab load (non-PiP) to prevent browsers from blocking playback.
           // Bypasses: 
-          // 1. If we are currently floating in PiP mode.
-          // 2. If the player was just restored back into the page from PiP mode!
-          if (isPip || isRestoring) {
+          // 1. If the player was just restored back into the page from PiP mode!
+          // 2. If we are currently floating in PiP mode.
+          if (isRestoring) {
+            self.isMuted = false;
+            self.handshakeEstablished = true;
+            localStorage.setItem('cyber-player-muted', 'false');
+          } else if (isPip) {
             self.isMuted = storedMuted === 'true';
             self.handshakeEstablished = true;
           } else {
@@ -598,14 +598,7 @@ const pageDescription = `Tune into the 24/7 client-synchronized Cybernati broadc
             };
           }
 
-          // 5b. PiP Hover Overlay Restore Trigger
-          const pipRestoreTrigger = document.getElementById('pip-restore-trigger');
-          if (pipRestoreTrigger) {
-            pipRestoreTrigger.onclick = (e) => {
-              e.stopPropagation();
-              self.triggerPip();
-            };
-          }
+
 
           // 6. Fullscreen Mode
           const fsBtn = document.getElementById('fullscreen-toggle');

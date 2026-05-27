@@ -131,6 +131,9 @@ const scrollbarClass = siteConfig.hideScrollBar ? '' : 'show-scrollbars';
   )}
   <link rel="preconnect" href="https://cdnjs.cloudflare.com">
 
+  <!-- Google Icons (Material Symbols Outlined) loaded globally to support custom Picture-in-Picture components across client routing navigations -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+
   <!-- Fonts with optimized loading -->
   {shouldLoadCdnFonts() && (
     <>
@@ -1193,6 +1196,15 @@ const scrollbarClass = siteConfig.hideScrollBar ? '' : 'show-scrollbars';
           container.style.right = `${gap}px`;
           container.style.bottom = `${gap}px`;
         }
+
+        // WHY: Remove transition after snap animation completes (300ms) to lock
+        // the dimension properties in place. This prevents the browser from resetting
+        // the player size back to the stylesheet default during page-navigation re-flows.
+        setTimeout(() => {
+          if (container && container.classList.contains('floating-pip-iframe-container')) {
+            container.style.transition = 'none';
+          }
+        }, 300);
       }
 
       // Drag and Drop Helper
@@ -1203,10 +1215,11 @@ const scrollbarClass = siteConfig.hideScrollBar ? '' : 'show-scrollbars';
         if (!header) {
           header = document.createElement('div');
           header.className = 'cyber-pip-header';
+          // WHY: No branding text — the user requested a clean, minimal header.
+          // Only the drag handle icon and action buttons remain.
           header.innerHTML = `
             <span class="cyber-pip-drag-handle">
-              <span class="material-symbols-outlined" style="font-size:14px; vertical-align:middle; margin-right:4px;">drag_indicator</span>
-              CyberPlayer Mini
+              <span class="material-symbols-outlined" style="font-size:14px; vertical-align:middle;">drag_indicator</span>
             </span>
             <div class="cyber-pip-actions">
               <!-- WHY: pip_exit is the exact Material Symbol depicting an arrow exiting floating PiP back to its page -->
@@ -1215,6 +1228,176 @@ const scrollbarClass = siteConfig.hideScrollBar ? '' : 'show-scrollbars';
             </div>
           `;
           container.insertBefore(header, container.firstChild);
+
+          // WHY: Custom JS perimeter resizer grab regions — the native CSS resize:both handle is
+          // unreachable because the iframe sits on top of it and consumes pointer events.
+          // We construct 8 invisible perimeter zones (4 edges, 4 corners) that sit at z-index:20
+          // (above the iframe) styled completely inline in JavaScript.
+          // By styling them entirely inline, they have ZERO dependency on CSS stylesheet classes,
+          // making them 100% immune to Swup / Vite style purge bugs on page transitions.
+          // This perfectly mimics YouTube's border-grab resizer while keeping a clean borderless aesthetic!
+          const grabRegions = [
+            { name: 'tl', cursor: 'nwse-resize', top: '-6px', left: '-6px', width: '12px', height: '12px' },
+            { name: 'tr', cursor: 'nesw-resize', top: '-6px', right: '-6px', width: '12px', height: '12px' },
+            { name: 'bl', cursor: 'nesw-resize', bottom: '-6px', left: '-6px', width: '12px', height: '12px' },
+            { name: 'br', cursor: 'nwse-resize', bottom: '-6px', right: '-6px', width: '12px', height: '12px' },
+            { name: 't', cursor: 'ns-resize', top: '-6px', left: '6px', right: '6px', width: 'auto', height: '8px' },
+            { name: 'b', cursor: 'ns-resize', bottom: '-6px', left: '6px', right: '6px', width: 'auto', height: '8px' },
+            { name: 'l', cursor: 'ew-resize', left: '-6px', top: '6px', bottom: '6px', width: '8px', height: 'auto' },
+            { name: 'r', cursor: 'ew-resize', right: '-6px', top: '6px', bottom: '6px', width: '8px', height: 'auto' }
+          ];
+
+          // JS-powered 8-region resize logic
+          let isResizing = false;
+          let activeGrip = null; // 'tl', 'tr', 'bl', 'br', 't', 'b', 'l', 'r'
+          let resizeStartX = 0, resizeStartY = 0;
+          let startWidth = 0, startHeight = 0;
+
+          // Helper: Pins the opposite corner in space before resizing begins
+          // This prevents anchoring conflicts (e.g. dragging a locked side) and guarantees a perfect 1-to-1 scale.
+          const pinOppositeCorner = (grip) => {
+            const rect = container.getBoundingClientRect();
+            startWidth = container.offsetWidth;
+            startHeight = container.offsetHeight;
+            container.style.transition = 'none';
+
+            if (grip === 'br' || grip === 'r' || grip === 'b') {
+              // Pin top-left
+              container.style.bottom = 'auto';
+              container.style.right = 'auto';
+              container.style.left = `${rect.left}px`;
+              container.style.top = `${rect.top}px`;
+            } else if (grip === 'bl' || grip === 'l') {
+              // Pin top-right
+              container.style.left = 'auto';
+              container.style.bottom = 'auto';
+              container.style.right = `${window.innerWidth - rect.right}px`;
+              container.style.top = `${rect.top}px`;
+            } else if (grip === 'tl' || grip === 't') {
+              // Pin bottom-right
+              container.style.left = 'auto';
+              container.style.top = 'auto';
+              container.style.right = `${window.innerWidth - rect.right}px`;
+              container.style.bottom = `${window.innerHeight - rect.bottom}px`;
+            } else if (grip === 'tr') {
+              // Pin bottom-left
+              container.style.right = 'auto';
+              container.style.top = 'auto';
+              container.style.left = `${rect.left}px`;
+              container.style.bottom = `${window.innerHeight - rect.bottom}px`;
+            }
+          };
+
+          const handleResizeMousedown = (grip, e) => {
+            isResizing = true;
+            activeGrip = grip;
+            resizeStartX = e.clientX;
+            resizeStartY = e.clientY;
+            pinOppositeCorner(grip);
+            cover.style.display = 'block';
+            e.preventDefault();
+            e.stopPropagation();
+          };
+
+          grabRegions.forEach(region => {
+            const el = document.createElement('div');
+            el.className = `cyber-pip-grab-region cyber-pip-grab-${region.name}`;
+            el.style.position = 'absolute';
+            el.style.zIndex = '20';
+            el.style.cursor = region.cursor;
+            el.style.background = 'transparent';
+            if (region.top) el.style.top = region.top;
+            if (region.bottom) el.style.bottom = region.bottom;
+            if (region.left) el.style.left = region.left;
+            if (region.right) el.style.right = region.right;
+            if (region.width) el.style.width = region.width;
+            if (region.height) el.style.height = region.height;
+            container.appendChild(el);
+
+            el.onmousedown = (e) => handleResizeMousedown(region.name, e);
+          });
+
+          const onResizeMove = (e) => {
+            if (!isResizing) return;
+            const dx = e.clientX - resizeStartX;
+            const dy = e.clientY - resizeStartY;
+            
+            let newWidth = startWidth;
+            let newHeight = startHeight;
+
+            // Enforce a strict 16:9 aspect ratio resize
+            if (activeGrip === 'b') {
+              newHeight = Math.max(158, Math.min(450, startHeight + dy));
+              newWidth = Math.round(newHeight * 16 / 9);
+            } else if (activeGrip === 't') {
+              newHeight = Math.max(158, Math.min(450, startHeight - dy));
+              newWidth = Math.round(newHeight * 16 / 9);
+            } else if (activeGrip === 'r' || activeGrip === 'br') {
+              newWidth = Math.max(280, Math.min(800, startWidth + dx));
+              newHeight = Math.round(newWidth * 9 / 16);
+            } else if (activeGrip === 'l' || activeGrip === 'bl') {
+              newWidth = Math.max(280, Math.min(800, startWidth - dx));
+              newHeight = Math.round(newWidth * 9 / 16);
+            } else if (activeGrip === 'tl') {
+              newWidth = Math.max(280, Math.min(800, startWidth - dx));
+              newHeight = Math.round(newWidth * 9 / 16);
+            } else if (activeGrip === 'tr') {
+              newWidth = Math.max(280, Math.min(800, startWidth + dx));
+              newHeight = Math.round(newWidth * 9 / 16);
+            }
+
+            container.style.width = newWidth + 'px';
+            container.style.height = newHeight + 'px';
+          };
+
+          const onResizeUp = () => {
+            if (!isResizing) return;
+            isResizing = false;
+            activeGrip = null;
+            cover.style.display = 'none';
+            snapToNearestCorner(container);
+          };
+
+          document.addEventListener('mousemove', onResizeMove);
+          document.addEventListener('mouseup', onResizeUp);
+
+          // Store cleanup so we can detach all listeners if the player is destroyed
+          const existingCleanup = container._dragCleanup;
+          container._resizeCleanup = () => {
+            document.removeEventListener('mousemove', onResizeMove);
+            document.removeEventListener('mouseup', onResizeUp);
+          };
+
+          // WHY: Auto-hide header — starts hidden (height:0, opacity:0 via CSS).
+          // On mouseover the header slides in. After 3 seconds of no mouse activity
+          // inside the container, the header slides back out. This gives the user
+          // maximum video real estate while keeping controls easily accessible.
+          let headerHideTimer = null;
+
+          const showHeader = () => {
+            header.classList.add('is-visible');
+            clearTimeout(headerHideTimer);
+          };
+
+          const scheduleHideHeader = () => {
+            clearTimeout(headerHideTimer);
+            headerHideTimer = setTimeout(() => {
+              header.classList.remove('is-visible');
+            }, 3000);
+          };
+
+          container.addEventListener('mouseenter', () => {
+            showHeader();
+          });
+
+          container.addEventListener('mousemove', () => {
+            showHeader();
+            scheduleHideHeader();
+          });
+
+          container.addEventListener('mouseleave', () => {
+            scheduleHideHeader();
+          });
           
           // WHY: Iframes consume pointer events. If you try to drag over an iframe, the mouse event is lost to the iframe.
           // We overlay an invisible div over the iframe while dragging to intercept the pointer events.
@@ -1366,6 +1549,12 @@ const scrollbarClass = siteConfig.hideScrollBar ? '' : 'show-scrollbars';
         // Add the CSS class that triggers the floating/resizing styles in global.css
         container.classList.add('floating-pip-iframe-container');
         
+        // WHY: Explicitly initialize the container's inline dimensions to 380x214px (perfect 16:9).
+        // This overrides any leftover inline styles (like width: 100%; height: auto; set on exit)
+        // and guarantees a clean, robust, and predictable starting size.
+        container.style.width = '380px';
+        container.style.height = '214px';
+        
         // Move to body to escape Swup destruction and any CSS transforms that might trap position:fixed elements
         document.body.appendChild(container);
 
@@ -1401,16 +1590,21 @@ const scrollbarClass = siteConfig.hideScrollBar ? '' : 'show-scrollbars';
         container.style.width = '100%';
         container.style.height = 'auto';
 
-        // Remove the custom drag header and invisible cover
+        // Remove the custom drag header, invisible cover, and resize grips
         const header = container.querySelector('.cyber-pip-header');
         if (header) header.remove();
         const cover = container.querySelector('.cyber-pip-drag-cover');
         if (cover) cover.remove();
+        container.querySelectorAll('.cyber-pip-grab-region').forEach(grip => grip.remove());
 
-        // Detach the global mouse event listeners
+        // Detach the global mouse event listeners for drag and resize
         if (container._dragCleanup) {
           container._dragCleanup();
           delete container._dragCleanup;
+        }
+        if (container._resizeCleanup) {
+          container._resizeCleanup();
+          delete container._resizeCleanup;
         }
 
         // Clear global tracking

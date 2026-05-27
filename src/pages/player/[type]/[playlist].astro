@@ -171,6 +171,16 @@ const pageDescription = `Tune into the 24/7 client-synchronized Cybernati broadc
   </style>
 </head>
 <body class="flex h-full flex-col overflow-hidden text-zinc-200">
+  <!-- WHY: Synchronously check if we are in PiP mode on initial load.
+       This prevents "flash of unstyled content" (FOUC) where the iframe briefly renders
+       the entire player UI inside a small floating viewport during iframe reloading. -->
+  <script is:inline>
+    try {
+      if (window !== window.parent && window.parent.cyberPlayerContainer && window.parent.cyberPlayerContainer.classList.contains('floating-pip-iframe-container')) {
+        document.body.classList.add('pip-mode');
+      }
+    } catch (e) {}
+  </script>
   
   <div id="player-root" class="relative flex h-full w-full flex-col p-4 box-sizing-border-box">
     
@@ -438,12 +448,11 @@ const pageDescription = `Tune into the 24/7 client-synchronized Cybernati broadc
           // 5. Picture in Picture Mode
           const pipBtn = document.getElementById('pip-btn');
           if (pipBtn) {
-            // WHY (SOLID/Beyonce Rule): The custom PiP miniplayer relies on Swup page-navigation interceptors
-            // and parent DOM reparenting. This is only possible if the parent page is on the exact same origin.
-            // If we are embedded inside a third-party (cross-origin) iframe, accessing parent properties throws
-            // a security error and DOM swapping is blocked. In this case, we hide the button entirely.
-            // If loaded directly in a tab (not embedded), we keep the button visible so they can use native PiP
-            // or in-page floating modes.
+            // WHY: The custom PiP miniplayer relies on Swup page-navigation interceptors
+            // and parent DOM reparenting. This is only possible if the player is embedded
+            // in a parent page on the exact same origin.
+            // If loaded directly in a tab (not embedded), or in a cross-origin embed,
+            // we hide the button entirely because the floating container needs the parent page to survive.
             const isEmbedded = window.self !== window.top;
             let isSameOrigin = false;
             try {
@@ -452,8 +461,7 @@ const pageDescription = `Tune into the 24/7 client-synchronized Cybernati broadc
               // Accessing parent location from a third-party iframe throws a security DOMException
             }
 
-            const isCrossOriginEmbed = isEmbedded && !isSameOrigin;
-            if (isCrossOriginEmbed) {
+            if (!isEmbedded || !isSameOrigin) {
               pipBtn.style.display = 'none';
             }
 

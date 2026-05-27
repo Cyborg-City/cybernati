@@ -1,5 +1,5 @@
 {
-  "openExternalURLs": false,
+  "openExternalURLs": true,
   "enableAdblocking": true,
   "homepage": "http://localhost:5000/"
 }

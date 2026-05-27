@@ -1500,7 +1500,18 @@ svg:has(text:contains("mermaid version")) {
   }
 }
 
-/* Floating Cybernati Player Iframe styling (YouTube-style Miniplayer) */
+/* =====================================================================
+   Floating Cybernati Player Iframe styling (YouTube-style Miniplayer)
+   
+   WHY flex layout: Using display:flex + flex-direction:column lets the
+   iframe automatically fill all remaining space whether the header is
+   visible (28px) or hidden (0px). This avoids brittle calc() math.
+   
+   WHY no CSS resize:both: The native resize handle sits BEHIND child
+   elements (the iframe). Iframes consume pointer events, making the
+   native handle unreachable. We use a custom JS-powered resize grip
+   element instead, positioned above the iframe with a higher z-index.
+   ===================================================================== */
 .floating-pip-iframe-container {
   position: fixed !important;
   z-index: 99999 !important;
@@ -1510,25 +1521,38 @@ svg:has(text:contains("mermaid version")) {
   border-radius: 12px !important;
   overflow: hidden !important;
   background: #030303 !important;
-  resize: both !important;
+  display: flex !important;
+  flex-direction: column !important;
   min-width: 280px !important;
-  min-height: 158px !important;
-  max-width: 640px !important;
-  max-height: 360px !important;
-  width: 360px !important;
-  height: 230px !important; /* Includes 28px header */
+  min-height: 180px !important;
+  max-width: 800px !important;
+  max-height: 500px !important;
+  width: 380px;
+  height: 240px;
 }
 
+/* WHY flex:1 + min-height:0: The iframe must fill all remaining vertical
+   space after the header (which dynamically transitions between 0-28px).
+   min-height:0 prevents flex items from overflowing their container.
+   height:100% forces the iframe to respect flex bounds and override default attributes. */
 .floating-pip-iframe-container iframe {
+  flex: 1 !important;
+  height: 100% !important;
+  min-height: 0 !important;
   width: 100% !important;
-  height: calc(100% - 28px) !important; /* Exclude header height */
   border: 0 !important;
   background: #000 !important;
 }
 
-/* Dynamic dynamically injected PiP Header */
+/* WHY auto-hide header: The header starts collapsed (height:0, opacity:0)
+   so the user gets maximum video real estate. On mouseover the container
+   adds .is-visible which transitions the header open. After 3s of idle
+   the class is removed and the header slides back out. This keeps the
+   mini-player clean and unobtrusive while still being fully controllable. */
 .cyber-pip-header {
-  height: 28px;
+  height: 0;
+  opacity: 0;
+  overflow: hidden;
   background: rgba(10, 10, 15, 0.95);
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   display: flex;
@@ -1541,6 +1565,16 @@ svg:has(text:contains("mermaid version")) {
   text-transform: uppercase;
   letter-spacing: 0.1em;
   user-select: none;
+  transition: height 0.25s ease, opacity 0.25s ease;
+  flex-shrink: 0;
+}
+
+/* WHY .is-visible: The JS mouseover handler toggles this class. Keeping
+   the show/hide logic in CSS transitions ensures smooth 60fps animation
+   without JS layout thrashing. */
+.cyber-pip-header.is-visible {
+  height: 28px;
+  opacity: 1;
 }
 
 .cyber-pip-drag-handle {
@@ -1581,16 +1615,21 @@ svg:has(text:contains("mermaid version")) {
   color: #ef4444;
 }
 
+/* WHY absolute + top:0: The drag cover must span the entire iframe area
+   (not the header). Since the header height is dynamic (0 or 28px), we
+   position from the top and let the iframe's flex sizing handle the rest. */
 .cyber-pip-drag-cover {
   position: absolute;
-  top: 28px;
+  top: 0;
   left: 0;
   width: 100%;
-  height: calc(100% - 28px);
+  height: 100%;
   background: transparent;
   z-index: 10;
   display: none;
 }
+
+
 
 /* Inline placeholder when PiP is active */
 .cyber-player-placeholder {
@@ -1604,7 +1643,7 @@ svg:has(text:contains("mermaid version")) {
 
 @media (max-width: 480px) {
   .floating-pip-iframe-container {
-    width: 260px !important;
-    height: 178px !important;
+    width: 280px !important;
+    height: 200px !important;
   }
 }

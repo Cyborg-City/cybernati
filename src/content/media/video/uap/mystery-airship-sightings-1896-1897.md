@@ -1,14 +1,16 @@
 ---
-title: "\"Mystery Airship\" Sightings, 1896 - 1897"
-source: "https://www.youtube.com/watch?v=IBaw2oqVz8w"
+title: '"Mystery Airship" Sightings, 1896 - 1897'
+source: https://www.youtube.com/watch?v=IBaw2oqVz8w
 author:
   - "[[Think Anomalous]]"
 published: 2017-07-24
-created: "2026-05-26T21:59:42-05:00"
-description: "For 8 months in 1896 and 1897, people in the US and Canada saw mysterious lights in the sky, and sometimes, spectacular, winged airships and dirigibles. The ..."
+created: 2026-05-26T21:59:42-05:00
+description: For 8 months in 1896 and 1897, people in the US and Canada saw mysterious lights in the sky, and sometimes, spectacular, winged airships and dirigibles. The ...
 tags:
-  - "clippings"
+  - clippings
 duration: 753
+related:
+  - "[[test-dossier]]"
 ---
 ![](https://www.youtube.com/watch?v=IBaw2oqVz8w)
 

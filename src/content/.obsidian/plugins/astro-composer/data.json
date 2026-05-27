@@ -80,7 +80,7 @@
       "enableUnderscorePrefix": false,
       "useMdxExtension": false,
       "modifiedDateField": "",
-      "collapsed": false
+      "collapsed": true
     },
     {
       "id": "content-1779770104454",
@@ -94,7 +94,23 @@
       "ignoreSubfolders": false,
       "enableUnderscorePrefix": false,
       "useMdxExtension": false,
-      "modifiedDateField": ""
+      "modifiedDateField": "",
+      "collapsed": true
+    },
+    {
+      "id": "content-1779839687370",
+      "name": "Media",
+      "folder": "media",
+      "linkBasePath": "/media/",
+      "template": "---\ntitle: \"{{title}}\"\ndate: {{date}}\ndescription: \"\"\nsource: \"\"\nduration: \nrelated: []\ntags: []\nimage: \"\"\nimageAlt: \"\"\nhideCoverImage: false\nhideTOC: false\ndraft: false\n---\n",
+      "enabled": true,
+      "creationMode": "file",
+      "indexFileName": "",
+      "ignoreSubfolders": false,
+      "enableUnderscorePrefix": false,
+      "useMdxExtension": false,
+      "modifiedDateField": "",
+      "collapsed": true
     }
   ],
   "migrationCompleted": true,

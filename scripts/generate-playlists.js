@@ -96,16 +96,20 @@ function parseFrontmatter(fileContent) {
     // Check if it's a list item for the current key
     if (trimmed.startsWith('-') && currentKey === 'related') {
       let val = trimmed.substring(1).trim();
-      if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'"))) {
-        val = val.substring(1, val.length - 1);
+      if (val.startsWith('"') && val.endsWith('"')) {
+        val = val.substring(1, val.length - 1).replace(/\\"/g, '"').replace(/\\\\/g, '\\');
+      } else if (val.startsWith("'") && val.endsWith("'")) {
+        val = val.substring(1, val.length - 1).replace(/\\'/g, "'").replace(/\\\\/g, '\\');
       }
       result.related.push(val);
       continue;
     }
     if (trimmed.startsWith('-') && currentKey === 'aliases') {
       let val = trimmed.substring(1).trim();
-      if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'"))) {
-        val = val.substring(1, val.length - 1);
+      if (val.startsWith('"') && val.endsWith('"')) {
+        val = val.substring(1, val.length - 1).replace(/\\"/g, '"').replace(/\\\\/g, '\\');
+      } else if (val.startsWith("'") && val.endsWith("'")) {
+        val = val.substring(1, val.length - 1).replace(/\\'/g, "'").replace(/\\\\/g, '\\');
       }
       result.aliases = result.aliases || [];
       result.aliases.push(val);
@@ -118,9 +122,11 @@ function parseFrontmatter(fileContent) {
     const key = line.substring(0, colonIdx).trim();
     let val = line.substring(colonIdx + 1).trim();
     
-    // Strip quotes
-    if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'"))) {
-      val = val.substring(1, val.length - 1);
+    // Strip quotes and unescape
+    if (val.startsWith('"') && val.endsWith('"')) {
+      val = val.substring(1, val.length - 1).replace(/\\"/g, '"').replace(/\\\\/g, '\\');
+    } else if (val.startsWith("'") && val.endsWith("'")) {
+      val = val.substring(1, val.length - 1).replace(/\\'/g, "'").replace(/\\\\/g, '\\');
     }
     
     currentKey = key;

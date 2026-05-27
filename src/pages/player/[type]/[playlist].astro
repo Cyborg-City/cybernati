@@ -33,7 +33,10 @@ export async function getStaticPaths() {
   });
 }
 
+import { getBaseUrl } from '@/utils/url-helpers';
+
 const { type, playlist } = Astro.props;
+const base = getBaseUrl();
 ---
 
 <!DOCTYPE html>
@@ -224,7 +227,7 @@ const { type, playlist } = Astro.props;
 
   </div>
 
-  <script define:vars={{ type, playlist }}>
+  <script define:vars={{ type, playlist, base }}>
     // Self-contained broadcast client synchronization logic
     (function() {
       // Clean up any existing instances to prevent memory leaks during Swup transitions
@@ -264,7 +267,8 @@ const { type, playlist } = Astro.props;
           try {
             // Get current base route for playlist fetching
             const hostPath = window.location.origin;
-            const playlistUrl = `${hostPath}/api/playlists/${type}/${playlist}.json?v=${Date.now()}`;
+            const cleanBase = base.endsWith('/') ? base : base + '/';
+            const playlistUrl = `${hostPath}${cleanBase}api/playlists/${type}/${playlist}.json?v=${Date.now()}`;
             
             const response = await fetch(playlistUrl);
             if (!response.ok) throw new Error("Playlist file missing.");
@@ -653,11 +657,18 @@ const { type, playlist } = Astro.props;
           const linksEl = document.getElementById('related-links');
           if (linksEl) {
             if (prog.related && prog.related.length > 0) {
-              linksEl.innerHTML = prog.related.map(link => `
-                <a href="${link.slug}" target="_blank" class="px-3 py-1.5 rounded-lg text-xs font-semibold border border-zinc-800 bg-zinc-900 text-zinc-100 hover:border-purple-500 hover:text-purple-300 transition duration-150">
-                  ${link.name}
-                </a>
-              `).join('');
+              linksEl.innerHTML = prog.related.map(link => {
+                let linkSlug = link.slug;
+                if (linkSlug.startsWith('/') && !linkSlug.startsWith(base)) {
+                  const cleanBase = base.endsWith('/') ? base.slice(0, -1) : base;
+                  linkSlug = cleanBase + linkSlug;
+                }
+                return `
+                  <a href="${linkSlug}" target="_blank" class="px-3 py-1.5 rounded-lg text-xs font-semibold border border-zinc-800 bg-zinc-900 text-zinc-100 hover:border-purple-500 hover:text-purple-300 transition duration-150">
+                    ${link.name}
+                  </a>
+                `;
+              }).join('');
             } else {
               linksEl.innerHTML = '<span class="text-xs text-zinc-500 uppercase italic">No related vault notes detected.</span>';
             }
@@ -672,7 +683,12 @@ const { type, playlist } = Astro.props;
             this.currentInterstitialIndex = Math.floor(Math.random() * interstitials.length);
           }
           
-          const intUrl = interstitials[this.currentInterstitialIndex];
+          let intUrl = interstitials[this.currentInterstitialIndex];
+          if (intUrl.startsWith('/') && !intUrl.startsWith(base)) {
+            const cleanBase = base.endsWith('/') ? base.slice(0, -1) : base;
+            intUrl = cleanBase + intUrl;
+          }
+          
           const existing = mount.querySelector('video');
           if (existing && existing.getAttribute('src') === intUrl) return;
           

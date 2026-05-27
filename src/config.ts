@@ -338,7 +338,8 @@ export const siteConfig: SiteConfig = {
         children: [
           { title: "Privacy Policy", url: "/privacy-policy/" }
         ] },
-      { title: "GitHub", url: "https://github.com/davidvkimball/astro-modular" }
+      { title: "GitHub", url: "https://github.com/davidvkimball/astro-modular" },
+      { title: "Broadcast", url: "/player/video/channel-000" }
     ],
     // [CONFIG:NAVIGATION_SOCIAL]
     social: [

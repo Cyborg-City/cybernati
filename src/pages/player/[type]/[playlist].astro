@@ -177,7 +177,7 @@ const pageDescription = `Tune into the 24/7 client-synchronized Cybernati broadc
       transform: translateY(5px);
     }
     
-    body.pip-mode #player-viewport:hover #pip-controls-overlay {
+    body.pip-mode #pip-controls-overlay.is-visible {
       opacity: 1;
       pointer-events: auto;
       transform: translateY(0);
@@ -369,11 +369,27 @@ const pageDescription = `Tune into the 24/7 client-synchronized Cybernati broadc
           // Load volume/mute states from localStorage
           const storedVolume = localStorage.getItem('cyber-player-volume');
           const storedMuted = localStorage.getItem('cyber-player-muted');
-          const isRestoring = localStorage.getItem('cyber-player-restoring-pip') === 'true';
+          
+          // Path-Verified Autoplay Restoration
+          const restoringUrl = localStorage.getItem('cyber-player-restoring-url');
+          const currentUrl = window.location.href;
+          let isRestoring = false;
 
-          // Clear restoring flag immediately so subsequent fresh loads start muted
-          if (isRestoring) {
-            localStorage.removeItem('cyber-player-restoring-pip');
+          if (restoringUrl) {
+            try {
+              const rUrl = new URL(restoringUrl);
+              const cUrl = new URL(currentUrl);
+              // Match pathname and search params dynamically
+              if (rUrl.pathname === cUrl.pathname && rUrl.search === cUrl.search) {
+                isRestoring = true;
+              }
+            } catch (e) {
+              if (currentUrl.includes(restoringUrl) || restoringUrl.includes(currentUrl)) {
+                isRestoring = true;
+              }
+            }
+            // Clear restoring path immediately so other page players start safely muted
+            localStorage.removeItem('cyber-player-restoring-url');
           }
 
           // Check if we are inside the floated parent PiP container
@@ -391,9 +407,9 @@ const pageDescription = `Tune into the 24/7 client-synchronized Cybernati broadc
           // 1. If the player was just restored back into the page from PiP mode!
           // 2. If we are currently floating in PiP mode.
           if (isRestoring) {
-            self.isMuted = false;
+            // Restore exact PiP mute and volume state!
+            self.isMuted = storedMuted === 'true';
             self.handshakeEstablished = true;
-            localStorage.setItem('cyber-player-muted', 'false');
           } else if (isPip) {
             self.isMuted = storedMuted === 'true';
             self.handshakeEstablished = true;
@@ -401,6 +417,38 @@ const pageDescription = `Tune into the 24/7 client-synchronized Cybernati broadc
             self.isMuted = true;
             self.handshakeEstablished = false;
           }
+
+          // Smooth volume fading (logarithmic Cubic Out easing over 150ms)
+          let fadeInterval = null;
+          const fadeVolume = (targetVolume, duration = 150, onComplete) => {
+            if (!self.player || !self.player.setVolume) {
+              if (onComplete) onComplete();
+              return;
+            }
+            if (fadeInterval) clearInterval(fadeInterval);
+            const startVolume = self.player.getVolume ? self.player.getVolume() : 0;
+            const diff = targetVolume - startVolume;
+            if (diff === 0) {
+              if (onComplete) onComplete();
+              return;
+            }
+            const startTime = performance.now();
+            fadeInterval = setInterval(() => {
+              const elapsed = performance.now() - startTime;
+              const t = Math.min(1, elapsed / duration);
+              // Logarithmic-approximate Cubic Out easing (biological hearing curve representation)
+              const factor = 1 - Math.pow(1 - t, 3);
+              const currentVol = Math.round(startVolume + diff * factor);
+              if (self.player.setVolume) {
+                self.player.setVolume(currentVol);
+              }
+              if (t >= 1) {
+                clearInterval(fadeInterval);
+                fadeInterval = null;
+                if (onComplete) onComplete();
+              }
+            }, 16);
+          };
 
           // Synchronizes all Volume Sliders, Buttons, and Icons in the DOM (Main & PiP controls)
           const syncVolumeDOM = () => {
@@ -412,7 +460,8 @@ const pageDescription = `Tune into the 24/7 client-synchronized Cybernati broadc
             const pipVolControl = document.getElementById('pip-volume-control');
             const pipMuteBtn = document.getElementById('pip-mute-toggle');
 
-            const symbol = self.isMuted ? 'volume_off' : (self.currentVolume > 50 ? 'volume_up' : 'volume_down');
+            // Dynamic speaker icon transitions based on level
+            const symbol = (self.isMuted || self.currentVolume === 0) ? 'volume_off' : (self.currentVolume > 50 ? 'volume_up' : 'volume_down');
             const sliderVal = self.isMuted ? 0 : self.currentVolume;
 
             // Sync main footer elements
@@ -441,7 +490,7 @@ const pageDescription = `Tune into the 24/7 client-synchronized Cybernati broadc
           };
 
           // Handles the logical state update, localStorage persistence, and active player controls
-          const updateVolumeState = (muted, volume) => {
+          const updateVolumeState = (muted, volume, skipFade = false) => {
             self.isMuted = muted;
             if (volume !== undefined) {
               self.currentVolume = volume;
@@ -452,10 +501,21 @@ const pageDescription = `Tune into the 24/7 client-synchronized Cybernati broadc
 
             if (self.player) {
               if (self.isMuted) {
-                if (self.player.mute) self.player.mute();
+                if (skipFade) {
+                  if (self.player.setVolume) self.player.setVolume(0);
+                  if (self.player.mute) self.player.mute();
+                } else {
+                  fadeVolume(0, 150, () => {
+                    if (self.player.mute) self.player.mute();
+                  });
+                }
               } else {
                 if (self.player.unMute) self.player.unMute();
-                if (self.player.setVolume) self.player.setVolume(self.currentVolume);
+                if (skipFade) {
+                  if (self.player.setVolume) self.player.setVolume(self.currentVolume);
+                } else {
+                  fadeVolume(self.currentVolume, 150);
+                }
               }
             }
 
@@ -471,9 +531,9 @@ const pageDescription = `Tune into the 24/7 client-synchronized Cybernati broadc
             // Restore unmuted preference from previous session upon first interaction!
             const previouslyMuted = localStorage.getItem('cyber-player-muted') === 'true';
             if (!previouslyMuted) {
-              updateVolumeState(false, self.currentVolume || 25);
+              updateVolumeState(false, self.currentVolume || 25, true);
             } else {
-              updateVolumeState(true, self.currentVolume || 25);
+              updateVolumeState(true, self.currentVolume || 25, true);
             }
           };
           window.addEventListener('click', handleInteraction, { once: true });
@@ -487,7 +547,7 @@ const pageDescription = `Tune into the 24/7 client-synchronized Cybernati broadc
               if (!nextMuted && self.currentVolume === 0) {
                 nextVol = 25;
               }
-              updateVolumeState(nextMuted, nextVol);
+              updateVolumeState(nextMuted, nextVol, false);
             };
           }
 
@@ -496,7 +556,7 @@ const pageDescription = `Tune into the 24/7 client-synchronized Cybernati broadc
           if (volSlider) {
             volSlider.oninput = (e) => {
               const val = parseInt(e.target.value, 10);
-              updateVolumeState(val === 0, val);
+              updateVolumeState(val === 0, val, true);
             };
           }
 
@@ -509,7 +569,7 @@ const pageDescription = `Tune into the 24/7 client-synchronized Cybernati broadc
               if (!nextMuted && self.currentVolume === 0) {
                 nextVol = 25;
               }
-              updateVolumeState(nextMuted, nextVol);
+              updateVolumeState(nextMuted, nextVol, false);
             };
           }
 
@@ -518,9 +578,66 @@ const pageDescription = `Tune into the 24/7 client-synchronized Cybernati broadc
           if (pipVolSlider) {
             pipVolSlider.oninput = (e) => {
               const val = parseInt(e.target.value, 10);
-              updateVolumeState(val === 0, val);
+              updateVolumeState(val === 0, val, true);
             };
           }
+
+          // Sync PiP volume overlay visibility with mouse activity in PiP mode
+          const pipOverlay = document.getElementById('pip-controls-overlay');
+          let overlayHideTimer = null;
+
+          self.showOverlay = () => {
+            if (!document.body.classList.contains('pip-mode')) return;
+            if (pipOverlay) pipOverlay.classList.add('is-visible');
+            clearTimeout(overlayHideTimer);
+          };
+
+          self.scheduleHideOverlay = () => {
+            clearTimeout(overlayHideTimer);
+            overlayHideTimer = setTimeout(() => {
+              if (pipOverlay) pipOverlay.classList.remove('is-visible');
+            }, 3000);
+          };
+
+          // Mouse move over player body reveals it instantly in PiP mode
+          window.addEventListener('mousemove', () => {
+            self.showOverlay();
+            self.scheduleHideOverlay();
+          });
+
+          window.addEventListener('mouseenter', () => {
+            self.showOverlay();
+          });
+
+          window.addEventListener('mouseleave', () => {
+            self.scheduleHideOverlay();
+          });
+
+          // Global keyboard shortcuts for premium volume controls
+          window.addEventListener('keydown', (e) => {
+            // Ignore shortcut if user is currently focused inside text input fields
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.isContentEditable) {
+              return;
+            }
+
+            if (e.key === 'ArrowUp') {
+              e.preventDefault();
+              const nextVol = Math.min(100, self.currentVolume + 5);
+              updateVolumeState(false, nextVol, true);
+            } else if (e.key === 'ArrowDown') {
+              e.preventDefault();
+              const nextVol = Math.max(0, self.currentVolume - 5);
+              updateVolumeState(nextVol === 0, nextVol, true);
+            } else if (e.key === 'm' || e.key === 'M') {
+              e.preventDefault();
+              const nextMuted = !self.isMuted;
+              let nextVol = self.currentVolume;
+              if (!nextMuted && self.currentVolume === 0) {
+                nextVol = 25;
+              }
+              updateVolumeState(nextMuted, nextVol, false);
+            }
+          });
 
           // Run initial sync on load to display correct persisted values
           syncVolumeDOM();
@@ -959,6 +1076,11 @@ const pageDescription = `Tune into the 24/7 client-synchronized Cybernati broadc
           document.body.classList.remove('pip-mode');
         } else if (event.data.type === 'cyber-player-stop') {
           window.CyberPlayer.destroy();
+        } else if (event.data.type === 'cyber-player-parent-mouse-active') {
+          if (window.CyberPlayer && window.CyberPlayer.showOverlay) {
+            window.CyberPlayer.showOverlay();
+            window.CyberPlayer.scheduleHideOverlay();
+          }
         }
       });
 

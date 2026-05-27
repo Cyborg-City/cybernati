@@ -1377,6 +1377,11 @@ const scrollbarClass = siteConfig.hideScrollBar ? '' : 'show-scrollbars';
           const showHeader = () => {
             header.classList.add('is-visible');
             clearTimeout(headerHideTimer);
+            if (iframe) {
+              try {
+                iframe.contentWindow.postMessage({ type: 'cyber-player-parent-mouse-active' }, '*');
+              } catch (e) {}
+            }
           };
 
           const scheduleHideHeader = () => {
@@ -1422,7 +1427,7 @@ const scrollbarClass = siteConfig.hideScrollBar ? '' : 'show-scrollbars';
             } else if (originatingUrl) {
               // The user navigated away. We need to navigate BACK to the original page to restore the player.
               container.style.display = 'none';
-              localStorage.setItem('cyber-player-restoring-pip', 'true');
+              localStorage.setItem('cyber-player-restoring-url', originatingUrl);
               if (window.swup) {
                 window.swup.navigate(originatingUrl);
               } else {
@@ -1565,7 +1570,7 @@ const scrollbarClass = siteConfig.hideScrollBar ? '' : 'show-scrollbars';
         if (!container.classList.contains('floating-pip-iframe-container')) return;
 
         // Set restoring flag in localStorage so the iframe knows to play unmuted on reload!
-        localStorage.setItem('cyber-player-restoring-pip', 'true');
+        localStorage.setItem('cyber-player-restoring-url', container.dataset.originatingUrl || window.location.href);
 
         const iframe = container.querySelector('iframe');
         const placeholder = window.cyberPlayerPlaceholder;
@@ -1666,7 +1671,7 @@ const scrollbarClass = siteConfig.hideScrollBar ? '' : 'show-scrollbars';
                     exitPipMode(container);
                   } else if (originatingUrl) {
                     container.style.display = 'none';
-                    localStorage.setItem('cyber-player-restoring-pip', 'true');
+                    localStorage.setItem('cyber-player-restoring-url', originatingUrl);
                     if (window.swup) {
                       window.swup.navigate(originatingUrl);
                     } else {

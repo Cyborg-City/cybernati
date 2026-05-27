@@ -75,10 +75,10 @@ const pageDescription = `Tune into the 24/7 client-synchronized Cybernati broadc
   <meta name="twitter:player:height" content="360" />
   <meta name="twitter:image" content={absoluteOgImage} />
   
-  <!-- Premium Outfit Font and JetBrains Mono for Cybernati aesthetics -->
+  <!-- Premium Outfit Font, JetBrains Mono, and Special Elite for Cybernati aesthetics -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&family=JetBrains+Mono:wght@400;700&family=Special+Elite&display=swap" rel="stylesheet">
   
   <!-- Google Icons (Material Symbols Outlined) -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
@@ -151,6 +151,22 @@ const pageDescription = `Tune into the 24/7 client-synchronized Cybernati broadc
       overflow: hidden;
       border: 2px solid var(--cyber-primary);
     }
+
+    /* Pip mode override when embedded in a small parent float panel */
+    body.pip-mode header,
+    body.pip-mode footer,
+    body.pip-mode #related-notes-panel {
+      display: none !important;
+    }
+    body.pip-mode #player-root {
+      padding: 0 !important;
+    }
+    body.pip-mode #player-viewport {
+      border: none !important;
+      border-radius: 0 !important;
+      height: 100% !important;
+      width: 100% !important;
+    }
   </style>
 </head>
 <body class="flex h-full flex-col overflow-hidden text-zinc-200">
@@ -169,7 +185,7 @@ const pageDescription = `Tune into the 24/7 client-synchronized Cybernati broadc
         </div>
       </div>
       <div class="flex items-center gap-2">
-        <span class="text-[10px] font-bold uppercase tracking-widest text-purple-400" style="font-family: var(--font-mono)">CYBERNATI™</span>
+        <span class="text-xs md:text-sm font-normal tracking-wide text-purple-400" style="font-family: 'Special Elite', cursive;">CYBERNATI™</span>
       </div>
     </header>
 
@@ -679,11 +695,35 @@ const pageDescription = `Tune into the 24/7 client-synchronized Cybernati broadc
                   linkSlug = cleanBase + linkSlug;
                 }
                 return `
-                  <a href="${linkSlug}" target="_blank" class="px-3 py-1.5 rounded-lg text-xs font-semibold border border-zinc-800 bg-zinc-900 text-zinc-100 hover:border-purple-500 hover:text-purple-300 transition duration-150">
+                  <a href="${linkSlug}" class="cyber-related-link px-3 py-1.5 rounded-lg text-xs font-semibold border border-zinc-800 bg-zinc-900 text-zinc-100 hover:border-purple-500 hover:text-purple-300 transition duration-150">
                     ${link.name}
                   </a>
                 `;
               }).join('');
+              
+              // Intercept click on related links inside iframe to trigger PiP and navigate parent
+              linksEl.querySelectorAll('.cyber-related-link').forEach(linkEl => {
+                linkEl.onclick = (e) => {
+                  if (window !== window.parent) {
+                    e.preventDefault();
+                    
+                    // Toggle miniplayer/PiP mode if not already active
+                    const isParentPipActive = window.parent.cyberPlayerContainer && 
+                      window.parent.cyberPlayerContainer.classList.contains('floating-pip-iframe-container');
+                    
+                    if (!isParentPipActive) {
+                      self.triggerPip();
+                    }
+                    
+                    // Tell parent window to navigate to the note
+                    const href = linkEl.getAttribute('href');
+                    window.parent.postMessage({
+                      type: 'cyber-player-navigate',
+                      url: href
+                    }, '*');
+                  }
+                };
+              });
             } else {
               linksEl.innerHTML = '<span class="text-xs text-zinc-500 uppercase italic">No related vault notes detected.</span>';
             }
@@ -738,6 +778,19 @@ const pageDescription = `Tune into the 24/7 client-synchronized Cybernati broadc
           window.CyberPlayer.init();
         }
       }, 500);
+      // Listen for message instructions from the parent page
+      window.addEventListener('message', (event) => {
+        if (!event.data) return;
+        
+        if (event.data.type === 'cyber-player-enter-pip') {
+          document.body.classList.add('pip-mode');
+        } else if (event.data.type === 'cyber-player-exit-pip') {
+          document.body.classList.remove('pip-mode');
+        } else if (event.data.type === 'cyber-player-stop') {
+          window.CyberPlayer.destroy();
+        }
+      });
+
     })();
   </script>
 </body>

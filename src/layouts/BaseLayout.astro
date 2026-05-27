@@ -1146,12 +1146,244 @@ const scrollbarClass = siteConfig.hideScrollBar ? '' : 'show-scrollbars';
     // Listen for picture-in-picture requests from embedded Cybernati Player iframes
     if (!window.cyberPlayerPipListenerAdded) {
       window.cyberPlayerPipListenerAdded = true;
+      
+      // Snapping/Magnetization Helper
+      function snapToNearestCorner(container) {
+        const rect = container.getBoundingClientRect();
+        const vw = window.innerWidth;
+        const vh = window.innerHeight;
+        
+        const midX = rect.left + rect.width / 2;
+        const midY = rect.top + rect.height / 2;
+        
+        const isLeft = midX < vw / 2;
+        const isTop = midY < vh / 2;
+        
+        container.style.transition = 'all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)';
+        container.style.left = 'auto';
+        container.style.top = 'auto';
+        container.style.right = 'auto';
+        container.style.bottom = 'auto';
+        
+        const gap = 20;
+        
+        if (isLeft && isTop) {
+          container.style.left = `${gap}px`;
+          container.style.top = `${gap}px`;
+        } else if (!isLeft && isTop) {
+          container.style.right = `${gap}px`;
+          container.style.top = `${gap}px`;
+        } else if (isLeft && !isTop) {
+          container.style.left = `${gap}px`;
+          container.style.bottom = `${gap}px`;
+        } else {
+          container.style.right = `${gap}px`;
+          container.style.bottom = `${gap}px`;
+        }
+      }
+
+      // Drag and Drop Helper
+      function makeContainerDraggable(container, iframe) {
+        let header = container.querySelector('.cyber-pip-header');
+        if (!header) {
+          header = document.createElement('div');
+          header.className = 'cyber-pip-header';
+          header.innerHTML = `
+            <span class="cyber-pip-drag-handle"><span class="material-symbols-outlined" style="font-size:14px; vertical-align:middle; margin-right:4px;">drag_indicator</span>CyberPlayer Mini</span>
+            <div class="cyber-pip-actions">
+              <button class="cyber-pip-restore-btn" title="Restore Player"><span class="material-symbols-outlined" style="font-size:16px;">open_in_full</span></button>
+              <button class="cyber-pip-close-btn" title="Close Player"><span class="material-symbols-outlined" style="font-size:16px;">close</span></button>
+            </div>
+          `;
+          container.insertBefore(header, container.firstChild);
+          
+          const cover = document.createElement('div');
+          cover.className = 'cyber-pip-drag-cover';
+          container.appendChild(cover);
+
+          const restoreBtn = header.querySelector('.cyber-pip-restore-btn');
+          const closeBtn = header.querySelector('.cyber-pip-close-btn');
+
+          restoreBtn.onclick = (e) => {
+            e.stopPropagation();
+            const originatingUrl = container.dataset.originatingUrl;
+            const placeholderExists = document.body.contains(window.cyberPlayerPlaceholder);
+            
+            if (placeholderExists) {
+              exitPipMode(container);
+            } else if (originatingUrl) {
+              if (window.swup) {
+                window.swup.navigate(originatingUrl);
+                const restoreOnLoad = () => {
+                  const newPlaceholder = document.querySelector('.cyber-player-placeholder');
+                  if (newPlaceholder) {
+                    window.cyberPlayerPlaceholder = newPlaceholder;
+                    exitPipMode(container);
+                  }
+                  window.swup.hooks.off('content:replace', restoreOnLoad);
+                };
+                window.swup.hooks.on('content:replace', restoreOnLoad);
+              } else {
+                window.location.href = originatingUrl;
+              }
+            }
+          };
+
+          closeBtn.onclick = (e) => {
+            e.stopPropagation();
+            closePipMode(container);
+          };
+        }
+
+        const handle = header.querySelector('.cyber-pip-drag-handle');
+        const cover = container.querySelector('.cyber-pip-drag-cover');
+        let isDragging = false;
+        let startX = 0, startY = 0;
+        let elemX = 0, elemY = 0;
+
+        handle.onmousedown = (e) => {
+          isDragging = true;
+          cover.style.display = 'block';
+          startX = e.clientX;
+          startY = e.clientY;
+          
+          const rect = container.getBoundingClientRect();
+          elemX = rect.left;
+          elemY = rect.top;
+          
+          container.style.bottom = 'auto';
+          container.style.right = 'auto';
+          container.style.left = `${elemX}px`;
+          container.style.top = `${elemY}px`;
+          container.style.transition = 'none';
+          
+          e.preventDefault();
+        };
+
+        const onMouseMove = (e) => {
+          if (!isDragging) return;
+          const dx = e.clientX - startX;
+          const dy = e.clientY - startY;
+          container.style.left = `${elemX + dx}px`;
+          container.style.top = `${elemY + dy}px`;
+        };
+
+        const onMouseUp = () => {
+          if (!isDragging) return;
+          isDragging = false;
+          cover.style.display = 'none';
+          snapToNearestCorner(container);
+        };
+
+        document.addEventListener('mousemove', onMouseMove);
+        document.addEventListener('mouseup', onMouseUp);
+        
+        container._dragCleanup = () => {
+          document.removeEventListener('mousemove', onMouseMove);
+          document.removeEventListener('mouseup', onMouseUp);
+        };
+      }
+
+      function enterPipMode(container) {
+        if (container.classList.contains('floating-pip-iframe-container')) return;
+        
+        const iframe = container.querySelector('iframe');
+        if (!iframe) return;
+
+        container.dataset.originatingUrl = window.location.href;
+
+        const placeholder = document.createElement('div');
+        placeholder.className = 'cyber-player-placeholder';
+        placeholder.style.width = container.offsetWidth + 'px';
+        placeholder.style.height = container.offsetHeight + 'px';
+        placeholder.style.margin = getComputedStyle(container).margin;
+        placeholder.style.borderRadius = getComputedStyle(container).borderRadius;
+        placeholder.style.border = '2px dashed rgba(167, 139, 250, 0.2)';
+        placeholder.style.background = 'rgba(0,0,0,0.4)';
+        placeholder.style.display = 'flex';
+        placeholder.style.flexDirection = 'column';
+        placeholder.style.alignItems = 'center';
+        placeholder.style.justifyContent = 'center';
+        placeholder.style.color = '#a78bfa';
+        placeholder.style.fontSize = '11px';
+        placeholder.style.fontFamily = 'monospace';
+        placeholder.style.gap = '8px';
+        placeholder.innerHTML = '<span class="material-symbols-outlined" style="font-size:32px; animation: pulse 2s infinite;">desktop_windows</span><span style="letter-spacing: 0.1em;">PLAYING IN MINI-PLAYER</span>';
+        
+        container.parentNode.insertBefore(placeholder, container);
+
+        window.cyberPlayerPlaceholder = placeholder;
+        window.cyberPlayerContainer = container;
+
+        container.classList.add('floating-pip-iframe-container');
+        document.body.appendChild(container);
+
+        makeContainerDraggable(container, iframe);
+        snapToNearestCorner(container);
+
+        try {
+          iframe.contentWindow.postMessage({ type: 'cyber-player-enter-pip' }, '*');
+        } catch (e) {}
+      }
+
+      function exitPipMode(container) {
+        if (!container.classList.contains('floating-pip-iframe-container')) return;
+
+        const iframe = container.querySelector('iframe');
+        const placeholder = window.cyberPlayerPlaceholder;
+
+        if (placeholder && placeholder.parentNode) {
+          placeholder.parentNode.insertBefore(container, placeholder);
+          placeholder.remove();
+        }
+
+        container.classList.remove('floating-pip-iframe-container');
+        container.style.transition = 'none';
+        container.style.left = 'auto';
+        container.style.top = 'auto';
+        container.style.right = 'auto';
+        container.style.bottom = 'auto';
+        container.style.width = '100%';
+        container.style.height = 'auto';
+
+        const header = container.querySelector('.cyber-pip-header');
+        if (header) header.remove();
+        const cover = container.querySelector('.cyber-pip-drag-cover');
+        if (cover) cover.remove();
+
+        if (container._dragCleanup) {
+          container._dragCleanup();
+          delete container._dragCleanup;
+        }
+
+        window.cyberPlayerPlaceholder = null;
+        window.cyberPlayerContainer = null;
+
+        if (iframe) {
+          try {
+            iframe.contentWindow.postMessage({ type: 'cyber-player-exit-pip' }, '*');
+          } catch (e) {}
+        }
+      }
+
+      function closePipMode(container) {
+        const iframe = container.querySelector('iframe');
+        if (iframe) {
+          try {
+            iframe.contentWindow.postMessage({ type: 'cyber-player-stop' }, '*');
+          } catch (e) {}
+        }
+        exitPipMode(container);
+        container.remove();
+      }
+
       window.addEventListener('message', (event) => {
-        if (event.data && event.data.type === 'cyber-player-toggle-pip') {
+        if (!event.data) return;
+
+        if (event.data.type === 'cyber-player-toggle-pip') {
           const playlist = event.data.playlist;
           const mediaType = event.data.mediaType;
           
-          // Find the iframe playing this playlist
           const iframes = document.querySelectorAll('iframe');
           for (const iframe of iframes) {
             try {
@@ -1159,12 +1391,21 @@ const scrollbarClass = siteConfig.hideScrollBar ? '' : 'show-scrollbars';
               if (url.pathname.includes(`/player/${mediaType}/${playlist}`)) {
                 const container = iframe.closest('.cyber-player-embed-container');
                 if (container) {
-                  container.classList.toggle('floating-pip-iframe-container');
-                } else {
-                  iframe.classList.toggle('floating-pip-iframe-container');
+                  if (container.classList.contains('floating-pip-iframe-container')) {
+                    exitPipMode(container);
+                  } else {
+                    enterPipMode(container);
+                  }
                 }
               }
             } catch (e) {}
+          }
+        } else if (event.data.type === 'cyber-player-navigate') {
+          const url = event.data.url;
+          if (window.swup) {
+            window.swup.navigate(url);
+          } else {
+            window.location.href = url;
           }
         }
       });

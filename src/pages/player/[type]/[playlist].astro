@@ -220,6 +220,10 @@ const pageDescription = `Tune into the 24/7 client-synchronized Cybernati broadc
         </div>
       </div>
 
+      <!-- Transparent overlay to intercept user clicks. This prevents the YouTube iframe from stealing browser focus,
+           allowing global keyboard hotkeys (Arrows, M, Space) to remain 100% active and responsive at all times. -->
+      <div id="player-click-overlay" class="absolute inset-0 z-20 cursor-pointer"></div>
+
       <!-- Sync Progress Bar running cleanly across viewport bottom -->
       <div id="progress-container" class="absolute bottom-0 left-0 w-full h-[3px] bg-zinc-900 z-10" aria-label="Media play progress">
         <div id="sync-progress" class="progress-bar-fill h-full w-0"></div>
@@ -529,12 +533,14 @@ const pageDescription = `Tune into the 24/7 client-synchronized Cybernati broadc
                 }
               } else {
                 if (!skipFade) {
-                  // To hear the ramp up, we must force volume to 0 before unmuting
-                  if (self.player.setVolume) self.player.setVolume(0);
+                  // To hear the ramp up smoothly, we unmute the player first to let YouTube trigger its native volume restoration.
+                  // After a small 20ms delay, we drop the volume to 0 and gracefully fade it up to the target volume over 300ms.
                   if (self.player.unMute) self.player.unMute();
-                  // Reset fade tracker to 0 so we interpolate from 0 to currentVolume
-                  self.currentFadeLinear = 0; 
-                  fadeVolume(self.currentVolume, 300);
+                  setTimeout(() => {
+                    if (self.player.setVolume) self.player.setVolume(0);
+                    self.currentFadeLinear = 0; 
+                    fadeVolume(self.currentVolume, 300);
+                  }, 20);
                 } else {
                   if (self.player.unMute) self.player.unMute();
                   if (self.player.setVolume) self.player.setVolume(toLogVolume(self.currentVolume));
@@ -616,6 +622,29 @@ const pageDescription = `Tune into the 24/7 client-synchronized Cybernati broadc
             };
           }
 
+          // 3d. Prevent YouTube iframe focus-stealing by overlaying transparent div and handling clicks programmatically
+          const clickOverlay = document.getElementById('player-click-overlay');
+          if (clickOverlay) {
+            clickOverlay.onclick = (e) => {
+              // Ensure browser interaction handshake is processed
+              handleInteraction(e);
+              
+              if (self.player && self.player.getPlayerState) {
+                const state = self.player.getPlayerState();
+                if (state === 1) { // Playing
+                  self.player.pauseVideo();
+                } else if (state === 2 || state === -1 || state === 5) { // Paused, unstarted, cued
+                  self.player.playVideo();
+                }
+              }
+            };
+            
+            clickOverlay.ondblclick = () => {
+              const fullscreenBtn = document.getElementById('fullscreen-toggle');
+              if (fullscreenBtn) fullscreenBtn.click();
+            };
+          }
+
           // Sync PiP volume overlay visibility with mouse activity in PiP mode
           const pipOverlay = document.getElementById('pip-controls-overlay');
           let overlayHideTimer = null;
@@ -647,7 +676,7 @@ const pageDescription = `Tune into the 24/7 client-synchronized Cybernati broadc
             self.scheduleHideOverlay();
           });
 
-          // Helper to process keyboard volume controls
+          // Helper to process keyboard volume controls and media toggles
           self.handleGlobalKeydown = (key) => {
             if (key === 'ArrowUp') {
               const nextVol = Math.min(100, self.currentVolume + 5);
@@ -662,6 +691,15 @@ const pageDescription = `Tune into the 24/7 client-synchronized Cybernati broadc
                 nextVol = 25;
               }
               updateVolumeState(nextMuted, nextVol, false);
+            } else if (key === ' ' || key === 'Spacebar') {
+              if (self.player && self.player.getPlayerState) {
+                const state = self.player.getPlayerState();
+                if (state === 1) {
+                  self.player.pauseVideo();
+                } else {
+                  self.player.playVideo();
+                }
+              }
             }
           };
 
@@ -672,8 +710,8 @@ const pageDescription = `Tune into the 24/7 client-synchronized Cybernati broadc
               return;
             }
 
-            if (e.key === 'ArrowUp' || e.key === 'ArrowDown' || e.key === 'm' || e.key === 'M') {
-              if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+            if (e.key === 'ArrowUp' || e.key === 'ArrowDown' || e.key === 'm' || e.key === 'M' || e.key === ' ' || e.key === 'Spacebar') {
+              if (e.key === 'ArrowUp' || e.key === 'ArrowDown' || e.key === ' ' || e.key === 'Spacebar') {
                 e.preventDefault();
               }
               self.handleGlobalKeydown(e.key);

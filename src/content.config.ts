@@ -210,7 +210,11 @@ const mediaCollection = defineCollection({
     date: z.coerce.date().default(() => new Date()),
     source: z.string().default(''),
     duration: z.union([z.string(), z.number()]).nullable().optional().transform((val) => val !== null && val !== undefined ? String(val) : '').default(''),
-    related: z.array(z.string()).nullable().optional().default([]),
+    related: z.union([z.string(), z.array(z.string())]).nullable().optional().transform((val) => {
+      if (val === null || val === undefined) return [];
+      if (typeof val === 'string') return [val];
+      return val;
+    }).default([]),
     tags: z.array(z.string()).nullable().optional().default([]),
     image: z.any().nullable().optional().transform((val) => {
       // Handle various Obsidian syntax formats

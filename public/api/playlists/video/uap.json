@@ -1,5 +1,5 @@
 {
-  "totalLoopDuration": 753,
+  "totalLoopDuration": 5107,
   "schedule": [
     {
       "id": "IBaw2oqVz8w",
@@ -11,6 +11,22 @@
       "playlist": "uap",
       "start": 0,
       "end": 753
+    },
+    {
+      "id": "WnV5v-ECzPY",
+      "title": "THE 1897 AIRSHIP MYSTERY: America's First UFO Wave That Predated Roswell Before Planes Even Existed",
+      "duration": 4324,
+      "related": [
+        {
+          "name": "second-test-dossier",
+          "slug": "/posts/second-test-dossier/"
+        }
+      ],
+      "date": 1751846400000,
+      "type": "video",
+      "playlist": "uap",
+      "start": 783,
+      "end": 5107
     }
   ],
   "interstitials": [

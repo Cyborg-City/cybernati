@@ -154,6 +154,8 @@ function parseFrontmatter(fileContent) {
     } else if (key === 'related') {
       if (val.startsWith('[') && val.endsWith(']')) {
         result.related = val.substring(1, val.length - 1).split(',').map(s => s.trim()).filter(Boolean);
+      } else if (val) {
+        result.related = [val];
       } else {
         result.related = [];
       }

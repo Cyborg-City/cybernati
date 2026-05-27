@@ -427,10 +427,9 @@ const pageDescription = `Tune into the 24/7 client-synchronized Cybernati broadc
           if (pipBtn) {
             pipBtn.onclick = async () => {
               const video = document.querySelector('#player-mount video');
-              const iframe = document.querySelector('#player-mount iframe');
               
               if (video) {
-                // If it's a standby interstitial local video
+                // If it's a standby interstitial local video, use native PiP if supported
                 try {
                   if (document.pictureInPictureElement) {
                     await document.exitPictureInPicture();
@@ -438,32 +437,14 @@ const pageDescription = `Tune into the 24/7 client-synchronized Cybernati broadc
                     await video.requestPictureInPicture();
                   }
                 } catch (e) {
-                  console.error("PIP failed for native video:", e);
-                }
-              } else if (iframe) {
-                // If it's the YouTube iframe, we must use Document Picture-in-Picture API
-                // or float a custom overlay since YouTube iframes can't use native video PIP
-                if ('documentPictureInPicture' in window) {
-                  try {
-                    const pipWindow = await window.documentPictureInPicture.requestWindow({
-                      width: 320,
-                      height: 180
-                    });
-                    
-                    const viewport = document.getElementById('player-viewport');
-                    pipWindow.document.body.appendChild(viewport);
-                    
-                    pipWindow.addEventListener('pagehide', () => {
-                      const root = document.getElementById('player-root');
-                      const footer = document.querySelector('footer');
-                      root.insertBefore(viewport, footer);
-                    });
-                  } catch (e) {
-                    self.floatCustomPip();
-                  }
-                } else {
+                  // Fallback to floating in-place custom PiP
                   self.floatCustomPip();
                 }
+              } else {
+                // If it's the YouTube iframe, use the in-place floating custom PiP container
+                // This keeps the iframe attached in its original place in the DOM tree,
+                // which avoids re-parenting, prevents reloads, and maintains uninterrupted playback.
+                self.floatCustomPip();
               }
             };
           }
@@ -518,14 +499,8 @@ const pageDescription = `Tune into the 24/7 client-synchronized Cybernati broadc
 
         floatCustomPip: function() {
           const viewport = document.getElementById('player-viewport');
-          if (viewport.classList.contains('floating-pip-container')) {
-            viewport.classList.remove('floating-pip-container');
-            const root = document.getElementById('player-root');
-            const footer = document.querySelector('footer');
-            root.insertBefore(viewport, footer);
-          } else {
-            viewport.classList.add('floating-pip-container');
-            document.body.appendChild(viewport);
+          if (viewport) {
+            viewport.classList.toggle('floating-pip-container');
           }
         },
 

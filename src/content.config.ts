@@ -201,6 +201,38 @@ const vaultCollection = defineCollection({
 });
 
 
+// Define schema for media
+const mediaCollection = defineCollection({
+  loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/media' }),
+  schema: z.object({
+    title: z.string().default('Untitled Media'),
+    description: z.string().nullable().optional().default('No description provided'),
+    date: z.coerce.date().default(() => new Date()),
+    source: z.string().default(''),
+    duration: z.string().nullable().optional().default(''),
+    related: z.array(z.string()).nullable().optional().default([]),
+    tags: z.array(z.string()).nullable().optional().default([]),
+    image: z.any().nullable().optional().transform((val) => {
+      // Handle various Obsidian syntax formats
+      if (Array.isArray(val)) {
+        // Handle array format from [[...]] syntax - take first element
+        return val[0] || null;
+      }
+      if (typeof val === 'string') {
+        // Handle string format - return as-is
+        return val;
+      }
+      return null;
+    }),
+    imageAlt: z.string().nullable().optional(),
+    hideCoverImage: z.boolean().optional(),
+    hideTOC: z.boolean().optional(),
+    draft: z.boolean().optional(),
+    noIndex: z.boolean().optional(),
+  }),
+});
+
+
 // Export collections
 export const collections = {
   posts: postsCollection,
@@ -210,5 +242,6 @@ export const collections = {
   special: specialCollection,
   dossier: dossierCollection,
   vault: vaultCollection,
+  media: mediaCollection,
 };
 

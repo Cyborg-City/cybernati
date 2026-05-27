@@ -1634,7 +1634,7 @@ const scrollbarClass = siteConfig.hideScrollBar ? '' : 'show-scrollbars';
       }
 
       // Forward global keydown events to the active player iframe (floated or page-embedded)
-      window.addEventListener('keydown', (e) => {
+      document.addEventListener('keydown', (e) => {
         // Ignore key shortcut if focused on input elements
         if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.isContentEditable) {
           return;

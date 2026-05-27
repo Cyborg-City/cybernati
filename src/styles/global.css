@@ -1499,3 +1499,29 @@ svg:has(text:contains("mermaid version")) {
     @apply my-6;
   }
 }
+
+/* Floating Cybernati Player Iframe styling */
+.floating-pip-iframe-container {
+  position: fixed !important;
+  bottom: 20px !important;
+  right: 20px !important;
+  width: 320px !important;
+  height: 180px !important;
+  z-index: 99999 !important;
+  margin: 0 !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8) !important;
+  border: 2px solid rgb(var(--color-primary-400, 167 139 250)) !important;
+  border-radius: 12px !important;
+  overflow: hidden !important;
+  background: black !important;
+  transition: all 0.3s ease !important;
+}
+
+@media (max-width: 480px) {
+  .floating-pip-iframe-container {
+    width: 240px !important;
+    height: 135px !important;
+    bottom: 10px !important;
+    right: 10px !important;
+  }
+}

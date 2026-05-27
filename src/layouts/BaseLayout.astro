@@ -1143,6 +1143,33 @@ const scrollbarClass = siteConfig.hideScrollBar ? '' : 'show-scrollbars';
     // Set window.commentsEnabled for client-side access
     window.commentsEnabled = commentsEnabled;
 
+    // Listen for picture-in-picture requests from embedded Cybernati Player iframes
+    if (!window.cyberPlayerPipListenerAdded) {
+      window.cyberPlayerPipListenerAdded = true;
+      window.addEventListener('message', (event) => {
+        if (event.data && event.data.type === 'cyber-player-toggle-pip') {
+          const playlist = event.data.playlist;
+          const mediaType = event.data.mediaType;
+          
+          // Find the iframe playing this playlist
+          const iframes = document.querySelectorAll('iframe');
+          for (const iframe of iframes) {
+            try {
+              const url = new URL(iframe.src);
+              if (url.pathname.includes(`/player/${mediaType}/${playlist}`)) {
+                const container = iframe.closest('.cyber-player-embed-container');
+                if (container) {
+                  container.classList.toggle('floating-pip-iframe-container');
+                } else {
+                  iframe.classList.toggle('floating-pip-iframe-container');
+                }
+              }
+            } catch (e) {}
+          }
+        }
+      });
+    }
+
     // Simple favicon function - follows system theme only
     function setFavicon() {
       const faviconThemeAdaptive = window.siteConfig?.faviconThemeAdaptive ?? true;

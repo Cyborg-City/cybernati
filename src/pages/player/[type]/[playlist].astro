@@ -437,14 +437,12 @@ const pageDescription = `Tune into the 24/7 client-synchronized Cybernati broadc
                     await video.requestPictureInPicture();
                   }
                 } catch (e) {
-                  // Fallback to floating in-place custom PiP
-                  self.floatCustomPip();
+                  // Fallback to floating
+                  self.triggerPip();
                 }
               } else {
-                // If it's the YouTube iframe, use the in-place floating custom PiP container
-                // This keeps the iframe attached in its original place in the DOM tree,
-                // which avoids re-parenting, prevents reloads, and maintains uninterrupted playback.
-                self.floatCustomPip();
+                // If it's the YouTube iframe, invoke parent or in-place custom PiP
+                self.triggerPip();
               }
             };
           }
@@ -501,6 +499,19 @@ const pageDescription = `Tune into the 24/7 client-synchronized Cybernati broadc
           const viewport = document.getElementById('player-viewport');
           if (viewport) {
             viewport.classList.toggle('floating-pip-container');
+          }
+        },
+
+        triggerPip: function() {
+          const self = this;
+          if (window !== window.parent) {
+            window.parent.postMessage({
+              type: 'cyber-player-toggle-pip',
+              playlist: playlist,
+              mediaType: type
+            }, '*');
+          } else {
+            self.floatCustomPip();
           }
         },
 

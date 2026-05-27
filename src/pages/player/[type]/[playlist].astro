@@ -168,6 +168,20 @@ const pageDescription = `Tune into the 24/7 client-synchronized Cybernati broadc
       height: 100% !important;
       width: 100% !important;
     }
+    
+    /* Custom PiP overlay volume controls */
+    #pip-volume-overlay {
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease, transform 0.25s ease;
+      transform: translateY(5px);
+    }
+    
+    body.pip-mode #player-viewport:hover #pip-volume-overlay {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0);
+    }
   </style>
 </head>
 <body class="flex h-full flex-col overflow-hidden text-zinc-200">
@@ -209,6 +223,14 @@ const pageDescription = `Tune into the 24/7 client-synchronized Cybernati broadc
       <!-- Sync Progress Bar running cleanly across viewport bottom -->
       <div id="progress-container" class="absolute bottom-0 left-0 w-full h-[3px] bg-zinc-900 z-10" aria-label="Media play progress">
         <div id="sync-progress" class="progress-bar-fill h-full w-0"></div>
+      </div>
+
+      <!-- PiP Hover Volume Overlay -->
+      <div id="pip-volume-overlay" class="absolute bottom-3 left-3 z-30 flex items-center gap-1.5 rounded-lg border border-zinc-800 bg-zinc-950/90 backdrop-blur-md px-2 py-1.5 opacity-0 pointer-events-none transition-all duration-300 shadow-xl border border-white/5">
+        <button id="pip-mute-toggle" class="flex items-center justify-center rounded p-1 text-zinc-400 hover:bg-zinc-800 hover:text-purple-400" aria-label="Toggle mute state">
+          <span id="pip-volume-icon-symbol" class="material-symbols-outlined text-base">volume_off</span>
+        </button>
+        <input type="range" id="pip-volume-control" class="h-1 w-14 cursor-pointer accent-purple-400 bg-zinc-800 rounded-lg appearance-none" min="0" max="100" value="0" aria-label="Volume Slider" />
       </div>
     </main>
 
@@ -342,86 +364,150 @@ const pageDescription = `Tune into the 24/7 client-synchronized Cybernati broadc
         setupUI: function() {
           const self = this;
 
+          // Load volume/mute states from localStorage
+          const storedVolume = localStorage.getItem('cyber-player-volume');
+          const storedMuted = localStorage.getItem('cyber-player-muted');
+          const storedHandshake = localStorage.getItem('cyber-player-handshake');
+
+          // Check if we are inside the floated parent PiP container
+          const isPip = window !== window.parent && window.parent.cyberPlayerContainer && window.parent.cyberPlayerContainer.classList.contains('floating-pip-iframe-container');
+
+          if (storedVolume !== null) {
+            self.currentVolume = parseInt(storedVolume, 10);
+          } else {
+            self.currentVolume = 25; // default volume
+          }
+
+          if (storedMuted !== null) {
+            self.isMuted = storedMuted === 'true';
+          } else {
+            self.isMuted = true; // start muted for autoplay policy
+          }
+
+          if (storedHandshake !== null) {
+            self.handshakeEstablished = storedHandshake === 'true';
+          }
+
+          // If in PiP mode, the user has already interacted with the parent window, so bypass the handshake!
+          if (isPip) {
+            self.handshakeEstablished = true;
+          }
+
+          // Synchronizes all Volume Sliders, Buttons, and Icons in the DOM (Main & PiP controls)
+          const syncVolumeDOM = () => {
+            const volIcon = document.getElementById('volume-icon-symbol');
+            const volControl = document.getElementById('volume-control');
+            const muteBtn = document.getElementById('mute-toggle');
+
+            const pipVolIcon = document.getElementById('pip-volume-icon-symbol');
+            const pipVolControl = document.getElementById('pip-volume-control');
+            const pipMuteBtn = document.getElementById('pip-mute-toggle');
+
+            const symbol = self.isMuted ? 'volume_off' : (self.currentVolume > 50 ? 'volume_up' : 'volume_down');
+            const sliderVal = self.isMuted ? 0 : self.currentVolume;
+
+            // Sync main footer elements
+            if (volIcon) volIcon.textContent = symbol;
+            if (volControl) volControl.value = sliderVal;
+            if (muteBtn) {
+              muteBtn.setAttribute('aria-checked', self.isMuted ? 'true' : 'false');
+              if (self.isMuted) {
+                muteBtn.classList.remove('text-purple-400');
+              } else {
+                muteBtn.classList.add('text-purple-400');
+              }
+            }
+
+            // Sync PiP hover overlay elements
+            if (pipVolIcon) pipVolIcon.textContent = symbol;
+            if (pipVolControl) pipVolControl.value = sliderVal;
+            if (pipMuteBtn) {
+              pipMuteBtn.setAttribute('aria-checked', self.isMuted ? 'true' : 'false');
+              if (self.isMuted) {
+                pipMuteBtn.classList.remove('text-purple-400');
+              } else {
+                pipMuteBtn.classList.add('text-purple-400');
+              }
+            }
+          };
+
+          // Handles the logical state update, localStorage persistence, and active player controls
+          const updateVolumeState = (muted, volume) => {
+            self.isMuted = muted;
+            if (volume !== undefined) {
+              self.currentVolume = volume;
+            }
+
+            localStorage.setItem('cyber-player-muted', self.isMuted ? 'true' : 'false');
+            localStorage.setItem('cyber-player-volume', self.currentVolume);
+
+            if (self.player) {
+              if (self.isMuted) {
+                if (self.player.mute) self.player.mute();
+              } else {
+                if (self.player.unMute) self.player.unMute();
+                if (self.player.setVolume) self.player.setVolume(self.currentVolume);
+              }
+            }
+
+            syncVolumeDOM();
+          };
+
           // 1. Interactive User Handshake (To unmute automatically on first click)
           const handleInteraction = () => {
             if (self.handshakeEstablished) return;
             self.handshakeEstablished = true;
-            self.isMuted = false;
-            self.currentVolume = 25;
-            
-            if (self.player && self.player.unMute) {
-              self.player.unMute();
-              self.player.setVolume(self.currentVolume);
-            }
-            
-            const volIcon = document.getElementById('volume-icon-symbol');
-            if (volIcon) volIcon.textContent = 'volume_down';
-            
-            const volControl = document.getElementById('volume-control');
-            if (volControl) volControl.value = 25;
-            
-            const muteBtn = document.getElementById('mute-toggle');
-            if (muteBtn) {
-              muteBtn.setAttribute('aria-checked', 'false');
-              muteBtn.classList.add('text-purple-400');
-            }
+            localStorage.setItem('cyber-player-handshake', 'true');
+            updateVolumeState(false, self.currentVolume || 25);
           };
           window.addEventListener('click', handleInteraction, { once: true });
 
-          // 2. Mute Toggle
+          // 2. Main Mute Toggle
           const muteBtn = document.getElementById('mute-toggle');
           if (muteBtn) {
             muteBtn.onclick = () => {
-              self.isMuted = !self.isMuted;
-              muteBtn.setAttribute('aria-checked', self.isMuted ? 'true' : 'false');
-              
-              if (self.player) {
-                if (self.isMuted) {
-                  self.player.mute();
-                } else {
-                  if (self.currentVolume === 0) self.currentVolume = 30;
-                  self.player.unMute();
-                  self.player.setVolume(self.currentVolume);
-                }
+              const nextMuted = !self.isMuted;
+              let nextVol = self.currentVolume;
+              if (!nextMuted && self.currentVolume === 0) {
+                nextVol = 25;
               }
-              
-              const volIcon = document.getElementById('volume-icon-symbol');
-              const volControl = document.getElementById('volume-control');
-              if (volIcon) {
-                volIcon.textContent = self.isMuted ? 'volume_off' : (self.currentVolume > 50 ? 'volume_up' : 'volume_down');
-              }
-              if (volControl) {
-                volControl.value = self.isMuted ? 0 : self.currentVolume;
-              }
+              updateVolumeState(nextMuted, nextVol);
             };
           }
 
-          // 3. Volume Control
+          // 3. Main Volume Control
           const volSlider = document.getElementById('volume-control');
           if (volSlider) {
             volSlider.oninput = (e) => {
-              self.currentVolume = parseInt(e.target.value, 10);
-              self.isMuted = self.currentVolume === 0;
-              
-              if (muteBtn) {
-                muteBtn.setAttribute('aria-checked', self.isMuted ? 'true' : 'false');
-              }
-              
-              if (self.player && self.player.setVolume) {
-                if (self.isMuted) {
-                  self.player.mute();
-                } else {
-                  self.player.unMute();
-                  self.player.setVolume(self.currentVolume);
-                }
-              }
-              
-              const volIcon = document.getElementById('volume-icon-symbol');
-              if (volIcon) {
-                volIcon.textContent = self.isMuted ? 'volume_off' : (self.currentVolume > 50 ? 'volume_up' : 'volume_down');
-              }
+              const val = parseInt(e.target.value, 10);
+              updateVolumeState(val === 0, val);
             };
           }
+
+          // 3b. PiP Overlay Mute Toggle
+          const pipMuteBtn = document.getElementById('pip-mute-toggle');
+          if (pipMuteBtn) {
+            pipMuteBtn.onclick = () => {
+              const nextMuted = !self.isMuted;
+              let nextVol = self.currentVolume;
+              if (!nextMuted && self.currentVolume === 0) {
+                nextVol = 25;
+              }
+              updateVolumeState(nextMuted, nextVol);
+            };
+          }
+
+          // 3c. PiP Overlay Volume Control
+          const pipVolSlider = document.getElementById('pip-volume-control');
+          if (pipVolSlider) {
+            pipVolSlider.oninput = (e) => {
+              const val = parseInt(e.target.value, 10);
+              updateVolumeState(val === 0, val);
+            };
+          }
+
+          // Run initial sync on load to display correct persisted values
+          syncVolumeDOM();
 
           // 4. Related Notes Panel toggle
           const notesTrigger = document.getElementById('notes-trigger-btn');
@@ -466,6 +552,15 @@ const pageDescription = `Tune into the 24/7 client-synchronized Cybernati broadc
             }
 
             pipBtn.onclick = async () => {
+              // Direct user click establishes volume handshake and unmutes player immediately
+              self.handshakeEstablished = true;
+              localStorage.setItem('cyber-player-handshake', 'true');
+              
+              // Unmute and restore to previous non-zero volume (or default to 25)
+              let targetVol = self.currentVolume;
+              if (targetVol === 0) targetVol = 25;
+              updateVolumeState(false, targetVol);
+
               const video = document.querySelector('#player-mount video');
               
               if (video) {

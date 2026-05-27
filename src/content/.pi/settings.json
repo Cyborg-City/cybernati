@@ -1,0 +1,9 @@
+{
+  "extensions": [
+    "extensions/schedule"
+  ],
+  "skills": [
+    ".agents/skills/",
+    "_AI/skills/"
+  ]
+}

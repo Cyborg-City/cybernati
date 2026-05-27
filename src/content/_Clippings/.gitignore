@@ -1,0 +1,6 @@
+# Ignore files in the root of _Clippings/
+*
+!.gitignore
+# Allow directories
+!shared/
+!archived/

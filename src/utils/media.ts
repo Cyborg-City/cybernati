@@ -83,3 +83,50 @@ export function parseISODuration(durationStr: string | null | undefined): number
   
   return 0;
 }
+
+/**
+ * Determines whether the custom picture-in-picture (PiP) miniplayer button should be visible.
+ * 
+ * DESIGN PRINCIPLES (SOLID & DRY):
+ * - Single Responsibility: This pure helper has only one job: evaluate browser environment origins 
+ *   to determine if the Swup-based DOM swapping custom PiP miniplayer is securely possible.
+ * - DRY: We centralize the validation logic here so both the player page and parent scripts 
+ *   can rely on a single, secure source of truth instead of duplicating try/catch origin checks.
+ * 
+ * WHY THIS IS CRITICAL FOR SECURITY:
+ * - If embedded on a third-party website, standard browsers restrict accessing `window.parent.location` 
+ *   due to the Same-Origin Policy (raising a security error).
+ * - Even if we bypass that, we cannot perform DOM swapping with an external parent because 
+ *   `document.body.appendChild` across distinct domains is strictly blocked by browser sandboxes.
+ * - If loaded directly in a tab, there is no parent context to float over, so PiP is useless.
+ * 
+ * @param params Environmental inputs from the browser window object
+ * @param params.isEmbedded True if window.self !== window.top (inside an iframe)
+ * @param params.parentOrigin The origin of the parent window (or null if inaccessible due to cross-origin boundary)
+ * @param params.currentOrigin The current window origin (location.origin)
+ * @returns boolean True if the player is embedded inside a same-origin parent context and can securely enter PiP
+ */
+export function shouldShowCustomPip(params: {
+  isEmbedded: boolean;
+  parentOrigin: string | null;
+  currentOrigin: string;
+}): boolean {
+  // WHY: If the player is loaded directly in a browser tab (not inside an iframe),
+  // there is no parent site context. The custom floating miniplayer will have nothing
+  // to float "above" while browsing, so we hide the PiP control.
+  if (!params.isEmbedded) {
+    return false;
+  }
+
+  // WHY: If the parent origin is inaccessible or null, it means we are either sandboxed
+  // without 'allow-same-origin' or reside inside a cross-origin iframe boundary.
+  if (!params.parentOrigin) {
+    return false;
+  }
+
+  // WHY: We strictly compare the protocols, domains, and ports.
+  // The custom floating PiP relies on window-to-parent postMessage API and parent DOM manipulation,
+  // which is only possible if they share the exact same origin.
+  return params.parentOrigin === params.currentOrigin;
+}
+

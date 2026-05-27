@@ -75,10 +75,10 @@ const pageDescription = `Tune into the 24/7 client-synchronized Cybernati broadc
   <meta name="twitter:player:height" content="360" />
   <meta name="twitter:image" content={absoluteOgImage} />
   
-  <!-- Premium Outfit Font, JetBrains Mono, and Special Elite for Cybernati aesthetics -->
+  <!-- Premium Outfit Font, JetBrains Mono, Special Elite, and Courier Prime for Cybernati aesthetics -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&family=JetBrains+Mono:wght@400;700&family=Special+Elite&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&family=JetBrains+Mono:wght@400;700&family=Special+Elite&family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
   
   <!-- Google Icons (Material Symbols Outlined) -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
@@ -91,6 +91,7 @@ const pageDescription = `Tune into the 24/7 client-synchronized Cybernati broadc
       --cyber-highlight: #ff4d4d; /* Coral red accent */
       --font-outfit: 'Outfit', sans-serif;
       --font-mono: 'JetBrains Mono', monospace;
+      --font-courier-prime: 'Courier Prime', monospace;
     }
     
     body {
@@ -174,18 +175,14 @@ const pageDescription = `Tune into the 24/7 client-synchronized Cybernati broadc
   <div id="player-root" class="relative flex h-full w-full flex-col p-4 box-sizing-border-box">
     
     <!-- Top Header: Dynamic playing title & Cybernati branding -->
-    <header class="glass-panel mb-3 flex items-center justify-between rounded-xl px-4 py-3 shadow-lg">
-      <div class="flex items-center gap-3">
-        <span class="flex h-2 w-2 animate-pulse rounded-full bg-red-500 shadow-[0_0_8px_#ef4444]" aria-hidden="true"></span>
-        <div class="flex flex-col">
-          <span class="text-[9px] font-bold uppercase tracking-widest text-zinc-500" style="font-family: var(--font-mono)">Broadcast Feed</span>
-          <h1 id="video-title" class="text-sm font-semibold tracking-wide text-zinc-100 uppercase truncate max-w-[280px] sm:max-w-[420px]" style="font-family: var(--font-mono)">
-            SCANNING FOR SIGNAL...
-          </h1>
-        </div>
+    <header class="glass-panel mb-3 flex items-center justify-between rounded-xl px-4 py-2 shadow-lg">
+      <div class="flex items-center">
+        <h1 id="video-title" class="text-sm font-semibold tracking-wide text-zinc-100 uppercase truncate max-w-[280px] sm:max-w-[420px]" style="font-family: var(--font-courier-prime)">
+          SCANNING FOR SIGNAL...
+        </h1>
       </div>
       <div class="flex items-center gap-2">
-        <span class="text-xs md:text-sm font-normal tracking-wide text-purple-400" style="font-family: 'Special Elite', cursive;">CYBERNATI™</span>
+        <a href={base} target="_top" class="text-sm md:text-base font-bold tracking-wide text-purple-400 hover:text-purple-300 transition-colors" style="font-family: 'Special Elite', cursive;">CYBERNATI™</a>
       </div>
     </header>
 
@@ -441,6 +438,24 @@ const pageDescription = `Tune into the 24/7 client-synchronized Cybernati broadc
           // 5. Picture in Picture Mode
           const pipBtn = document.getElementById('pip-btn');
           if (pipBtn) {
+            // WHY (SOLID/Beyonce Rule): The custom PiP miniplayer relies on Swup page-navigation interceptors
+            // and parent DOM reparenting. This is only possible if:
+            // 1. The player is embedded in an iframe (isEmbedded = true).
+            // 2. The parent page is on the exact same origin (same protocol, domain, port).
+            // If these conditions aren't met (e.g. loaded directly in a tab or on a third-party domain),
+            // we hide the custom PiP button to prevent security errors and broken UI states.
+            const isEmbedded = window.self !== window.top;
+            let isSameOrigin = false;
+            try {
+              isSameOrigin = isEmbedded && window.parent.location.origin === window.location.origin;
+            } catch (e) {
+              // Accessing parent location from a third-party iframe throws a security DOMException
+            }
+
+            if (!isSameOrigin) {
+              pipBtn.style.display = 'none';
+            }
+
             pipBtn.onclick = async () => {
               const video = document.querySelector('#player-mount video');
               

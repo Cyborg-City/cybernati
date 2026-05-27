@@ -1516,19 +1516,19 @@ svg:has(text:contains("mermaid version")) {
   max-width: 640px !important;
   max-height: 360px !important;
   width: 360px !important;
-  height: 234px !important; /* Includes 32px header */
+  height: 230px !important; /* Includes 28px header */
 }
 
 .floating-pip-iframe-container iframe {
   width: 100% !important;
-  height: calc(100% - 32px) !important; /* Exclude header height */
+  height: calc(100% - 28px) !important; /* Exclude header height */
   border: 0 !important;
   background: #000 !important;
 }
 
 /* Dynamic dynamically injected PiP Header */
 .cyber-pip-header {
-  height: 32px;
+  height: 28px;
   background: rgba(10, 10, 15, 0.95);
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   display: flex;
@@ -1583,10 +1583,10 @@ svg:has(text:contains("mermaid version")) {
 
 .cyber-pip-drag-cover {
   position: absolute;
-  top: 32px;
+  top: 28px;
   left: 0;
   width: 100%;
-  height: calc(100% - 32px);
+  height: calc(100% - 28px);
   background: transparent;
   z-index: 10;
   display: none;

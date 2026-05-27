@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { extractYouTubeId, parseISODuration } from './media';
+import { extractYouTubeId, parseISODuration, shouldShowCustomPip } from './media';
 
 describe('Media Utility - YouTube ID Extraction', () => {
   it('should extract the correct video ID from a standard YouTube watch URL', () => {
@@ -102,5 +102,73 @@ describe('Media Utility - ISO 8601 Duration Parsing', () => {
   it('should return 0 when provided an empty or invalid duration string', () => {
     expect(parseISODuration('')).toBe(0);
     expect(parseISODuration('invalid_duration')).toBe(0);
+  });
+});
+
+describe('Media Utility - Custom Picture-in-Picture Visibility Check (shouldShowCustomPip)', () => {
+  it('should return false when the player is not embedded in an iframe (loaded directly in a tab)', () => {
+    // WHY: If the player is the top-level page, there is no parent site context to navigate while watching.
+    // Therefore, the PiP button should be completely hidden.
+    const result = shouldShowCustomPip({
+      isEmbedded: false,
+      parentOrigin: 'http://localhost:5000',
+      currentOrigin: 'http://localhost:5000'
+    });
+    expect(result).toBe(false);
+  });
+
+  it('should return false when the parent window origin is inaccessible or null (cross-origin / sandboxed)', () => {
+    // WHY: If the parent origin is null, we either cannot communicate with the parent or it resides on a 
+    // different origin that blocks custom message handling. The custom PiP option must be hidden.
+    const result = shouldShowCustomPip({
+      isEmbedded: true,
+      parentOrigin: null,
+      currentOrigin: 'http://localhost:5000'
+    });
+    expect(result).toBe(false);
+  });
+
+  it('should return false when the parent window is on a third-party website (cross-origin mismatch)', () => {
+    // WHY: If the player is embedded on an external website (e.g. someotherdomain.com), they cannot 
+    // participate in our same-origin Swup-based parent container swapping.
+    const result = shouldShowCustomPip({
+      isEmbedded: true,
+      parentOrigin: 'https://someotherdomain.com',
+      currentOrigin: 'http://localhost:5000'
+    });
+    expect(result).toBe(false);
+  });
+
+  it('should return true when the player is embedded inside a same-origin parent window (Astro Modular Note)', () => {
+    // WHY: This is the exact condition needed for custom PiP. Since the parent is same-origin, 
+    // we can securely swap DOM elements and trigger Swup-based seamless page navigation.
+    const result = shouldShowCustomPip({
+      isEmbedded: true,
+      parentOrigin: 'http://localhost:5000',
+      currentOrigin: 'http://localhost:5000'
+    });
+    expect(result).toBe(true);
+  });
+
+  it('should return false if origins match but the port is different', () => {
+    // WHY: The same-origin policy is strict on protocol, domain, and port. If ports mismatch, 
+    // browser security policies will block parent element swapping.
+    const result = shouldShowCustomPip({
+      isEmbedded: true,
+      parentOrigin: 'http://localhost:3000',
+      currentOrigin: 'http://localhost:5000'
+    });
+    expect(result).toBe(false);
+  });
+
+  it('should return false if origins match but the protocol is different (http vs https)', () => {
+    // WHY: A secure HTTPS page embedding an HTTP player (or vice versa) constitutes a protocol mismatch,
+    // which violates strict same-origin rules and blocks secure parent manipulation.
+    const result = shouldShowCustomPip({
+      isEmbedded: true,
+      parentOrigin: 'https://localhost:5000',
+      currentOrigin: 'http://localhost:5000'
+    });
+    expect(result).toBe(false);
   });
 });

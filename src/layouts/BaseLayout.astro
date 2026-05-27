@@ -1204,9 +1204,13 @@ const scrollbarClass = siteConfig.hideScrollBar ? '' : 'show-scrollbars';
           header = document.createElement('div');
           header.className = 'cyber-pip-header';
           header.innerHTML = `
-            <span class="cyber-pip-drag-handle"><span class="material-symbols-outlined" style="font-size:14px; vertical-align:middle; margin-right:4px;">drag_indicator</span>CyberPlayer Mini</span>
+            <span class="cyber-pip-drag-handle">
+              <span class="material-symbols-outlined" style="font-size:14px; vertical-align:middle; margin-right:4px;">drag_indicator</span>
+              CyberPlayer Mini
+            </span>
             <div class="cyber-pip-actions">
-              <button class="cyber-pip-restore-btn" title="Restore Player"><span class="material-symbols-outlined" style="font-size:16px;">open_in_full</span></button>
+              <!-- WHY: pip_exit is the exact Material Symbol depicting an arrow exiting floating PiP back to its page -->
+              <button class="cyber-pip-restore-btn" title="Restore Player"><span class="material-symbols-outlined" style="font-size:16px;">pip_exit</span></button>
               <button class="cyber-pip-close-btn" title="Close Player"><span class="material-symbols-outlined" style="font-size:16px;">close</span></button>
             </div>
           `;

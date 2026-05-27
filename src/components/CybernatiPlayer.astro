@@ -1,0 +1,38 @@
+---
+/**
+ * Cybernati Player Embed Component
+ * 
+ * Renders an iframe pointing to the standalone, dynamic Cybernati Player.
+ * Easily embeddable inside any MDX article, page, or homepage layout.
+ */
+import { resolveUrl } from '@/utils/url-helpers';
+
+export interface Props {
+  type?: 'video' | 'audio';
+  playlist?: string;
+  height?: string;
+  width?: string;
+}
+
+const {
+  type = 'video',
+  playlist = 'channel-000',
+  height = '500px',
+  width = '100%'
+} = Astro.props;
+
+const playerUrl = resolveUrl(`/player/${type}/${playlist}`);
+---
+
+<div class="cyber-player-embed-container w-full my-6 rounded-2xl overflow-hidden border border-zinc-900/60 shadow-2xl">
+  <iframe
+    src={playerUrl}
+    width={width}
+    height={height}
+    frameborder="0"
+    allow="autoplay; fullscreen; picture-in-picture"
+    title={`Cybernati Player - ${playlist}`}
+    class="block w-full border-0 bg-black"
+  >
+  </iframe>
+</div>

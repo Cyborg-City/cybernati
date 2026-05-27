@@ -135,6 +135,10 @@ function parseFrontmatter(fileContent) {
       result.draft = val === 'true';
     } else if (key === 'date') {
       result.date = val;
+    } else if (key === 'published') {
+      result.published = val;
+    } else if (key === 'created') {
+      result.created = val;
     } else if (key === 'aliases') {
       if (val.startsWith('[') && val.endsWith(']')) {
         result.aliases = val.substring(1, val.length - 1).split(',').map(s => s.trim()).filter(Boolean);
@@ -314,12 +318,13 @@ async function run() {
         }
       }
 
+      const itemDate = fm.date || fm.published || fm.created || '';
       mediaItems.push({
         id: ytId,
         title: fm.title || fileBasename,
         duration: durationSec,
         related: resolvedRelated,
-        date: fm.date ? new Date(fm.date).getTime() : 0,
+        date: itemDate ? new Date(itemDate).getTime() : 0,
         type,
         playlist
       });

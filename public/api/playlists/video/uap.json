@@ -1,0 +1,21 @@
+{
+  "totalLoopDuration": 753,
+  "schedule": [
+    {
+      "id": "IBaw2oqVz8w",
+      "title": "\\\"Mystery Airship\\\" Sightings, 1896 - 1897",
+      "duration": 753,
+      "related": [],
+      "date": 1500854400000,
+      "type": "video",
+      "playlist": "uap",
+      "start": 0,
+      "end": 753
+    }
+  ],
+  "interstitials": [
+    "/static/interstitials/int-01.mp4",
+    "/static/interstitials/int-02.mp4",
+    "/static/interstitials/int-03.mp4"
+  ]
+}

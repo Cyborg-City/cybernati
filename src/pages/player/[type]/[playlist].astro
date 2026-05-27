@@ -1,0 +1,713 @@
+---
+import { getCollection } from 'astro:content';
+import { siteConfig } from '@/config';
+
+// Define getStaticPaths for Astro SSG
+export async function getStaticPaths() {
+  const mediaDir = 'src/content/media';
+  
+  // Scrape files to find directories (playlists)
+  const mediaItems = await getCollection('media');
+  
+  const playlists = new Set();
+  
+  // Add default playlist
+  playlists.add('video/channel-000');
+  
+  for (const item of mediaItems) {
+    // Expected id format: "type/playlistName/filename"
+    const parts = item.id.split('/');
+    if (parts.length >= 2) {
+      const type = parts[0];
+      const playlist = parts[1];
+      playlists.add(`${type}/${playlist}`);
+    }
+  }
+
+  return Array.from(playlists).map((playlistKey) => {
+    const [type, playlist] = (playlistKey as string).split('/');
+    return {
+      params: { type, playlist },
+      props: { type, playlist }
+    };
+  });
+}
+
+const { type, playlist } = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="en" class="h-full select-none bg-black">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cybernati Player | {playlist}</title>
+  
+  <!-- Premium Outfit Font and JetBrains Mono for Cybernati aesthetics -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  
+  <!-- Google Icons (Material Symbols Outlined) -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+  
+  <style>
+    /* Styling utilizing site theme values dynamically */
+    :root {
+      --cyber-primary: #a78bfa; /* Lavender primary default */
+      --cyber-primary-rgb: 167, 139, 250;
+      --cyber-highlight: #ff4d4d; /* Coral red accent */
+      --font-outfit: 'Outfit', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+    
+    body {
+      font-family: var(--font-outfit);
+      background-color: #030303;
+      color: #e4e4e7;
+    }
+
+    /* Premium Glassmorphic Controls */
+    .glass-panel {
+      background: rgba(10, 10, 12, 0.7);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    
+    /* Sleek Cybernati progress bar */
+    .progress-bar-fill {
+      background: linear-gradient(90deg, var(--cyber-primary) 0%, #c084fc 100%);
+      box-shadow: 0 0 12px rgba(var(--cyber-primary-rgb), 0.5);
+      transition: width 1s linear;
+    }
+
+    /* Custom thin scrollbars for lists */
+    .custom-scroll::-webkit-scrollbar {
+      width: 4px;
+    }
+    .custom-scroll::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.2);
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 2px;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb:hover {
+      background: rgba(var(--cyber-primary-rgb), 0.3);
+    }
+
+    /* Google Icons fill transition */
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      transition: font-variation-settings 0.1s ease;
+    }
+    button:hover .material-symbols-outlined {
+      font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 24;
+    }
+
+    /* Floating PIP Container fallback style */
+    .floating-pip-container {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 320px;
+      height: 180px;
+      z-index: 9999;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+      border-radius: 8px;
+      overflow: hidden;
+      border: 2px solid var(--cyber-primary);
+    }
+  </style>
+</head>
+<body class="flex h-full flex-col overflow-hidden text-zinc-200">
+  
+  <div id="player-root" class="relative flex h-full w-full flex-col p-4 box-sizing-border-box">
+    
+    <!-- Top Header: Dynamic playing title & Cybernati branding -->
+    <header class="glass-panel mb-3 flex items-center justify-between rounded-xl px-4 py-3 shadow-lg">
+      <div class="flex items-center gap-3">
+        <span class="flex h-2 w-2 animate-pulse rounded-full bg-red-500 shadow-[0_0_8px_#ef4444]" aria-hidden="true"></span>
+        <div class="flex flex-col">
+          <span class="text-[9px] font-bold uppercase tracking-widest text-zinc-500" style="font-family: var(--font-mono)">Broadcast Feed</span>
+          <h1 id="video-title" class="text-sm font-semibold tracking-wide text-zinc-100 uppercase truncate max-w-[280px] sm:max-w-[420px]" style="font-family: var(--font-mono)">
+            SCANNING FOR SIGNAL...
+          </h1>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="text-[10px] font-bold uppercase tracking-widest text-purple-400" style="font-family: var(--font-mono)">CYBERNATI™</span>
+      </div>
+    </header>
+
+    <!-- Main Viewport: The YouTube Video player -->
+    <main id="player-viewport" class="relative flex-grow rounded-2xl border border-zinc-900 bg-black overflow-hidden shadow-2xl">
+      <div id="player-mount" class="h-full w-full">
+        <!-- Standby Signal message during initialization -->
+        <div id="terminal-status-msg" class="flex h-full w-full flex-col items-center justify-center gap-3 bg-zinc-950 text-center">
+          <span class="material-symbols-outlined text-4xl animate-spin text-purple-400">sync</span>
+          <span class="text-xs uppercase tracking-widest text-zinc-400" style="font-family: var(--font-mono)">Aligning Remote Feed Nodes...</span>
+        </div>
+      </div>
+
+      <!-- Sync Progress Bar running cleanly across viewport bottom -->
+      <div id="progress-container" class="absolute bottom-0 left-0 w-full h-[3px] bg-zinc-900 z-10" aria-label="Media play progress">
+        <div id="sync-progress" class="progress-bar-fill h-full w-0"></div>
+      </div>
+    </main>
+
+    <!-- Collapsible Related Notes overlay (renders above header and bottom controls) -->
+    <div id="related-notes-panel" class="absolute bottom-[92px] left-4 right-4 z-50 rounded-2xl glass-panel shadow-2xl max-h-0 overflow-hidden transition-all duration-300 ease-in-out opacity-0">
+      <div class="p-4 flex flex-col gap-3">
+        <div class="flex items-center justify-between border-b border-zinc-800 pb-2">
+          <span class="text-[10px] font-bold uppercase tracking-widest text-zinc-400" style="font-family: var(--font-mono)">Related Notes</span>
+          <button id="close-notes-btn" class="flex items-center justify-center rounded p-1 text-zinc-400 hover:bg-zinc-800 hover:text-white" aria-label="Close notes panel">
+            <span class="material-symbols-outlined text-sm">close</span>
+          </button>
+        </div>
+        <div id="related-links" class="flex flex-wrap gap-2 max-h-[160px] overflow-y-auto custom-scroll pr-1 text-zinc-300">
+          <!-- Populated dynamically via JS -->
+          <span class="text-xs text-zinc-500 uppercase italic">No related vault notes detected.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Interactive Bottom Controls Bar -->
+    <footer class="glass-panel mt-3 flex flex-col gap-2 rounded-xl p-3 shadow-lg">
+      <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+        
+        <!-- Upcoming track info -->
+        <div class="flex items-center gap-2 overflow-hidden">
+          <span class="text-[10px] font-bold uppercase tracking-widest text-zinc-500" style="font-family: var(--font-mono)">Next:</span>
+          <span id="next-title" class="truncate text-xs font-semibold text-zinc-300 max-w-[200px]" style="font-family: var(--font-mono)">STANDBY</span>
+        </div>
+
+        <!-- Toolbar Buttons -->
+        <div class="flex items-center justify-between sm:justify-end gap-3 flex-wrap">
+          
+          <!-- Related Notes Trigger -->
+          <button id="notes-trigger-btn" class="flex items-center gap-1.5 rounded-lg border border-zinc-800 bg-zinc-900/60 px-3 py-1.5 text-xs font-medium text-zinc-300 hover:border-purple-500 hover:bg-purple-950/20 hover:text-purple-300" aria-label="Open related Obsidian notes">
+            <span class="material-symbols-outlined text-sm">menu_book</span>
+            <span>Vault Notes</span>
+          </button>
+
+          <!-- Sync/Desync Mode Toggle -->
+          <button id="desync-btn" class="flex items-center gap-1.5 rounded-lg border border-zinc-800 bg-zinc-900/60 px-3 py-1.5 text-xs font-medium text-zinc-300 hover:border-red-500 hover:bg-red-950/20 hover:text-red-300" aria-label="Switch between broadcast and on-demand mode">
+            <span class="material-symbols-outlined text-sm">podcasts</span>
+            <span id="desync-text">Desync</span>
+          </button>
+
+          <div class="flex items-center gap-1">
+            <!-- Mute/Volume controls -->
+            <button id="mute-toggle" class="flex items-center justify-center rounded-lg p-2 text-zinc-400 hover:bg-zinc-800 hover:text-purple-400" aria-label="Toggle mute state" aria-checked="true">
+              <span id="volume-icon-symbol" class="material-symbols-outlined text-lg">volume_off</span>
+            </button>
+            <input type="range" id="volume-control" class="h-1 w-16 cursor-pointer accent-purple-400 bg-zinc-800 rounded-lg appearance-none" min="0" max="100" value="0" aria-label="Volume Slider" />
+          </div>
+
+          <div class="flex items-center gap-1">
+            <!-- PiP Control -->
+            <button id="pip-btn" class="flex items-center justify-center rounded-lg p-2 text-zinc-400 hover:bg-zinc-800 hover:text-purple-400" title="Picture in Picture" aria-label="Enable Picture-in-Picture">
+              <span class="material-symbols-outlined text-lg">picture_in_picture_alt</span>
+            </button>
+
+            <!-- Fullscreen Control -->
+            <button id="fullscreen-toggle" class="flex items-center justify-center rounded-lg p-2 text-zinc-400 hover:bg-zinc-800 hover:text-purple-400" title="Fullscreen" aria-label="Toggle full screen">
+              <span class="material-symbols-outlined text-lg">fullscreen</span>
+            </button>
+          </div>
+
+        </div>
+      </div>
+    </footer>
+
+  </div>
+
+  <script define:vars={{ type, playlist }}>
+    // Self-contained broadcast client synchronization logic
+    (function() {
+      // Clean up any existing instances to prevent memory leaks during Swup transitions
+      if (window.CyberPlayer) { window.CyberPlayer.destroy(); }
+
+      window.CyberPlayer = {
+        player: null,
+        currentVolume: 0,
+        isMuted: true,
+        isDesynced: false,
+        handshakeEstablished: false,
+        updateTimer: null,
+        desyncTimer: null,
+        currentVideoId: null,
+        playlistData: null,
+        currentInterstitialIndex: null,
+
+        destroy: function() {
+          if (this.updateTimer) clearInterval(this.updateTimer);
+          if (this.desyncTimer) clearInterval(this.desyncTimer);
+          if (this.player && this.player.destroy) {
+            try { this.player.destroy(); } catch (e) {}
+          }
+          this.player = null;
+          this.currentVideoId = null;
+          const mount = document.getElementById('player-mount');
+          if (mount) {
+            mount.innerHTML = `
+              <div class="flex h-full w-full flex-col items-center justify-center gap-3 bg-zinc-950 text-center">
+                <span class="material-symbols-outlined text-4xl animate-spin text-purple-400">sync</span>
+                <span class="text-xs uppercase tracking-widest text-zinc-400" style="font-family: var(--font-mono)">Aligning Remote Feed Nodes...</span>
+              </div>`;
+          }
+        },
+
+        init: async function() {
+          try {
+            // Get current base route for playlist fetching
+            const hostPath = window.location.origin;
+            const playlistUrl = `${hostPath}/api/playlists/${type}/${playlist}.json?v=${Date.now()}`;
+            
+            const response = await fetch(playlistUrl);
+            if (!response.ok) throw new Error("Playlist file missing.");
+            this.playlistData = await response.json();
+            
+            this.setupUI();
+            this.startLoop();
+          } catch (e) {
+            console.error("Player initialization failure:", e);
+            const status = document.getElementById('terminal-status-msg');
+            if (status) {
+              status.innerHTML = `
+                <span class="material-symbols-outlined text-4xl text-red-500">dangerous</span>
+                <span class="text-xs uppercase tracking-widest text-red-400" style="font-family: var(--font-mono)">Feed Node Offline: 404</span>`;
+            }
+          }
+        },
+
+        setupUI: function() {
+          const self = this;
+
+          // 1. Interactive User Handshake (To unmute automatically on first click)
+          const handleInteraction = () => {
+            if (self.handshakeEstablished) return;
+            self.handshakeEstablished = true;
+            self.isMuted = false;
+            self.currentVolume = 25;
+            
+            if (self.player && self.player.unMute) {
+              self.player.unMute();
+              self.player.setVolume(self.currentVolume);
+            }
+            
+            const volIcon = document.getElementById('volume-icon-symbol');
+            if (volIcon) volIcon.textContent = 'volume_down';
+            
+            const volControl = document.getElementById('volume-control');
+            if (volControl) volControl.value = 25;
+            
+            const muteBtn = document.getElementById('mute-toggle');
+            if (muteBtn) {
+              muteBtn.setAttribute('aria-checked', 'false');
+              muteBtn.classList.add('text-purple-400');
+            }
+          };
+          window.addEventListener('click', handleInteraction, { once: true });
+
+          // 2. Mute Toggle
+          const muteBtn = document.getElementById('mute-toggle');
+          if (muteBtn) {
+            muteBtn.onclick = () => {
+              self.isMuted = !self.isMuted;
+              muteBtn.setAttribute('aria-checked', self.isMuted ? 'true' : 'false');
+              
+              if (self.player) {
+                if (self.isMuted) {
+                  self.player.mute();
+                } else {
+                  if (self.currentVolume === 0) self.currentVolume = 30;
+                  self.player.unMute();
+                  self.player.setVolume(self.currentVolume);
+                }
+              }
+              
+              const volIcon = document.getElementById('volume-icon-symbol');
+              const volControl = document.getElementById('volume-control');
+              if (volIcon) {
+                volIcon.textContent = self.isMuted ? 'volume_off' : (self.currentVolume > 50 ? 'volume_up' : 'volume_down');
+              }
+              if (volControl) {
+                volControl.value = self.isMuted ? 0 : self.currentVolume;
+              }
+            };
+          }
+
+          // 3. Volume Control
+          const volSlider = document.getElementById('volume-control');
+          if (volSlider) {
+            volSlider.oninput = (e) => {
+              self.currentVolume = parseInt(e.target.value, 10);
+              self.isMuted = self.currentVolume === 0;
+              
+              if (muteBtn) {
+                muteBtn.setAttribute('aria-checked', self.isMuted ? 'true' : 'false');
+              }
+              
+              if (self.player && self.player.setVolume) {
+                if (self.isMuted) {
+                  self.player.mute();
+                } else {
+                  self.player.unMute();
+                  self.player.setVolume(self.currentVolume);
+                }
+              }
+              
+              const volIcon = document.getElementById('volume-icon-symbol');
+              if (volIcon) {
+                volIcon.textContent = self.isMuted ? 'volume_off' : (self.currentVolume > 50 ? 'volume_up' : 'volume_down');
+              }
+            };
+          }
+
+          // 4. Related Notes Panel toggle
+          const notesTrigger = document.getElementById('notes-trigger-btn');
+          const closeNotes = document.getElementById('close-notes-btn');
+          const notesPanel = document.getElementById('related-notes-panel');
+          
+          if (notesTrigger && notesPanel) {
+            notesTrigger.onclick = () => {
+              notesPanel.classList.toggle('max-h-0');
+              notesPanel.classList.toggle('max-h-[300px]');
+              notesPanel.classList.toggle('opacity-0');
+              notesPanel.classList.toggle('opacity-100');
+            };
+          }
+          if (closeNotes && notesPanel) {
+            closeNotes.onclick = () => {
+              notesPanel.classList.add('max-h-0');
+              notesPanel.classList.remove('max-h-[300px]');
+              notesPanel.classList.add('opacity-0');
+              notesPanel.classList.remove('opacity-100');
+            };
+          }
+
+          // 5. Picture in Picture Mode
+          const pipBtn = document.getElementById('pip-btn');
+          if (pipBtn) {
+            pipBtn.onclick = async () => {
+              const video = document.querySelector('#player-mount video');
+              const iframe = document.querySelector('#player-mount iframe');
+              
+              if (video) {
+                // If it's a standby interstitial local video
+                try {
+                  if (document.pictureInPictureElement) {
+                    await document.exitPictureInPicture();
+                  } else {
+                    await video.requestPictureInPicture();
+                  }
+                } catch (e) {
+                  console.error("PIP failed for native video:", e);
+                }
+              } else if (iframe) {
+                // If it's the YouTube iframe, we must use Document Picture-in-Picture API
+                // or float a custom overlay since YouTube iframes can't use native video PIP
+                if ('documentPictureInPicture' in window) {
+                  try {
+                    const pipWindow = await window.documentPictureInPicture.requestWindow({
+                      width: 320,
+                      height: 180
+                    });
+                    
+                    const viewport = document.getElementById('player-viewport');
+                    pipWindow.document.body.appendChild(viewport);
+                    
+                    pipWindow.addEventListener('pagehide', () => {
+                      const root = document.getElementById('player-root');
+                      const footer = document.querySelector('footer');
+                      root.insertBefore(viewport, footer);
+                    });
+                  } catch (e) {
+                    self.floatCustomPip();
+                  }
+                } else {
+                  self.floatCustomPip();
+                }
+              }
+            };
+          }
+
+          // 6. Fullscreen Mode
+          const fsBtn = document.getElementById('fullscreen-toggle');
+          if (fsBtn) {
+            fsBtn.onclick = () => {
+              const root = document.getElementById('player-root');
+              if (!document.fullscreenElement) {
+                root.requestFullscreen().catch(err => console.error("Fullscreen fail:", err));
+              } else {
+                document.exitFullscreen();
+              }
+            };
+          }
+
+          // 7. Sync / Desync Toggle
+          const desyncBtn = document.getElementById('desync-btn');
+          const desyncText = document.getElementById('desync-text');
+          
+          if (desyncBtn && desyncText) {
+            desyncBtn.onclick = () => {
+              self.isDesynced = !self.isDesynced;
+              
+              if (self.isDesynced) {
+                desyncBtn.classList.add('border-purple-500', 'text-purple-300', 'bg-purple-950/20');
+                desyncBtn.classList.remove('border-zinc-800', 'bg-zinc-900/60');
+                desyncText.textContent = "Sync Feed";
+                
+                if (self.updateTimer) clearInterval(self.updateTimer);
+                if (self.player) {
+                  try { self.player.destroy(); } catch (e) {}
+                  self.player = null;
+                  self.currentVideoId = null;
+                }
+                
+                self.startDesyncSequence();
+              } else {
+                desyncBtn.classList.remove('border-purple-500', 'text-purple-300', 'bg-purple-950/20');
+                desyncBtn.classList.add('border-zinc-800', 'bg-zinc-900/60');
+                desyncText.textContent = "Desync";
+                
+                if (self.desyncTimer) clearInterval(self.desyncTimer);
+                self.currentVideoId = null;
+                self.player = null;
+                self.startLoop();
+              }
+            };
+          }
+        },
+
+        floatCustomPip: function() {
+          const viewport = document.getElementById('player-viewport');
+          if (viewport.classList.contains('floating-pip-container')) {
+            viewport.classList.remove('floating-pip-container');
+            const root = document.getElementById('player-root');
+            const footer = document.querySelector('footer');
+            root.insertBefore(viewport, footer);
+          } else {
+            viewport.classList.add('floating-pip-container');
+            document.body.appendChild(viewport);
+          }
+        },
+
+        startLoop: function() {
+          const { totalLoopDuration, schedule, interstitials } = this.playlistData;
+          if (!schedule || schedule.length === 0) return;
+          
+          const self = this;
+          
+          const update = () => {
+            if (self.isDesynced) return;
+            
+            const now = Math.floor(Date.now() / 1000);
+            const pos = now % totalLoopDuration;
+            
+            let active = null;
+            let standby = true;
+            let wait = 0;
+            let offset = 0;
+            let nextIndex = 0;
+            
+            for (let i = 0; i < schedule.length; i++) {
+              const p = schedule[i];
+              if (pos >= p.start && pos < p.end) {
+                active = p;
+                standby = false;
+                offset = pos - p.start;
+                nextIndex = (i + 1) % schedule.length;
+                break;
+              }
+              if (pos >= p.end && (i === schedule.length - 1 || pos < schedule[i+1].start)) {
+                standby = true;
+                wait = (i === schedule.length - 1) ? (totalLoopDuration - pos) : (schedule[i+1].start - pos);
+                nextIndex = (i + 1) % schedule.length;
+                break;
+              }
+            }
+            
+            const progressBar = document.getElementById('sync-progress');
+            const titleEl = document.getElementById('video-title');
+            const nextEl = document.getElementById('next-title');
+            
+            if (!standby && active) {
+              if (progressBar) progressBar.style.width = `${((offset / active.duration) * 100)}%`;
+              if (titleEl) titleEl.innerHTML = active.title.toUpperCase();
+              if (nextEl) nextEl.innerHTML = schedule[nextIndex].title.toUpperCase();
+              
+              if (self.currentVideoId !== active.id) {
+                self.mountVideo(active, offset);
+              } else if (self.player && self.player.getCurrentTime) {
+                const drift = Math.abs(self.player.getCurrentTime() - offset);
+                if (drift > 3) self.player.seekTo(offset, true);
+              }
+            } else {
+              if (progressBar) progressBar.style.width = `${Math.min(100, (wait / 30) * 100)}%`;
+              if (titleEl) titleEl.innerHTML = "SIGNAL LOST: TRANSMITTING STANDBY...";
+              if (nextEl) nextEl.innerHTML = schedule[nextIndex].title.toUpperCase();
+              
+              self.mountStandby(interstitials);
+            }
+          };
+
+          if (this.updateTimer) clearInterval(this.updateTimer);
+          this.updateTimer = setInterval(update, 1000);
+          update();
+        },
+
+        startDesyncSequence: function() {
+          const { schedule, interstitials } = this.playlistData;
+          if (!schedule || schedule.length === 0) return;
+          const self = this;
+          
+          const playRandom = () => {
+            const index = Math.floor(Math.random() * schedule.length);
+            const prog = schedule[index];
+            const playWindow = Math.min(prog.duration, 180); // 3 minutes play cap for desync
+            const startAt = Math.floor(Math.random() * Math.max(1, prog.duration - playWindow));
+            
+            self.mountVideo(prog, startAt);
+            
+            let remaining = playWindow;
+            
+            if (self.desyncTimer) clearInterval(self.desyncTimer);
+            self.desyncTimer = setInterval(() => {
+              if (!self.isDesynced) {
+                clearInterval(self.desyncTimer);
+                return;
+              }
+              
+              remaining--;
+              
+              const progressBar = document.getElementById('sync-progress');
+              if (progressBar) {
+                progressBar.style.width = `${((remaining / playWindow) * 100)}%`;
+              }
+              
+              if (remaining <= 0) {
+                clearInterval(self.desyncTimer);
+                self.mountStandby(interstitials);
+                
+                // Keep standby interstitial running for 10 seconds before next random clip
+                setTimeout(playRandom, 10000);
+              }
+            }, 1000);
+          };
+
+          playRandom();
+        },
+
+        mountVideo: function(prog, offset) {
+          const mount = document.getElementById('player-mount');
+          if (!mount) return;
+          
+          if (this.currentVideoId === prog.id && this.player && this.player.getPlayerState && this.player.getPlayerState() > 0) return;
+          
+          if (this.player && this.player.destroy) {
+            try { this.player.destroy(); } catch (e) {}
+          }
+          
+          this.player = null;
+          this.currentVideoId = prog.id;
+          
+          // Clear any interstitial cached index so that standby picks fresh
+          this.currentInterstitialIndex = null;
+          
+          mount.innerHTML = '<div id="yt-player" class="h-full w-full"></div>';
+          
+          const self = this;
+          this.player = new YT.Player('yt-player', {
+            height: '100%',
+            width: '100%',
+            videoId: prog.id,
+            playerVars: {
+              autoplay: 1,
+              mute: 1,
+              controls: 0,
+              disablekb: 1,
+              modestbranding: 1,
+              rel: 0,
+              start: Math.floor(offset)
+            },
+            events: {
+              onReady: (e) => {
+                if (self.isMuted) {
+                  e.target.mute();
+                } else {
+                  e.target.unMute();
+                  e.target.setVolume(self.currentVolume);
+                }
+              },
+              onError: (e) => {
+                console.error("YouTube Player API Error:", e);
+              }
+            }
+          });
+
+          // Render dynamic related links in footer panel
+          const linksEl = document.getElementById('related-links');
+          if (linksEl) {
+            if (prog.related && prog.related.length > 0) {
+              linksEl.innerHTML = prog.related.map(link => `
+                <a href="${link.slug}" target="_blank" class="px-3 py-1.5 rounded-lg text-xs font-semibold border border-zinc-800 bg-zinc-900 text-zinc-100 hover:border-purple-500 hover:text-purple-300 transition duration-150">
+                  ${link.name}
+                </a>
+              `).join('');
+            } else {
+              linksEl.innerHTML = '<span class="text-xs text-zinc-500 uppercase italic">No related vault notes detected.</span>';
+            }
+          }
+        },
+
+        mountStandby: function(interstitials) {
+          const mount = document.getElementById('player-mount');
+          if (!mount || !interstitials || interstitials.length === 0) return;
+          
+          if (this.currentInterstitialIndex === null) {
+            this.currentInterstitialIndex = Math.floor(Math.random() * interstitials.length);
+          }
+          
+          const intUrl = interstitials[this.currentInterstitialIndex];
+          const existing = mount.querySelector('video');
+          if (existing && existing.getAttribute('src') === intUrl) return;
+          
+          if (this.player && this.player.destroy) {
+            try { this.player.destroy(); } catch (e) {}
+            this.player = null;
+            this.currentVideoId = null;
+          }
+          
+          mount.innerHTML = `
+            <video src="${intUrl}" autoplay muted loop style="width:100%; height:100%; object-fit:cover; background:black;"></video>
+          `;
+          
+          // Clear dynamic related links in footer panel
+          const linksEl = document.getElementById('related-links');
+          if (linksEl) {
+            linksEl.innerHTML = '<span class="text-xs text-zinc-500 uppercase italic">TRANSMITTING CYBERNATI SIGNAL INTERSTITIAL...</span>';
+          }
+        }
+      };
+
+      // Load YouTube IFrame API if not already present
+      if (!window.YT) {
+        const tag = document.createElement('script');
+        tag.src = "https://www.youtube.com/iframe_api";
+        document.head.appendChild(tag);
+      }
+      
+      const checkReady = setInterval(() => {
+        if (window.YT && window.YT.Player && document.getElementById('player-mount')) {
+          clearInterval(checkReady);
+          window.CyberPlayer.init();
+        }
+      }, 500);
+    })();
+  </script>
+</body>
+</html>

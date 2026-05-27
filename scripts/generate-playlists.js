@@ -253,7 +253,7 @@ async function run() {
       // Safe fallback if target note is missing
       return {
         name: alias || target,
-        slug: `/posts/${slugify(target)}/`
+        slug: `/posts/${target}/`
       };
     }
 
@@ -261,7 +261,26 @@ async function run() {
     const mediaFiles = await getMarkdownFiles(mediaDir);
     const mediaItems = [];
 
-    for (const file of mediaFiles) {
+    for (let file of mediaFiles) {
+      const fileBasename = path.basename(file, path.extname(file));
+      const expectedSlug = slugify(fileBasename);
+
+      // AUTOMATED DISK RENAMING: If the filename contains spaces or un-slugified characters,
+      // physically rename the file on disk to maintain a pristine, standardized vault!
+      if (fileBasename !== expectedSlug) {
+        const dir = path.dirname(file);
+        const ext = path.extname(file);
+        const newPath = path.join(dir, `${expectedSlug}${ext}`);
+        
+        console.log(`✏️  Auto-slugifying media filename: "${fileBasename}" -> "${expectedSlug}"`);
+        try {
+          await fs.rename(file, newPath);
+          file = newPath; // Update reference to read from the new path
+        } catch (e) {
+          console.error(`⚠️  Failed to rename file "${file}" to "${newPath}":`, e.message);
+        }
+      }
+
       const content = await fs.readFile(file, 'utf-8');
       const fm = parseFrontmatter(content);
       if (!fm || fm.draft) continue;
@@ -279,7 +298,6 @@ async function run() {
         continue;
       }
 
-      const fileBasename = path.basename(file, path.extname(file));
       const relativeToMedia = path.relative(mediaDir, file);
       const relativeParts = relativeToMedia.split(path.sep);
 

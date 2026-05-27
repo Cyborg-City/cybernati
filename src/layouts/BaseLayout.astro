@@ -1452,14 +1452,23 @@ const scrollbarClass = siteConfig.hideScrollBar ? '' : 'show-scrollbars';
             try {
               const url = new URL(iframe.src);
               if (url.pathname.includes(`/player/${mediaType}/${playlist}`)) {
-                const container = iframe.closest('.cyber-player-embed-container');
-                if (container) {
-                  // Toggle state
-                  if (container.classList.contains('floating-pip-iframe-container')) {
-                    exitPipMode(container);
-                  } else {
-                    enterPipMode(container);
-                  }
+                let container = iframe.closest('.cyber-player-embed-container');
+                if (!container) {
+                  // WHY: If the iframe is embedded directly as a naked raw HTML element in Obsidian / Markdown,
+                  // we dynamically wrap it in a container div so we can securely handle the floating bar, drag cover, and resizing rules.
+                  container = document.createElement('div');
+                  container.className = 'cyber-player-embed-container';
+                  
+                  // Wrap the iframe
+                  iframe.parentNode.insertBefore(container, iframe);
+                  container.appendChild(iframe);
+                }
+
+                // Toggle state
+                if (container.classList.contains('floating-pip-iframe-container')) {
+                  exitPipMode(container);
+                } else {
+                  enterPipMode(container);
                 }
               }
             } catch (e) {}

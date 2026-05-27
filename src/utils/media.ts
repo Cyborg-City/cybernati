@@ -112,10 +112,10 @@ export function shouldShowCustomPip(params: {
   currentOrigin: string;
 }): boolean {
   // WHY: If the player is loaded directly in a browser tab (not inside an iframe),
-  // there is no parent site context. The custom floating miniplayer will have nothing
-  // to float "above" while browsing, so we hide the PiP control.
+  // we still want the PiP button to be visible so the user can use native browser PiP
+  // or trigger the custom in-page floating player.
   if (!params.isEmbedded) {
-    return false;
+    return true;
   }
 
   // WHY: If the parent origin is inaccessible or null, it means we are either sandboxed

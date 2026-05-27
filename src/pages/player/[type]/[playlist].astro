@@ -439,11 +439,11 @@ const pageDescription = `Tune into the 24/7 client-synchronized Cybernati broadc
           const pipBtn = document.getElementById('pip-btn');
           if (pipBtn) {
             // WHY (SOLID/Beyonce Rule): The custom PiP miniplayer relies on Swup page-navigation interceptors
-            // and parent DOM reparenting. This is only possible if:
-            // 1. The player is embedded in an iframe (isEmbedded = true).
-            // 2. The parent page is on the exact same origin (same protocol, domain, port).
-            // If these conditions aren't met (e.g. loaded directly in a tab or on a third-party domain),
-            // we hide the custom PiP button to prevent security errors and broken UI states.
+            // and parent DOM reparenting. This is only possible if the parent page is on the exact same origin.
+            // If we are embedded inside a third-party (cross-origin) iframe, accessing parent properties throws
+            // a security error and DOM swapping is blocked. In this case, we hide the button entirely.
+            // If loaded directly in a tab (not embedded), we keep the button visible so they can use native PiP
+            // or in-page floating modes.
             const isEmbedded = window.self !== window.top;
             let isSameOrigin = false;
             try {
@@ -452,7 +452,8 @@ const pageDescription = `Tune into the 24/7 client-synchronized Cybernati broadc
               // Accessing parent location from a third-party iframe throws a security DOMException
             }
 
-            if (!isSameOrigin) {
+            const isCrossOriginEmbed = isEmbedded && !isSameOrigin;
+            if (isCrossOriginEmbed) {
               pipBtn.style.display = 'none';
             }
 

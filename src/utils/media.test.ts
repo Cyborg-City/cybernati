@@ -106,15 +106,15 @@ describe('Media Utility - ISO 8601 Duration Parsing', () => {
 });
 
 describe('Media Utility - Custom Picture-in-Picture Visibility Check (shouldShowCustomPip)', () => {
-  it('should return false when the player is not embedded in an iframe (loaded directly in a tab)', () => {
-    // WHY: If the player is the top-level page, there is no parent site context to navigate while watching.
-    // Therefore, the PiP button should be completely hidden.
+  it('should return true when the player is not embedded in an iframe (loaded directly in a tab on our site)', () => {
+    // WHY: If the player is loaded directly, we still want the PiP button to be visible so the user
+    // can trigger the custom in-page floating player or native browser PiP modes.
     const result = shouldShowCustomPip({
       isEmbedded: false,
       parentOrigin: 'http://localhost:5000',
       currentOrigin: 'http://localhost:5000'
     });
-    expect(result).toBe(false);
+    expect(result).toBe(true);
   });
 
   it('should return false when the parent window origin is inaccessible or null (cross-origin / sandboxed)', () => {

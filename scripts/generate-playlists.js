@@ -314,13 +314,13 @@ async function run() {
       const source = fm.source || '';
       const ytId = extractYouTubeId(source);
       if (!ytId) {
-        // Skip files that don't have a valid YouTube source
+        console.warn(`⚠️  [Skip] Media file lacks a valid YouTube source URL: "${fileBasename}.md"`);
         continue;
       }
 
       const durationSec = parseISODuration(fm.duration);
       if (durationSec <= 0) {
-        // Skip if duration is invalid or 0
+        console.warn(`⚠️  [Skip] Media file is missing a valid duration: "${fileBasename}.md" (Add 'duration: seconds' to frontmatter)`);
         continue;
       }
 

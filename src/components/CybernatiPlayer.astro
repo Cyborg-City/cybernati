@@ -578,13 +578,13 @@ const base = getBaseUrl();
       setupUI: function() {
         const self = this;
         const storedVolume = localStorage.getItem('cyber-player-volume');
-        const storedMuted = localStorage.getItem('cyber-player-muted');
 
         if (storedVolume !== null) {
           self.currentVolume = parseInt(storedVolume, 10);
         }
         
-        self.isMuted = storedMuted === 'true';
+        // ALWAYS start muted on reload/refresh as requested by the user
+        self.isMuted = true;
 
         // WHY: Intercept clicks on the Cybernati logo to smoothly navigate via Swup on the live website (which preserves playing audio), while allowing normal target="_top" navigation when embedded inside an iframe (like in Obsidian).
         const logoLink = document.querySelector('#global-cyber-player .cyber-header a');
@@ -704,8 +704,8 @@ const base = getBaseUrl();
           
           if (e && e.target && e.target.closest('button, input')) return;
 
-          const previouslyMuted = localStorage.getItem('cyber-player-muted') === 'true';
-          updateVolumeState(previouslyMuted, self.currentVolume || 25, true);
+          // Always start muted on reload/refresh interaction
+          updateVolumeState(true, self.currentVolume || 25, true);
         };
         window.addEventListener('click', handleInteraction, { once: true });
 
@@ -1082,6 +1082,9 @@ const base = getBaseUrl();
             }
           }
         });
+        
+        // Synchronize initial muted UI volume elements immediately on page load
+        syncVolumeDOM();
       },
 
       // WHY: The core feature of Cybernati is that all users visiting a playlist are watching the exact same video at the exact same timestamp.

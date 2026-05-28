@@ -106,18 +106,32 @@ const base = getBaseUrl();
       </div>
     </div>
 
+    <!-- Collapsible Queue Panel overlay -->
+    <div id="queue-panel" class="absolute bottom-[92px] left-4 right-4 z-50 rounded-2xl glass-panel shadow-2xl max-h-0 overflow-hidden transition-all duration-300 ease-in-out opacity-0">
+      <div class="p-4 flex flex-col gap-3">
+        <div class="flex items-center justify-between border-b border-zinc-800 pb-2">
+          <span class="text-[10px] font-bold uppercase tracking-widest text-zinc-400" style="font-family: var(--font-mono)">Broadcast Schedule / Queue</span>
+          <button id="close-queue-btn" class="flex items-center justify-center rounded p-1 text-zinc-400 hover:bg-zinc-800 hover:text-white" aria-label="Close schedule panel">
+            <span class="material-symbols-outlined text-sm">close</span>
+          </button>
+        </div>
+        <div id="queue-links" class="flex flex-col gap-2 max-h-[160px] overflow-y-auto custom-scroll pr-1">
+          <span class="text-xs text-zinc-500 uppercase italic">Loading schedule...</span>
+        </div>
+      </div>
+    </div>
+
     <!-- Interactive Bottom Controls Bar -->
     <div class="cyber-footer glass-panel mt-2 flex flex-col flex-shrink-0 gap-2.5 rounded-lg p-2.5 shadow-md box-border">
-      <!-- Row 1: Next Title -->
-      <div class="flex items-center gap-2 overflow-hidden w-full pb-1">
-        <span class="text-[10px] font-bold uppercase tracking-widest text-zinc-500" style="font-family: var(--font-mono)">Next:</span>
-        <span id="next-title" class="truncate text-xs font-semibold text-zinc-300 max-w-[80%]" style="font-family: var(--font-mono)">STANDBY</span>
-      </div>
-
       <!-- Row 2: Controls Group -->
       <div class="flex flex-row items-center justify-between w-full gap-3">
-        <!-- Left Controls: Vault Notes and Desync -->
+        <!-- Left Controls: Up Next, Vault Notes, Desync -->
         <div class="flex items-center gap-2">
+          <button id="queue-trigger-btn" class="cyber-btn flex items-center gap-1.5 rounded-lg border border-zinc-800 bg-zinc-900/60 px-3 py-1.5 text-xs font-medium text-zinc-300 hover:border-purple-500 hover:bg-purple-950/20 hover:text-purple-300" aria-label="Open broadcast queue schedule">
+            <span class="material-symbols-outlined text-sm">queue_music</span>
+            <span>Up Next</span>
+          </button>
+
           <button id="notes-trigger-btn" class="cyber-btn flex items-center gap-1.5 rounded-lg border border-zinc-800 bg-zinc-900/60 px-3 py-1.5 text-xs font-medium text-zinc-300 hover:border-purple-500 hover:bg-purple-950/20 hover:text-purple-300" aria-label="Open related Obsidian notes">
             <span class="material-symbols-outlined text-sm">menu_book</span>
             <span>Vault Notes</span>
@@ -129,7 +143,7 @@ const base = getBaseUrl();
           </button>
         </div>
 
-        <!-- Right Controls: Mute, Volume, PiP, Fullscreen -->
+        <!-- Right Controls: Mute, Volume, Share, PiP, Fullscreen -->
         <div class="flex items-center gap-2">
           <!-- Volume Group -->
           <div class="flex items-center gap-1">
@@ -241,7 +255,8 @@ const base = getBaseUrl();
   #global-cyber-player.is-pip .cyber-header,
   #global-cyber-player.is-pip .cyber-footer,
   #global-cyber-player.is-pip #related-notes-panel,
-  #global-cyber-player.is-pip #share-panel {
+  #global-cyber-player.is-pip #share-panel,
+  #global-cyber-player.is-pip #queue-panel {
     display: none !important;
   }
   #global-cyber-player.is-pip #player-root {
@@ -515,9 +530,43 @@ const base = getBaseUrl();
           this.playlistData = await response.json();
           
           this.startLoop();
+          this.renderQueue();
         } catch (e) {
           console.error("Player initialization failure:", e);
         }
+      },
+
+      // WHY: Dynamically renders the list of upcoming tracks in the current schedule/playlist.
+      // It highlights the currently playing track with a purple background/border and a pulsing active indicator.
+      renderQueue: function() {
+        const queueEl = document.getElementById('queue-links');
+        if (!queueEl || !this.playlistData || !this.playlistData.schedule) return;
+        
+        const schedule = this.playlistData.schedule;
+        const now = Math.floor(Date.now() / 1000);
+        const pos = now % this.playlistData.totalLoopDuration;
+        
+        queueEl.innerHTML = schedule.map((p, index) => {
+          const isActive = pos >= p.start && pos < p.end;
+          const formatTime = (secs) => {
+            const m = Math.floor(secs / 60);
+            const s = Math.floor(secs % 60);
+            return `${m}:${s < 10 ? '0' : ''}${s}`;
+          };
+          
+          return `
+            <div class="flex items-center justify-between w-full p-2.5 rounded-lg border ${isActive ? 'border-purple-500 bg-purple-950/20 text-purple-300 font-bold' : 'border-zinc-800 bg-zinc-900/40 text-zinc-300'} transition-all" style="box-sizing: border-box !important;">
+              <div class="flex items-center gap-2.5 overflow-hidden">
+                <span class="text-[10px] ${isActive ? 'text-purple-400 font-bold' : 'text-zinc-500'} font-mono">${index + 1}</span>
+                <span class="text-xs truncate max-w-[160px] sm:max-w-[280px]">${p.title.toUpperCase()}</span>
+              </div>
+              <div class="flex items-center gap-2 flex-shrink-0">
+                <span class="text-[10px] text-zinc-500 font-mono">${formatTime(p.duration)}</span>
+                ${isActive ? '<span class="flex h-2 w-2 relative"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-purple-500"></span></span>' : ''}
+              </div>
+            </div>
+          `;
+        }).join('');
       },
 
       destroy: function() {
@@ -821,21 +870,41 @@ const base = getBaseUrl();
         const sharePanel = document.getElementById('share-panel');
         const shareLinkInput = document.getElementById('share-link-input');
         const shareEmbedInput = document.getElementById('share-embed-input');
+        const queueTrigger = document.getElementById('queue-trigger-btn');
+        const closeQueue = document.getElementById('close-queue-btn');
+        const queuePanel = document.getElementById('queue-panel');
+
+        const closeAllPanels = () => {
+          if (notesPanel) {
+            notesPanel.classList.add('max-h-0');
+            notesPanel.classList.remove('max-h-[300px]');
+            notesPanel.classList.add('opacity-0');
+            notesPanel.classList.remove('opacity-100');
+          }
+          if (sharePanel) {
+            sharePanel.classList.add('max-h-0');
+            sharePanel.classList.remove('max-h-[300px]');
+            sharePanel.classList.add('opacity-0');
+            sharePanel.classList.remove('opacity-100');
+          }
+          if (queuePanel) {
+            queuePanel.classList.add('max-h-0');
+            queuePanel.classList.remove('max-h-[300px]');
+            queuePanel.classList.add('opacity-0');
+            queuePanel.classList.remove('opacity-100');
+          }
+        };
 
         if (notesTrigger && notesPanel) {
           notesTrigger.onclick = () => {
-            // Close share panel if open to prevent overlap
-            if (sharePanel) {
-              sharePanel.classList.add('max-h-0');
-              sharePanel.classList.remove('max-h-[300px]');
-              sharePanel.classList.add('opacity-0');
-              sharePanel.classList.remove('opacity-100');
+            const isOpen = notesPanel.classList.contains('opacity-100');
+            closeAllPanels();
+            if (!isOpen) {
+              notesPanel.classList.remove('max-h-0');
+              notesPanel.classList.add('max-h-[300px]');
+              notesPanel.classList.remove('opacity-0');
+              notesPanel.classList.add('opacity-100');
             }
-
-            notesPanel.classList.toggle('max-h-0');
-            notesPanel.classList.toggle('max-h-[300px]');
-            notesPanel.classList.toggle('opacity-0');
-            notesPanel.classList.toggle('opacity-100');
           };
         }
         if (closeNotes && notesPanel) {
@@ -849,20 +918,14 @@ const base = getBaseUrl();
 
         if (shareTrigger && sharePanel) {
           shareTrigger.onclick = () => {
-            // Close notes panel if open to prevent overlap
-            if (notesPanel) {
-              notesPanel.classList.add('max-h-0');
-              notesPanel.classList.remove('max-h-[300px]');
-              notesPanel.classList.add('opacity-0');
-              notesPanel.classList.remove('opacity-100');
-            }
+            const isOpen = sharePanel.classList.contains('opacity-100');
+            closeAllPanels();
+            if (!isOpen) {
+              sharePanel.classList.remove('max-h-0');
+              sharePanel.classList.add('max-h-[300px]');
+              sharePanel.classList.remove('opacity-0');
+              sharePanel.classList.add('opacity-100');
 
-            sharePanel.classList.toggle('max-h-0');
-            sharePanel.classList.toggle('max-h-[300px]');
-            sharePanel.classList.toggle('opacity-0');
-            sharePanel.classList.toggle('opacity-100');
-
-            if (sharePanel.classList.contains('opacity-100')) {
               // Dynamically generate share link and embed code
               const cleanBase = base.endsWith('/') ? base : base + '/';
               const embedUrl = `${window.location.origin}${cleanBase}player/${self.currentType || 'video'}/${self.currentPlaylist || 'channel-000'}`;
@@ -884,6 +947,30 @@ const base = getBaseUrl();
             sharePanel.classList.remove('max-h-[300px]');
             sharePanel.classList.add('opacity-0');
             sharePanel.classList.remove('opacity-100');
+          };
+        }
+
+        if (queueTrigger && queuePanel) {
+          queueTrigger.onclick = () => {
+            const isOpen = queuePanel.classList.contains('opacity-100');
+            closeAllPanels();
+            if (!isOpen) {
+              queuePanel.classList.remove('max-h-0');
+              queuePanel.classList.add('max-h-[300px]');
+              queuePanel.classList.remove('opacity-0');
+              queuePanel.classList.add('opacity-100');
+              
+              self.renderQueue();
+            }
+          };
+        }
+
+        if (closeQueue && queuePanel) {
+          closeQueue.onclick = () => {
+            queuePanel.classList.add('max-h-0');
+            queuePanel.classList.remove('max-h-[300px]');
+            queuePanel.classList.add('opacity-0');
+            queuePanel.classList.remove('opacity-100');
           };
         }
 
@@ -1005,7 +1092,10 @@ const base = getBaseUrl();
             if (titleEl) titleEl.innerHTML = active.title.toUpperCase();
             if (nextEl) nextEl.innerHTML = schedule[nextIndex].title.toUpperCase();
             
-            if (self.currentVideoId !== active.id) self.mountVideo(active, offset);
+            if (self.currentVideoId !== active.id) {
+              self.mountVideo(active, offset);
+              self.renderQueue();
+            }
             else if (self.player && self.player.getCurrentTime) {
               const drift = Math.abs(self.player.getCurrentTime() - offset);
               if (drift > 3) self.player.seekTo(offset, true);
@@ -1037,6 +1127,7 @@ const base = getBaseUrl();
           const startAt = prog.duration > 300 ? Math.floor(Math.random() * (prog.duration - playWindow)) : 0;
           
           self.mountVideo(prog, startAt);
+          self.renderQueue();
           let remaining = playWindow;
           
           if (self.desyncTimer) clearInterval(self.desyncTimer);

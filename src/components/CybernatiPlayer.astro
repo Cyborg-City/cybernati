@@ -1,38 +1,1155 @@
 ---
-/**
- * Cybernati Player Embed Component
- * 
- * Renders an iframe pointing to the standalone, dynamic Cybernati Player.
- * Easily embeddable inside any MDX article, page, or homepage layout.
- */
-import { resolveUrl } from '@/utils/url-helpers';
-
-export interface Props {
-  type?: 'video' | 'audio';
-  playlist?: string;
-  height?: string;
-  width?: string;
-}
-
-const {
-  type = 'video',
-  playlist = 'channel-000',
-  height = '500px',
-  width = '100%'
-} = Astro.props;
-
-const playerUrl = resolveUrl(`/player/${type}/${playlist}`);
+import { getBaseUrl } from '@/utils/url-helpers';
+const base = getBaseUrl();
 ---
 
-<div class="cyber-player-embed-container w-full my-6 rounded-2xl overflow-hidden border border-zinc-900/60 shadow-2xl">
-  <iframe
-    src={playerUrl}
-    width={width}
-    height={height}
-    frameborder="0"
-    allow="autoplay; fullscreen; picture-in-picture"
-    title={`Cybernati Player - ${playlist}`}
-    class="block w-full border-0 bg-black"
-  >
-  </iframe>
+<div id="global-cyber-player" class="is-hidden not-prose">
+  
+  <div id="player-root" class="relative flex h-full w-full flex-col p-2.5 box-sizing-border-box">
+    
+    <!-- Top Header: Dynamic playing title & Cybernati branding -->
+    <div class="cyber-header glass-panel mb-2 flex flex-shrink-0 items-center justify-between rounded-lg px-2.5 py-1 shadow-md">
+      <div class="flex items-center">
+        <div id="video-title" class="text-xs font-bold tracking-wider text-zinc-400 uppercase truncate max-w-[280px] sm:max-w-[420px] m-0 p-0 leading-none" style="font-family: var(--font-courier-prime)">
+          SCANNING FOR SIGNAL...
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <a href={base} target="_top" class="text-xs font-bold tracking-widest text-purple-400 hover:text-purple-300 transition-colors m-0 p-0 leading-none" style="font-family: 'Special Elite', cursive;">CYBERNATI™</a>
+      </div>
+    </div>
+
+    <!-- Main Viewport: The YouTube Video player -->
+    <div id="player-viewport" class="cyber-main relative flex-grow min-h-0 rounded-2xl border border-zinc-900 bg-black overflow-hidden shadow-2xl">
+      <div id="player-mount" class="h-full w-full">
+        <!-- Standby Signal message during initialization -->
+        <div id="terminal-status-msg" class="flex h-full w-full flex-col items-center justify-center gap-3 bg-zinc-950 text-center">
+          <span class="material-symbols-outlined text-4xl animate-spin text-purple-400">sync</span>
+          <span class="text-xs uppercase tracking-widest text-zinc-400" style="font-family: var(--font-mono)">Aligning Remote Feed Nodes...</span>
+        </div>
+      </div>
+
+      <!-- Transparent overlay to intercept user clicks. -->
+      <div id="player-click-overlay" class="absolute inset-0 z-20 cursor-pointer"></div>
+
+      <!-- Sync Progress Bar -->
+      <div id="progress-container" class="absolute bottom-0 left-0 w-full h-1 bg-zinc-950/80 z-20" aria-label="Media play progress">
+        <div id="sync-progress" class="progress-bar-fill h-full w-0"></div>
+      </div>
+
+      <!-- PiP Hover Controls Overlay -->
+      <div id="pip-controls-overlay" class="absolute bottom-3 left-3 z-30 flex items-center justify-center rounded-lg border border-zinc-800 bg-zinc-950/90 backdrop-blur-md px-2.5 py-1.5 opacity-0 pointer-events-none transition-all duration-300 shadow-xl border border-white/5 w-auto">
+        <div class="flex items-center gap-1.5">
+          <button id="pip-mute-toggle" class="flex items-center justify-center rounded p-1 text-zinc-400 hover:bg-zinc-800 hover:text-purple-400" aria-label="Toggle mute state">
+            <span id="pip-volume-icon-symbol" class="material-symbols-outlined text-base">volume_off</span>
+          </button>
+          <input type="range" id="pip-volume-control" class="h-1 w-14 cursor-pointer accent-purple-400 bg-zinc-800 rounded-lg appearance-none" min="0" max="100" value="0" aria-label="Volume Slider" />
+        </div>
+        
+        <!-- PiP Exit Button -->
+        <button id="pip-exit-btn" class="ml-2 flex items-center justify-center rounded p-1 text-zinc-400 hover:bg-zinc-800 hover:text-red-400 transition-colors" title="Close Player" aria-label="Close Player">
+          <span class="material-symbols-outlined text-base">close</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Collapsible Related Notes overlay -->
+    <div id="related-notes-panel" class="absolute bottom-[92px] left-4 right-4 z-50 rounded-2xl glass-panel shadow-2xl max-h-0 overflow-hidden transition-all duration-300 ease-in-out opacity-0">
+      <div class="p-4 flex flex-col gap-3">
+        <div class="flex items-center justify-between border-b border-zinc-800 pb-2">
+          <span class="text-[10px] font-bold uppercase tracking-widest text-zinc-400" style="font-family: var(--font-mono)">Related Notes</span>
+          <button id="close-notes-btn" class="flex items-center justify-center rounded p-1 text-zinc-400 hover:bg-zinc-800 hover:text-white" aria-label="Close notes panel">
+            <span class="material-symbols-outlined text-sm">close</span>
+          </button>
+        </div>
+        <div id="related-links" class="flex flex-wrap gap-2 max-h-[160px] overflow-y-auto custom-scroll pr-1 text-zinc-300">
+          <span class="text-xs text-zinc-500 uppercase italic">No related vault notes detected.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Collapsible Share Panel overlay -->
+    <div id="share-panel" class="absolute bottom-[92px] left-4 right-4 z-50 rounded-2xl glass-panel shadow-2xl max-h-0 overflow-hidden transition-all duration-300 ease-in-out opacity-0">
+      <div class="p-4 flex flex-col gap-3">
+        <div class="flex items-center justify-between border-b border-zinc-800 pb-2">
+          <span class="text-[10px] font-bold uppercase tracking-widest text-zinc-400" style="font-family: var(--font-mono)">Share Cybernati Feed</span>
+          <button id="close-share-btn" class="flex items-center justify-center rounded p-1 text-zinc-400 hover:bg-zinc-800 hover:text-white" aria-label="Close share panel">
+            <span class="material-symbols-outlined text-sm">close</span>
+          </button>
+        </div>
+        
+        <div class="flex flex-col gap-3 mt-1">
+          <!-- Share Link -->
+          <div class="flex flex-col gap-1">
+            <label class="text-[9px] uppercase tracking-wider text-zinc-500 font-bold" style="font-family: var(--font-mono)">Direct Link</label>
+            <div class="flex items-center gap-2 rounded-lg bg-zinc-950/60 border border-zinc-800 p-1 pl-2.5">
+              <input type="text" id="share-link-input" readonly class="bg-transparent text-xs text-zinc-300 w-full outline-none select-all" />
+              <button id="copy-link-btn" class="cyber-btn flex items-center gap-1 px-3 py-1.5 rounded-md bg-zinc-900 border border-zinc-850 hover:border-purple-500 hover:bg-purple-950/20 hover:text-purple-300 text-xs text-zinc-400 transition-colors" style="background-color: rgba(24, 24, 27, 0.9) !important; border: 1px solid rgba(63, 63, 70, 0.8) !important;">
+                <span class="material-symbols-outlined text-xs">content_copy</span>
+                <span id="copy-link-text">Copy</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Embed Code -->
+          <div class="flex flex-col gap-1">
+            <label class="text-[9px] uppercase tracking-wider text-zinc-500 font-bold" style="font-family: var(--font-mono)">Embed Player Frame</label>
+            <div class="flex items-center gap-2 rounded-lg bg-zinc-950/60 border border-zinc-800 p-1 pl-2.5">
+              <input type="text" id="share-embed-input" readonly class="bg-transparent text-xs text-zinc-300 w-full outline-none select-all" />
+              <button id="copy-embed-btn" class="cyber-btn flex items-center gap-1 px-3 py-1.5 rounded-md bg-zinc-900 border border-zinc-850 hover:border-purple-500 hover:bg-purple-950/20 hover:text-purple-300 text-xs text-zinc-400 transition-colors" style="background-color: rgba(24, 24, 27, 0.9) !important; border: 1px solid rgba(63, 63, 70, 0.8) !important;">
+                <span class="material-symbols-outlined text-xs">code</span>
+                <span id="copy-embed-text">Copy</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Interactive Bottom Controls Bar -->
+    <div class="cyber-footer glass-panel mt-2 flex flex-col flex-shrink-0 gap-2.5 rounded-lg p-2.5 shadow-md box-border">
+      <!-- Row 1: Next Title -->
+      <div class="flex items-center gap-2 overflow-hidden w-full pb-1">
+        <span class="text-[10px] font-bold uppercase tracking-widest text-zinc-500" style="font-family: var(--font-mono)">Next:</span>
+        <span id="next-title" class="truncate text-xs font-semibold text-zinc-300 max-w-[80%]" style="font-family: var(--font-mono)">STANDBY</span>
+      </div>
+
+      <!-- Row 2: Controls Group -->
+      <div class="flex flex-row items-center justify-between w-full gap-3">
+        <!-- Left Controls: Vault Notes and Desync -->
+        <div class="flex items-center gap-2">
+          <button id="notes-trigger-btn" class="cyber-btn flex items-center gap-1.5 rounded-lg border border-zinc-800 bg-zinc-900/60 px-3 py-1.5 text-xs font-medium text-zinc-300 hover:border-purple-500 hover:bg-purple-950/20 hover:text-purple-300" aria-label="Open related Obsidian notes">
+            <span class="material-symbols-outlined text-sm">menu_book</span>
+            <span>Vault Notes</span>
+          </button>
+
+          <button id="desync-btn" class="cyber-btn flex items-center gap-1.5 rounded-lg border border-zinc-800 bg-zinc-900/60 px-3 py-1.5 text-xs font-medium text-zinc-300 hover:border-red-500 hover:bg-red-950/20 hover:text-red-300" aria-label="Switch between broadcast and on-demand mode">
+            <span class="material-symbols-outlined text-sm">podcasts</span>
+            <span id="desync-text">Desync</span>
+          </button>
+        </div>
+
+        <!-- Right Controls: Mute, Volume, PiP, Fullscreen -->
+        <div class="flex items-center gap-2">
+          <!-- Volume Group -->
+          <div class="flex items-center gap-1">
+            <button id="mute-toggle" class="flex items-center justify-center rounded-lg p-2 text-zinc-400 hover:bg-zinc-800 hover:text-purple-400" aria-label="Toggle mute state" aria-checked="true">
+              <span id="volume-icon-symbol" class="material-symbols-outlined text-lg">volume_off</span>
+            </button>
+            <input type="range" id="volume-control" class="h-1 w-16 cursor-pointer accent-purple-400 bg-zinc-800 rounded-lg appearance-none" min="0" max="100" value="0" aria-label="Volume Slider" />
+          </div>
+
+          <!-- Utility Group (Share, PiP, Fullscreen) -->
+          <div class="flex items-center gap-1">
+            <button id="share-trigger-btn" class="flex items-center justify-center rounded-lg p-2 text-zinc-400 hover:bg-zinc-800 hover:text-purple-400" title="Share Feed" aria-label="Share Cybernati Feed">
+              <span class="material-symbols-outlined text-lg">share</span>
+            </button>
+
+            <button id="pip-btn" class="flex items-center justify-center rounded-lg p-2 text-zinc-400 hover:bg-zinc-800 hover:text-purple-400" title="Picture in Picture" aria-label="Enable Picture-in-Picture">
+              <span class="material-symbols-outlined text-lg">picture_in_picture_alt</span>
+            </button>
+
+            <button id="fullscreen-toggle" class="flex items-center justify-center rounded-lg p-2 text-zinc-400 hover:bg-zinc-800 hover:text-purple-400" title="Fullscreen" aria-label="Toggle full screen">
+              <span class="material-symbols-outlined text-lg">fullscreen</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
+
+<style is:global>
+  /* Prevent flash of old player style on the live site before JS hijacks the iframe */
+  iframe[src*="/player/"] {
+    display: none !important;
+  }
+
+  /* Scoped CSS resets to isolate the player completely from parent theme styles */
+  #global-cyber-player button {
+    all: unset;
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+
+  /* Specific styling for standard buttons (Vault Notes, Desync) to override parent/prose themes */
+  #global-cyber-player button.cyber-btn {
+    background-color: rgba(24, 24, 27, 0.75) !important;
+    border: 1px solid rgba(63, 63, 70, 0.6) !important;
+    border-radius: 0.5rem !important;
+    padding: 0.375rem 0.75rem !important;
+    font-size: 0.75rem !important;
+    font-weight: 500 !important;
+    color: #e4e4e7 !important;
+    font-family: var(--font-outfit), sans-serif !important;
+    transition: all 0.15s ease !important;
+  }
+  #global-cyber-player button.cyber-btn:hover {
+    background-color: rgba(88, 28, 135, 0.25) !important;
+    border-color: #a855f7 !important;
+    color: #f3e8ff !important;
+  }
+  #global-cyber-player button.cyber-btn.is-active {
+    background-color: rgba(88, 28, 135, 0.2) !important;
+    border-color: #a855f7 !important;
+    color: #d8b4fe !important;
+  }
+
+  /* Global Player Styles */
+  #global-cyber-player {
+    transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+    background-color: #030303;
+    font-family: var(--font-outfit);
+    color: #e4e4e7;
+  }
+  
+  #global-cyber-player.is-slotted {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+    display: flex;
+    border-radius: 1rem;
+    overflow: hidden;
+  }
+  
+  #global-cyber-player.is-pip {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 320px;
+    height: 180px;
+    z-index: 9999;
+    display: flex;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+    border-radius: 8px;
+    overflow: hidden;
+    border: 2px solid var(--cyber-primary);
+    cursor: move;
+  }
+  
+  #global-cyber-player.is-hidden {
+    display: none !important;
+  }
+
+  /* PiP overrides */
+  #global-cyber-player.is-pip .cyber-header,
+  #global-cyber-player.is-pip .cyber-footer,
+  #global-cyber-player.is-pip #related-notes-panel,
+  #global-cyber-player.is-pip #share-panel {
+    display: none !important;
+  }
+  #global-cyber-player.is-pip #player-root {
+    padding: 0 !important;
+  }
+  #global-cyber-player.is-pip #player-viewport {
+    border: none !important;
+    border-radius: 0 !important;
+    height: 100% !important;
+    width: 100% !important;
+  }
+
+  /* Core UI from original player */
+  #global-cyber-player .glass-panel {
+    background: rgba(10, 10, 12, 0.7);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+  }
+  #global-cyber-player .progress-bar-fill {
+    background: linear-gradient(90deg, var(--cyber-primary, #a855f7) 0%, #c084fc 100%) !important;
+    box-shadow: 0 0 12px rgba(168, 85, 247, 0.7) !important;
+    transition: width 1s linear !important;
+  }
+  #global-cyber-player .custom-scroll::-webkit-scrollbar {
+    width: 4px;
+  }
+  #global-cyber-player .custom-scroll::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.2);
+  }
+  #global-cyber-player .custom-scroll::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+  }
+  #global-cyber-player .custom-scroll::-webkit-scrollbar-thumb:hover {
+    background: rgba(var(--cyber-primary-rgb), 0.3);
+  }
+  #global-cyber-player .material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    transition: font-variation-settings 0.1s ease;
+  }
+  #global-cyber-player button:hover .material-symbols-outlined {
+    font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 24;
+  }
+  
+  #global-cyber-player #pip-controls-overlay {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    transform: translateY(5px);
+  }
+  #global-cyber-player.is-pip #pip-controls-overlay.is-visible {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+</style>
+
+<script>
+  import { toLogVolume } from '@/utils/player-math';
+
+  (function() {
+    // Avoid double-initialization
+    if (window.CyberPlayerInit) return;
+    window.CyberPlayerInit = true;
+
+    const base = window.location.pathname.startsWith('/cybernati/') ? '/cybernati/' : '/';
+
+    window.CyberPlayer = {
+      player: null,
+      currentVolume: 25,
+      isMuted: true,
+      isDesynced: false,
+      handshakeEstablished: false,
+      updateTimer: null,
+      desyncTimer: null,
+      currentVideoId: null,
+      playlistData: null,
+      currentInterstitialIndex: null,
+      currentType: null,
+      currentPlaylist: null,
+      isFloating: false,
+
+      // State handling
+      // WHY: Initializes the global player once per session. Sets up Swup listeners and a MutationObserver to automatically move the player in and out of the DOM slot during page transitions without destroying the player instance.
+      initGlobal: function() {
+        this.setupUI();
+        this.checkSlotAndMount();
+
+        // WHY: Set up a MutationObserver to watch the DOM for the dynamic appearance of '#cyber-player-slot' or iframe embeds. This guarantees that if a video page is loaded or transitioned into, the player is hijacked instantly, eliminating any race conditions or timing gaps!
+        const observer = new MutationObserver(() => {
+          this.checkSlotAndMount();
+        });
+        observer.observe(document.body, { childList: true, subtree: true });
+
+        const setupSwupHooks = () => {
+          if (!window.swup) return;
+          
+          // WHY: As soon as a user clicks a link and Swup starts the transition, we must immediately rescue the global player DOM from the container about to be replaced. We move it back to document.body and temporarily transition it to PiP mode so it remains alive and playing!
+          window.swup.hooks.on('visit:start', () => {
+            const globalPlayer = document.getElementById('global-cyber-player');
+            if (globalPlayer && globalPlayer.classList.contains('is-slotted')) {
+              globalPlayer.classList.remove('is-slotted');
+              if (this.currentPlaylist) {
+                globalPlayer.classList.add('is-pip');
+                this.isFloating = true;
+              } else {
+                globalPlayer.classList.add('is-hidden');
+              }
+              document.body.appendChild(globalPlayer);
+            }
+          });
+
+          // WHY: As soon as Swup replaces the DOM contents (before transition animations complete), we immediately run checkSlotAndMount to dismantle and replace the fallback iframe. This completely prevents duplicate background audio from starting!
+          window.swup.hooks.on('content:replace', () => {
+            this.checkSlotAndMount();
+          });
+
+          // WHY: After Swup has completed rendering the new page and replacing the container DOM, we check if the new page contains a designated video player slot (or an iframe to hijack). If it does, we dock the player into the new slot.
+          window.swup.hooks.on('page:view', () => {
+            this.checkSlotAndMount();
+          });
+        };
+
+        // Hook into Swup
+        if (window.swup) {
+          setupSwupHooks();
+        } else {
+          // If swup isn't ready yet, wait for it via DOM event
+          document.addEventListener('swup:enable', setupSwupHooks);
+        }
+
+        // F5 Restore fallback
+        // WHY: If the user manually refreshes the page (F5) while in PiP mode, the DOM is rebuilt. We read localStorage to instantly restore the floating player without requiring them to visit a video page first.
+        const wasPlaying = localStorage.getItem('cyber-player-playing') === 'true';
+        const lastPlaylist = localStorage.getItem('cyber-player-pip-playlist');
+        
+        if (wasPlaying && lastPlaylist && !document.getElementById('cyber-player-slot')) {
+          const parts = lastPlaylist.split('/');
+          if (parts.length >= 2) {
+            this.activate(parts[0], parts[1], true);
+          }
+        }
+      },
+
+      // WHY: Detects if the current page has a designated slot for the player.
+      // It also handles "iframe hijacking" for Obsidian fallbacks. If an author uses a standard markdown iframe to embed the player (which works perfectly in Obsidian), the live site will intercept that iframe, hide it, and snap the Global Player into its place to maintain persistent audio!
+      checkSlotAndMount: function() {
+        let slot = document.getElementById('cyber-player-slot');
+        const globalPlayer = document.getElementById('global-cyber-player');
+        if (!globalPlayer) return;
+
+        // Iframe Hijacking for Obsidian compatibility
+        if (!slot) {
+          const iframes = document.querySelectorAll('iframe');
+          const iframeMatch = Array.from(iframes).find(iframe => {
+            const src = iframe.getAttribute('src') || '';
+            return src.includes('/player/');
+          });
+          
+          if (iframeMatch) {
+            // Create a slot right before the iframe and hide the iframe
+            slot = document.createElement('div');
+            slot.id = 'cyber-player-slot';
+            slot.className = 'w-full my-6 relative bg-zinc-950 rounded-2xl overflow-hidden not-prose';
+            
+            // Extract height from iframe. If no height/width are set (or set to 100%), it automatically fills available space and maintains a perfect 16:9 aspect ratio!
+            const iframeHeight = iframeMatch.getAttribute('height') || iframeMatch.style.height;
+            if (iframeHeight && iframeHeight !== '100%') {
+              if (iframeHeight.endsWith('px')) {
+                slot.style.height = iframeHeight;
+              } else if (!isNaN(Number(iframeHeight))) {
+                slot.style.height = iframeHeight + 'px';
+              } else {
+                slot.style.height = iframeHeight;
+              }
+            } else {
+              // GORGEOUS RESPONSIVE ASPECT RATIO FALLBACK: Fills the available space and maintains 16:9 aspect ratio!
+              slot.classList.add('aspect-video');
+            }
+            
+            // Extract type and playlist from iframe src (e.g. /cybernati/player/video/channel-000)
+            const srcParts = iframeMatch.getAttribute('src').split('/player/');
+            if (srcParts.length > 1) {
+              const metaParts = srcParts[1].replace(/\/$/, '').split('/');
+              if (metaParts.length >= 2) {
+                slot.setAttribute('data-type', metaParts[0]);
+                slot.setAttribute('data-playlist', metaParts[1]);
+              }
+            }
+            
+            iframeMatch.parentNode.insertBefore(slot, iframeMatch);
+            iframeMatch.remove(); // Remove the iframe completely so it does not load or double-play in the background!
+          }
+        }
+
+        if (slot) {
+          // Found a slot on the current page!
+          const type = slot.getAttribute('data-type') || 'video';
+          const playlist = slot.getAttribute('data-playlist') || 'channel-000';
+
+          // If already docked and playlist/type hasn't changed, do nothing!
+          if (globalPlayer.parentNode === slot && this.currentPlaylist === playlist && this.currentType === type) {
+            return;
+          }
+
+          globalPlayer.classList.remove('is-hidden', 'is-pip');
+          globalPlayer.classList.add('is-slotted');
+          
+          // Physically move the player DOM into the slot
+          if (globalPlayer.parentNode !== slot) {
+            slot.appendChild(globalPlayer);
+          }
+          
+          // Ensure it's positioned correctly
+          globalPlayer.style.bottom = 'auto';
+          globalPlayer.style.right = 'auto';
+          
+          this.isFloating = false;
+
+          // If playlist changed, load new data
+          if (this.currentPlaylist !== playlist || this.currentType !== type) {
+            this.activate(type, playlist, false);
+          }
+        } else {
+          // No slot found. If playing, float it.
+          // WHY: This is the core of the seamless transition. If Swup navigates away from the player page, the player detects it is orphaned. Instead of dying, it snaps into PiP mode.
+          if (this.currentPlaylist) {
+            if (globalPlayer.classList.contains('is-pip') && globalPlayer.parentNode === document.body) {
+              return; // Already floating, do nothing!
+            }
+            globalPlayer.classList.remove('is-slotted');
+            globalPlayer.classList.add('is-pip');
+            // Move back to body to ensure it isn't destroyed by Swup
+            document.body.appendChild(globalPlayer);
+            this.isFloating = true;
+          } else {
+            // Not playing, hide it completely.
+            if (globalPlayer.classList.contains('is-hidden')) return;
+            this.destroy();
+          }
+        }
+      },
+
+      // WHY: Fetches the playlist JSON for the requested channel, and boots up the synchronization loop. 
+      // It also ensures the browser state is saved to localStorage so F5 reloads can restore correctly.
+      activate: async function(type, playlist, forcePip) {
+        this.currentType = type;
+        this.currentPlaylist = playlist;
+        
+        localStorage.setItem('cyber-player-pip-playlist', `${type}/${playlist}`);
+
+        const globalPlayer = document.getElementById('global-cyber-player');
+        if (forcePip) {
+          globalPlayer.classList.remove('is-hidden', 'is-slotted');
+          globalPlayer.classList.add('is-pip');
+          document.body.appendChild(globalPlayer);
+          this.isFloating = true;
+        } else {
+          // Ensure playing state is stored so F5 can restore it
+          localStorage.setItem('cyber-player-playing', 'true');
+        }
+
+        try {
+          const hostPath = window.location.origin;
+          const cleanBase = base.endsWith('/') ? base : base + '/';
+          const playlistUrl = `${hostPath}${cleanBase}api/playlists/${type}/${playlist}.json?v=${Date.now()}`;
+          
+          const response = await fetch(playlistUrl);
+          if (!response.ok) throw new Error("Playlist file missing.");
+          this.playlistData = await response.json();
+          
+          this.startLoop();
+        } catch (e) {
+          console.error("Player initialization failure:", e);
+        }
+      },
+
+      destroy: function() {
+        if (this.updateTimer) clearInterval(this.updateTimer);
+        if (this.desyncTimer) clearInterval(this.desyncTimer);
+        if (this.player && this.player.destroy) {
+          try { this.player.destroy(); } catch (e) {}
+        }
+        this.player = null;
+        this.currentVideoId = null;
+        this.currentPlaylist = null;
+        this.currentType = null;
+        this.isFloating = false;
+        
+        const globalPlayer = document.getElementById('global-cyber-player');
+        if (globalPlayer) {
+          globalPlayer.classList.remove('is-slotted', 'is-pip');
+          globalPlayer.classList.add('is-hidden');
+          document.body.appendChild(globalPlayer); // Move back to body
+        }
+        
+        localStorage.setItem('cyber-player-playing', 'false');
+      },
+
+      // -- CORE UI LOGIC PORTED --
+      // WHY: Wires up all internal DOM events for the global player (mute, volume, pip button, etc). 
+      // These are scoped strictly to the global player DOM to prevent polluting the rest of the app.
+      setupUI: function() {
+        const self = this;
+        const storedVolume = localStorage.getItem('cyber-player-volume');
+        const storedMuted = localStorage.getItem('cyber-player-muted');
+
+        if (storedVolume !== null) {
+          self.currentVolume = parseInt(storedVolume, 10);
+        }
+        
+        self.isMuted = storedMuted === 'true';
+
+        // WHY: Intercept clicks on the Cybernati logo to smoothly navigate via Swup on the live website (which preserves playing audio), while allowing normal target="_top" navigation when embedded inside an iframe (like in Obsidian).
+        const logoLink = document.querySelector('#global-cyber-player .cyber-header a');
+        if (logoLink) {
+          logoLink.onclick = (e) => {
+            if (window.location.pathname.includes('/player/')) return;
+            e.preventDefault();
+            
+            // Ensure player goes into PiP when navigating to the homepage via logo click
+            if (!self.isFloating) {
+              const gp = document.getElementById('global-cyber-player');
+              gp.classList.remove('is-slotted');
+              gp.classList.add('is-pip');
+              document.body.appendChild(gp);
+              self.isFloating = true;
+            }
+            
+            const href = logoLink.getAttribute('href');
+            if (window.swup) window.swup.navigate(href);
+            else window.location.href = href;
+          };
+        }
+
+        let fadeInterval = null;
+        const fadeVolume = (targetVolume, duration = 300, onComplete) => {
+          if (!self.player || !self.player.setVolume) {
+            if (onComplete) onComplete();
+            return;
+          }
+          if (fadeInterval) clearInterval(fadeInterval);
+          
+          const startVolume = typeof self.currentFadeLinear === 'number' ? self.currentFadeLinear : (self.currentVolume || 0);
+          const diff = targetVolume - startVolume;
+          
+          if (diff === 0) {
+            if (self.player.setVolume) self.player.setVolume(toLogVolume(targetVolume));
+            if (onComplete) onComplete();
+            return;
+          }
+          
+          const startTime = performance.now();
+          fadeInterval = setInterval(() => {
+            const elapsed = performance.now() - startTime;
+            const t = Math.min(1, elapsed / duration);
+            
+            const currentLinear = startVolume + diff * t;
+            self.currentFadeLinear = currentLinear;
+            
+            if (self.player.setVolume) {
+              self.player.setVolume(toLogVolume(currentLinear));
+            }
+            if (t >= 1) {
+              clearInterval(fadeInterval);
+              fadeInterval = null;
+              self.currentFadeLinear = targetVolume;
+              if (onComplete) onComplete();
+            }
+          }, 16);
+        };
+
+        const syncVolumeDOM = () => {
+          const vols = [
+            { icon: document.getElementById('volume-icon-symbol'), control: document.getElementById('volume-control'), mute: document.getElementById('mute-toggle') },
+            { icon: document.getElementById('pip-volume-icon-symbol'), control: document.getElementById('pip-volume-control'), mute: document.getElementById('pip-mute-toggle') }
+          ];
+          
+          const symbol = (self.isMuted || self.currentVolume === 0) ? 'volume_off' : (self.currentVolume > 50 ? 'volume_up' : 'volume_down');
+          const sliderVal = self.isMuted ? 0 : self.currentVolume;
+
+          vols.forEach(v => {
+            if (v.icon) v.icon.textContent = symbol;
+            if (v.control) v.control.value = sliderVal;
+            if (v.mute) {
+              v.mute.setAttribute('aria-checked', self.isMuted ? 'true' : 'false');
+              if (self.isMuted) v.mute.classList.remove('text-purple-400');
+              else v.mute.classList.add('text-purple-400');
+            }
+          });
+        };
+
+        // WHY: Changes the player volume and handles unmuting/muting. We set the volume to 0 *before* unmuting to prevent the YouTube player from blasting a sudden loud pop of audio before starting the fade.
+        const updateVolumeState = (muted, volume, skipFade = false) => {
+          self.isMuted = muted;
+          if (volume !== undefined) self.currentVolume = volume;
+
+          localStorage.setItem('cyber-player-muted', self.isMuted ? 'true' : 'false');
+          localStorage.setItem('cyber-player-volume', self.currentVolume);
+
+          if (self.player) {
+            if (self.isMuted) {
+              if (skipFade) {
+                if (self.player.setVolume) self.player.setVolume(0);
+                if (self.player.mute) self.player.mute();
+              } else {
+                fadeVolume(0, 300, () => { if (self.player.mute) self.player.mute(); });
+              }
+            } else {
+              if (!skipFade) {
+                if (self.player.setVolume) self.player.setVolume(0);
+                if (self.player.unMute) self.player.unMute();
+                self.currentFadeLinear = 0; 
+                fadeVolume(self.currentVolume, 300);
+              } else {
+                if (self.player.setVolume) self.player.setVolume(toLogVolume(self.currentVolume));
+                if (self.player.unMute) self.player.unMute();
+                self.currentFadeLinear = self.currentVolume;
+              }
+            }
+          }
+          syncVolumeDOM();
+        };
+
+        const handleInteraction = (e) => {
+          if (self.handshakeEstablished) return;
+          self.handshakeEstablished = true;
+          localStorage.setItem('cyber-player-handshake', 'true');
+          
+          if (e && e.target && e.target.closest('button, input')) return;
+
+          const previouslyMuted = localStorage.getItem('cyber-player-muted') === 'true';
+          updateVolumeState(previouslyMuted, self.currentVolume || 25, true);
+        };
+        window.addEventListener('click', handleInteraction, { once: true });
+
+        const setupMute = (id) => {
+          const btn = document.getElementById(id);
+          if (btn) {
+            btn.onclick = () => {
+              const nextMuted = !self.isMuted;
+              let nextVol = self.currentVolume;
+              if (!nextMuted && self.currentVolume === 0) nextVol = 25;
+              updateVolumeState(nextMuted, nextVol, false);
+            };
+          }
+        };
+        setupMute('mute-toggle');
+        setupMute('pip-mute-toggle');
+
+        const setupVol = (id) => {
+          const slider = document.getElementById(id);
+          if (slider) {
+            slider.oninput = (e) => {
+              const val = parseInt(e.target.value, 10);
+              updateVolumeState(val === 0, val, true);
+            };
+          }
+        };
+        setupVol('volume-control');
+        setupVol('pip-volume-control');
+
+        // PiP Close Button
+        const pipClose = document.getElementById('pip-exit-btn');
+        if (pipClose) {
+          pipClose.onclick = () => {
+            self.destroy();
+          };
+        }
+
+        const clickOverlay = document.getElementById('player-click-overlay');
+        if (clickOverlay) {
+          clickOverlay.onclick = (e) => {
+            handleInteraction(e);
+            // WHY: If the user was just dragging the PiP window, we ignore the click event so it doesn't accidentally play/pause the video!
+            if (self.wasDragged) {
+              self.wasDragged = false;
+              return;
+            }
+            if (self.player && self.player.getPlayerState) {
+              const state = self.player.getPlayerState();
+              if (state === 1) self.player.pauseVideo();
+              else self.player.playVideo();
+            }
+          };
+          clickOverlay.ondblclick = () => {
+            const fsBtn = document.getElementById('fullscreen-toggle');
+            if (fsBtn) fsBtn.click();
+          };
+        }
+
+        const pipOverlay = document.getElementById('pip-controls-overlay');
+        let overlayHideTimer = null;
+        self.showOverlay = () => {
+          if (!self.isFloating) return;
+          if (pipOverlay) pipOverlay.classList.add('is-visible');
+          clearTimeout(overlayHideTimer);
+        };
+        self.scheduleHideOverlay = () => {
+          clearTimeout(overlayHideTimer);
+          overlayHideTimer = setTimeout(() => {
+            if (pipOverlay) pipOverlay.classList.remove('is-visible');
+          }, 3000);
+        };
+
+        const globalPlayer = document.getElementById('global-cyber-player');
+        if (globalPlayer) {
+          globalPlayer.addEventListener('mousemove', () => { self.showOverlay(); self.scheduleHideOverlay(); });
+          globalPlayer.addEventListener('mouseenter', () => { self.showOverlay(); });
+          globalPlayer.addEventListener('mouseleave', () => { self.scheduleHideOverlay(); });
+        }
+
+        // Draggable logic for PiP
+        // WHY: We track isDragging and check if the mouse has moved more than 5px to mark it as a "drag" rather than a "click", preventing accidental video toggling when repositioning the PiP window.
+        let isDragging = false, startX, startY, initialRight, initialBottom;
+        self.wasDragged = false;
+        if (globalPlayer) {
+          const onMouseMove = (e) => {
+            if (!isDragging) return;
+            e.preventDefault();
+            const dx = e.clientX - startX;
+            const dy = e.clientY - startY;
+            
+            // If the mouse has moved more than 5px in any direction, it's a drag
+            if (Math.abs(dx) > 5 || Math.abs(dy) > 5) {
+              self.wasDragged = true;
+            }
+            
+            // Constrain to viewport
+            let newRight = Math.max(0, Math.min(window.innerWidth - 320, initialRight - dx));
+            let newBottom = Math.max(0, Math.min(window.innerHeight - 180, initialBottom - dy));
+            
+            globalPlayer.style.right = newRight + 'px';
+            globalPlayer.style.bottom = newBottom + 'px';
+          };
+          const onMouseUp = () => {
+            if (isDragging) {
+              isDragging = false;
+              document.removeEventListener('mousemove', onMouseMove);
+              document.removeEventListener('mouseup', onMouseUp);
+              globalPlayer.style.transition = 'all 0.3s cubic-bezier(0.25, 1, 0.5, 1)';
+              
+              // Clear wasDragged slightly delayed so click handler has time to intercept
+              setTimeout(() => {
+                self.wasDragged = false;
+              }, 80);
+            }
+          };
+          
+          const dragHandle = document.getElementById('player-click-overlay');
+          if (dragHandle) {
+            dragHandle.addEventListener('mousedown', (e) => {
+              if (!self.isFloating) return;
+              // Ignore clicks near bottom controls
+              if (e.offsetY > dragHandle.offsetHeight - 40) return;
+              
+              isDragging = true;
+              startX = e.clientX;
+              startY = e.clientY;
+              const rect = globalPlayer.getBoundingClientRect();
+              initialRight = window.innerWidth - rect.right;
+              initialBottom = window.innerHeight - rect.bottom;
+              
+              globalPlayer.style.transition = 'none';
+              document.addEventListener('mousemove', onMouseMove);
+              document.addEventListener('mouseup', onMouseUp);
+            });
+          }
+        }
+
+        const notesTrigger = document.getElementById('notes-trigger-btn');
+        const closeNotes = document.getElementById('close-notes-btn');
+        const notesPanel = document.getElementById('related-notes-panel');
+        const shareTrigger = document.getElementById('share-trigger-btn');
+        const closeShare = document.getElementById('close-share-btn');
+        const sharePanel = document.getElementById('share-panel');
+        const shareLinkInput = document.getElementById('share-link-input');
+        const shareEmbedInput = document.getElementById('share-embed-input');
+
+        if (notesTrigger && notesPanel) {
+          notesTrigger.onclick = () => {
+            // Close share panel if open to prevent overlap
+            if (sharePanel) {
+              sharePanel.classList.add('max-h-0');
+              sharePanel.classList.remove('max-h-[300px]');
+              sharePanel.classList.add('opacity-0');
+              sharePanel.classList.remove('opacity-100');
+            }
+
+            notesPanel.classList.toggle('max-h-0');
+            notesPanel.classList.toggle('max-h-[300px]');
+            notesPanel.classList.toggle('opacity-0');
+            notesPanel.classList.toggle('opacity-100');
+          };
+        }
+        if (closeNotes && notesPanel) {
+          closeNotes.onclick = () => {
+            notesPanel.classList.add('max-h-0');
+            notesPanel.classList.remove('max-h-[300px]');
+            notesPanel.classList.add('opacity-0');
+            notesPanel.classList.remove('opacity-100');
+          };
+        }
+
+        if (shareTrigger && sharePanel) {
+          shareTrigger.onclick = () => {
+            // Close notes panel if open to prevent overlap
+            if (notesPanel) {
+              notesPanel.classList.add('max-h-0');
+              notesPanel.classList.remove('max-h-[300px]');
+              notesPanel.classList.add('opacity-0');
+              notesPanel.classList.remove('opacity-100');
+            }
+
+            sharePanel.classList.toggle('max-h-0');
+            sharePanel.classList.toggle('max-h-[300px]');
+            sharePanel.classList.toggle('opacity-0');
+            sharePanel.classList.toggle('opacity-100');
+
+            if (sharePanel.classList.contains('opacity-100')) {
+              // Dynamically generate share link and embed code
+              const cleanBase = base.endsWith('/') ? base : base + '/';
+              const embedUrl = `${window.location.origin}${cleanBase}player/${self.currentType || 'video'}/${self.currentPlaylist || 'channel-000'}`;
+              
+              if (shareLinkInput) {
+                shareLinkInput.value = window.location.href;
+                shareLinkInput.select();
+              }
+              if (shareEmbedInput) {
+                shareEmbedInput.value = `<iframe src="${embedUrl}" width="100%" height="550" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" style="border-radius: 16px; background: #000; box-shadow: 0 10px 30px rgba(0,0,0,0.5);"></iframe>`;
+              }
+            }
+          };
+        }
+
+        if (closeShare && sharePanel) {
+          closeShare.onclick = () => {
+            sharePanel.classList.add('max-h-0');
+            sharePanel.classList.remove('max-h-[300px]');
+            sharePanel.classList.add('opacity-0');
+            sharePanel.classList.remove('opacity-100');
+          };
+        }
+
+        // Link copy logic
+        const copyLinkBtn = document.getElementById('copy-link-btn');
+        const copyLinkText = document.getElementById('copy-link-text');
+        if (copyLinkBtn && shareLinkInput) {
+          copyLinkBtn.onclick = () => {
+            navigator.clipboard.writeText(shareLinkInput.value).then(() => {
+              if (copyLinkText) {
+                copyLinkText.textContent = 'Copied!';
+                setTimeout(() => {
+                  copyLinkText.textContent = 'Copy';
+                }, 2000);
+              }
+            });
+          };
+        }
+
+        // Embed copy logic
+        const copyEmbedBtn = document.getElementById('copy-embed-btn');
+        const copyEmbedText = document.getElementById('copy-embed-text');
+        if (copyEmbedBtn && shareEmbedInput) {
+          copyEmbedBtn.onclick = () => {
+            navigator.clipboard.writeText(shareEmbedInput.value).then(() => {
+              if (copyEmbedText) {
+                copyEmbedText.textContent = 'Copied!';
+                setTimeout(() => {
+                  copyEmbedText.textContent = 'Copy';
+                }, 2000);
+              }
+            });
+          };
+        }
+
+        const pipBtn = document.getElementById('pip-btn');
+        if (pipBtn) {
+          pipBtn.onclick = () => {
+            if (self.isFloating) {
+              // Return to slot if we are floating (though button is hidden in PiP usually)
+              self.checkSlotAndMount();
+            } else {
+              // Force float
+              const gp = document.getElementById('global-cyber-player');
+              gp.classList.remove('is-slotted');
+              gp.classList.add('is-pip');
+              document.body.appendChild(gp);
+              self.isFloating = true;
+            }
+          };
+        }
+
+        const fsBtn = document.getElementById('fullscreen-toggle');
+        if (fsBtn) {
+          fsBtn.onclick = () => {
+            const root = document.getElementById('player-root');
+            if (!document.fullscreenElement) root.requestFullscreen();
+            else document.exitFullscreen();
+          };
+        }
+
+        const desyncBtn = document.getElementById('desync-btn');
+        const desyncText = document.getElementById('desync-text');
+        if (desyncBtn && desyncText) {
+          desyncBtn.onclick = () => {
+            self.isDesynced = !self.isDesynced;
+            if (self.isDesynced) {
+              desyncBtn.classList.add('is-active');
+              desyncBtn.classList.add('border-purple-500', 'text-purple-300', 'bg-purple-950/20');
+              desyncBtn.classList.remove('border-zinc-800', 'bg-zinc-900/60');
+              desyncText.textContent = "Sync Feed";
+              if (self.updateTimer) clearInterval(self.updateTimer);
+              if (self.player) { try { self.player.destroy(); } catch (e) {} self.player = null; }
+              self.startDesyncSequence();
+            } else {
+              desyncBtn.classList.remove('is-active');
+              desyncBtn.classList.remove('border-purple-500', 'text-purple-300', 'bg-purple-950/20');
+              desyncBtn.classList.add('border-zinc-800', 'bg-zinc-900/60');
+              desyncText.textContent = "Desync";
+              if (self.desyncTimer) clearInterval(self.desyncTimer);
+              self.startLoop();
+            }
+          };
+        }
+      },
+
+      // WHY: The core feature of Cybernati is that all users visiting a playlist are watching the exact same video at the exact same timestamp.
+      // It's a "live broadcast" simulation. We use the server-generated timeline and compare it against the current Unix time.
+      startLoop: function() {
+        if (!this.playlistData) return;
+        const { totalLoopDuration, schedule, interstitials } = this.playlistData;
+        if (!schedule || schedule.length === 0) return;
+        const self = this;
+        
+        const update = () => {
+          if (self.isDesynced) return;
+          const now = Math.floor(Date.now() / 1000);
+          const pos = now % totalLoopDuration;
+          
+          let active = null, standby = true, wait = 0, offset = 0, nextIndex = 0;
+          for (let i = 0; i < schedule.length; i++) {
+            const p = schedule[i];
+            if (pos >= p.start && pos < p.end) {
+              active = p; standby = false; offset = pos - p.start;
+              nextIndex = (i + 1) % schedule.length; break;
+            }
+            if (pos >= p.end && (i === schedule.length - 1 || pos < schedule[i+1].start)) {
+              standby = true; wait = (i === schedule.length - 1) ? (totalLoopDuration - pos) : (schedule[i+1].start - pos);
+              nextIndex = (i + 1) % schedule.length; break;
+            }
+          }
+          
+          const progressBar = document.getElementById('sync-progress');
+          const titleEl = document.getElementById('video-title');
+          const nextEl = document.getElementById('next-title');
+          
+          if (!standby && active) {
+            if (progressBar) progressBar.style.width = `${((offset / active.duration) * 100)}%`;
+            if (titleEl) titleEl.innerHTML = active.title.toUpperCase();
+            if (nextEl) nextEl.innerHTML = schedule[nextIndex].title.toUpperCase();
+            
+            if (self.currentVideoId !== active.id) self.mountVideo(active, offset);
+            else if (self.player && self.player.getCurrentTime) {
+              const drift = Math.abs(self.player.getCurrentTime() - offset);
+              if (drift > 3) self.player.seekTo(offset, true);
+            }
+          } else {
+            if (progressBar) progressBar.style.width = `${Math.min(100, (wait / 30) * 100)}%`;
+            if (titleEl) titleEl.innerHTML = "SIGNAL LOST: TRANSMITTING STANDBY...";
+            if (nextEl) nextEl.innerHTML = schedule[nextIndex].title.toUpperCase();
+            self.mountStandby(interstitials);
+          }
+        };
+
+        if (this.updateTimer) clearInterval(this.updateTimer);
+        this.updateTimer = setInterval(update, 1000);
+        update();
+      },
+
+      // WHY: Sometimes users don't want to watch the live broadcast, they just want to flip through random videos.
+      // This stops the synchronized updateTimer and plays random clips from the playlist for 5 minutes at a time.
+      startDesyncSequence: function() {
+        const { schedule, interstitials } = this.playlistData;
+        if (!schedule || schedule.length === 0) return;
+        const self = this;
+        
+        const playRandom = () => {
+          const index = Math.floor(Math.random() * schedule.length);
+          const prog = schedule[index];
+          const playWindow = Math.min(prog.duration, 300);
+          const startAt = prog.duration > 300 ? Math.floor(Math.random() * (prog.duration - playWindow)) : 0;
+          
+          self.mountVideo(prog, startAt);
+          let remaining = playWindow;
+          
+          if (self.desyncTimer) clearInterval(self.desyncTimer);
+          self.desyncTimer = setInterval(() => {
+            if (!self.isDesynced) { clearInterval(self.desyncTimer); return; }
+            remaining--;
+            const progressBar = document.getElementById('sync-progress');
+            if (progressBar) progressBar.style.width = `${((remaining / playWindow) * 100)}%`;
+            
+            if (remaining <= 0) {
+              clearInterval(self.desyncTimer);
+              self.mountStandby(interstitials);
+              setTimeout(playRandom, 10000);
+            }
+          }, 1000);
+        };
+        playRandom();
+      },
+
+      // WHY: When a new video starts on the broadcast schedule, we destroy the old YouTube iframe and create a new one.
+      // We seek to the exactly calculated offset so that the client joins perfectly in-sync with the global schedule.
+      mountVideo: function(prog, offset) {
+        const mount = document.getElementById('player-mount');
+        if (!mount) return;
+        if (this.currentVideoId === prog.id && this.player && this.player.getPlayerState && this.player.getPlayerState() > 0) return;
+        
+        if (this.player && this.player.destroy) { try { this.player.destroy(); } catch (e) {} }
+        this.player = null;
+        this.currentVideoId = prog.id;
+        this.currentInterstitialIndex = null;
+        
+        mount.innerHTML = '<div id="yt-player" class="h-full w-full"></div>';
+        const self = this;
+        
+        // Ensure playing state is saved when mounting video
+        localStorage.setItem('cyber-player-playing', 'true');
+
+        this.player = new window.YT.Player('yt-player', {
+          height: '100%', width: '100%', videoId: prog.id,
+          playerVars: { autoplay: 1, mute: 1, controls: 0, disablekb: 1, modestbranding: 1, rel: 0, start: Math.floor(offset) },
+          events: {
+            onReady: (e) => {
+              if (self.isMuted) { e.target.mute(); }
+              else { e.target.unMute(); e.target.setVolume(toLogVolume(self.currentVolume)); }
+              e.target.playVideo(); // Force play to be safe
+            }
+          }
+        });
+
+        const linksEl = document.getElementById('related-links');
+        if (linksEl) {
+          if (prog.related && prog.related.length > 0) {
+            linksEl.innerHTML = prog.related.map(link => {
+              let linkSlug = link.slug;
+              if (linkSlug.startsWith('/') && !linkSlug.startsWith(base)) linkSlug = base.replace(/\/$/, '') + linkSlug;
+              return `<a href="${linkSlug}" class="cyber-related-link px-3 py-1.5 rounded-lg text-xs font-semibold border border-zinc-800 bg-zinc-900 text-zinc-100 hover:border-purple-500 hover:text-purple-300 transition duration-150">${link.name}</a>`;
+            }).join('');
+            
+            linksEl.querySelectorAll('.cyber-related-link').forEach(linkEl => {
+              linkEl.onclick = (e) => {
+                e.preventDefault();
+                // Ensure player goes into PiP when clicking a related note
+                if (!self.isFloating) {
+                  const gp = document.getElementById('global-cyber-player');
+                  gp.classList.remove('is-slotted');
+                  gp.classList.add('is-pip');
+                  document.body.appendChild(gp);
+                  self.isFloating = true;
+                }
+                const href = linkEl.getAttribute('href');
+                if (window.swup) window.swup.navigate(href);
+                else window.location.href = href;
+              };
+            });
+          } else {
+            linksEl.innerHTML = '<span class="text-xs text-zinc-500 uppercase italic">No related vault notes detected.</span>';
+          }
+        }
+      },
+
+      mountStandby: function(interstitials) {
+        const mount = document.getElementById('player-mount');
+        if (!mount || !interstitials || interstitials.length === 0) return;
+        if (this.currentInterstitialIndex === null) this.currentInterstitialIndex = Math.floor(Math.random() * interstitials.length);
+        
+        let intUrl = interstitials[this.currentInterstitialIndex];
+        if (intUrl.startsWith('/') && !intUrl.startsWith(base)) intUrl = base.replace(/\/$/, '') + intUrl;
+        
+        const existing = mount.querySelector('video');
+        if (existing && existing.getAttribute('src') === intUrl) return;
+        
+        if (this.player && this.player.destroy) { try { this.player.destroy(); } catch (e) {} this.player = null; this.currentVideoId = null; }
+        
+        mount.innerHTML = `<video src="${intUrl}" autoplay muted loop style="width:100%; height:100%; object-fit:cover; background:black;"></video>`;
+        
+        const linksEl = document.getElementById('related-links');
+        if (linksEl) linksEl.innerHTML = '<span class="text-xs text-zinc-500 uppercase italic">TRANSMITTING CYBERNATI SIGNAL INTERSTITIAL...</span>';
+      }
+    };
+
+    // Load YouTube API
+    if (!window.YT) {
+      const tag = document.createElement('script');
+      tag.src = "https://www.youtube.com/iframe_api";
+      document.head.appendChild(tag);
+    }
+    
+    const checkReady = setInterval(() => {
+      if (window.YT && window.YT.Player) {
+        clearInterval(checkReady);
+        window.CyberPlayer.initGlobal();
+      }
+    }, 500);
+
+  })();
+</script>

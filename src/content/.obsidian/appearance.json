@@ -6,5 +6,6 @@
     "astro-modular-styling"
   ],
   "theme": "system",
-  "accentColor": ""
+  "accentColor": "",
+  "baseFontSize": 16
 }

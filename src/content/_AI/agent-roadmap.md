@@ -5,7 +5,7 @@ This note is the living record of completed tasks, active work, and future plans
 ---
 
 ## 📌 Active Focus
-* **Current Task**: Designing and organizing the Astro Content Collections, publishing workflows, and custom markdown rendering utilities (Chronos timelines and native media players).
+* **Current Task**: Finishing touches on the blog post + dossier draft. User is taking a pause to think over final edits before publishing.
 
 ---
 
@@ -13,6 +13,8 @@ This note is the living record of completed tasks, active work, and future plans
 A historical record of architectural and workflow decisions to prevent backsliding:
 
 ### May 2026
+* **Blog Post + Dossier Split**: Decided that the historical 130-year arc (airships → PURSUE) lives in the blog post, while the dossier is strictly PURSUE-focused — a living reference that grows with each tranche. Satellite dossiers (Kenneth Arnold, Roswell, Lazar) planned for later.
+* **PURSUE Naming Confirmation**: Confirmed via war.gov that the official name is "Presidential Unsealing and Reporting System for UAP Encounters (PURSUE)" — a Presidential executive initiative, not an Act of Congress. Dossier titled "The Project PURSUE Reference Dossier."
 * **Vault-Root AGENTS.md**: Relocated `AGENTS.md` from the hidden `.agents/` folder to `src/content/AGENTS.md` to make it visible in the Obsidian sidebar.
 * **Standardized Ingestion Report**: Agreed on a unified filename (`agent-report.md`) placed inside the collaborative `_writers-room/{working-title-dir}/` workspace to store source summaries, entity maps, and vault connections.
 * **Ingestion-Only Rationale**: Agreed to limit the initial clipping workflow to ingestion and source analysis, leaving final synthesis open-ended to support planned Astro content types (dossiers, atomic notes, wikis).
@@ -50,9 +52,16 @@ A historical record of architectural and workflow decisions to prevent backslidi
 * [ ] **Automatic Backlinks Parser**: Develop local Obsidian Dataview templates or script helpers to display dynamic connections natively in Obsidian before building them in Astro.
 
 ### Phase 3: Astro Integration & Publishing
-* [ ] **Astro Content Collections (Issue 0001)**: Add Zod schemas and folder/file loaders for `dossiers`, `wiki`, and `atomic` collections in `src/content.config.ts`.
-* [ ] **Astro Routes & Layouts (Issue 0001)**: Build dynamic pages and listings hubs under `src/pages/` and custom responsive layouts under `src/layouts/` for each collection.
-* [ ] **Build-Time Backlink Engine (Issue 0001)**: Write the markdown processor that dynamically extracts wikilinks from note bodies and injects backlink portals at page footers automatically.
+* [x] **Astro Content Collections (Issue 0001)**: Dossier, Vault, and Media collections implemented with schemas, routes, and listing pages. [Closed 2026-05-28]
+* [ ] **Publish Workflow**: Blog post + dossier written, pending finishing touches and frontmatter cleanup before moving to live directories.
+* [ ] **Build-Time Backlink Engine**: Write the markdown processor that dynamically extracts wikilinks from note bodies and injects backlink portals at page footers automatically.
 * [ ] **Chronos Timeline Integration (Issue 0002)**: Add a Remark/Rehype compiler plugin to parse Obsidian `chronos` codeblocks and render them as native, responsive HTML/CSS timelines.
-* [ ] **Video Player Integration (Issue 0003)**: Design and build a professional, theme-variable compliant native video/media player component to support colocated vault media.
+* ⏸️ **Media Player Integration (Issue 0003)**: Component and path resolver done; MDX registration and validation deferred for polish. [Pinned 2026-05-28]
 * [ ] **Transition-to-Publish Agent Skill**: Code the automation to prompt for frontmatter validation and transfer sandbox drafts to live-site collections.
+
+---
+
+## 🔜 Next Session (2026-05-28)
+
+1. **Write & Publish 1 post + 1 dossier** — Actual writing and publishing to the live Astro site. Need to identify content and go through the publish workflow.
+2. **Async Command Runner** (Issue [[0004-async-command-runner]]) — Secondary priority; build the `run_async` extension.

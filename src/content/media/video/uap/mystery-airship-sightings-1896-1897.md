@@ -4,13 +4,13 @@ source: https://www.youtube.com/watch?v=IBaw2oqVz8w
 author:
   - "[[Think Anomalous]]"
 published: 2017-07-24
-created: 2026-05-26T21:59:42-05:00
+created: 2026-05-24T14:46:58-05:00
 description: For 8 months in 1896 and 1897, people in the US and Canada saw mysterious lights in the sky, and sometimes, spectacular, winged airships and dirigibles. The ...
 tags:
   - clippings
-duration: 753
 related:
-  - "[[test-dossier]]"
+  - "[[from-classified-to-curated-how-the-government-still-controls-the-uap-narrative]]"
+  - "[[the-project-pursue-reference-dossier]]"
 ---
 ![](https://www.youtube.com/watch?v=IBaw2oqVz8w)
 

@@ -25,7 +25,7 @@
       "indexFileName": "index",
       "ignoreSubfolders": false,
       "enableUnderscorePrefix": false,
-      "collapsed": true
+      "collapsed": false
     },
     {
       "id": "pages-1765432337485",
@@ -95,7 +95,7 @@
       "enableUnderscorePrefix": false,
       "useMdxExtension": false,
       "modifiedDateField": "",
-      "collapsed": true
+      "collapsed": false
     },
     {
       "id": "content-1779839687370",
@@ -111,6 +111,20 @@
       "useMdxExtension": false,
       "modifiedDateField": "",
       "collapsed": true
+    },
+    {
+      "id": "content-1779978157323",
+      "name": "Writers Room",
+      "folder": "_writers-room",
+      "linkBasePath": "/_writers-room/",
+      "template": "---\ntitle: \"{{title}}\"\ndate: {{date}}\ndescription: \"\"\ntags: []\nimage: \"\"\nimageAlt: \"\"\nimageOG: false\nhideCoverImage: false\nhideTOC: false\ntargetKeyword: \"\"\ndraft: false\n---",
+      "enabled": true,
+      "creationMode": "folder",
+      "indexFileName": "",
+      "ignoreSubfolders": false,
+      "enableUnderscorePrefix": false,
+      "useMdxExtension": false,
+      "modifiedDateField": ""
     }
   ],
   "migrationCompleted": true,

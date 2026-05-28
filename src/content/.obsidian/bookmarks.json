@@ -51,7 +51,7 @@
           "type": "url",
           "ctime": 1779869304371,
           "url": "https://mufon.com/",
-          "title": "Home - MUFON"
+          "title": "MUFON"
         },
         {
           "type": "url",
@@ -86,6 +86,18 @@
         }
       ],
       "title": "Government Organizations"
+    },
+    {
+      "type": "url",
+      "ctime": 1779898501464,
+      "url": "https://archive.org/details/@cybernati",
+      "title": "Internet Archive: Digital Library of Free & Borrowable Texts, Movies, Music & Wayback Machine"
+    },
+    {
+      "type": "url",
+      "ctime": 1779909363294,
+      "url": "https://ia802905.us.archive.org/30/items/pursue-release-02-video/video_2605_DOD_111720696_DOD_111720696.mp4",
+      "title": "ia802905.us.archive.org/30/items/pursue-release-02-video/video_2605_DOD_111720696_DOD_111720696.mp4"
     }
   ]
 }

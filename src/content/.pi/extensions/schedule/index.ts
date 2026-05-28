@@ -13,6 +13,8 @@
 
 import type { ExtensionAPI, ExtensionContext } from "@earendil-works/pi-coding-agent";
 import { Type } from "typebox";
+import { appendFileSync, mkdirSync } from "fs";
+import { join } from "path";
 
 // ── State ──
 
@@ -62,14 +64,17 @@ export default function scheduleExtension(pi: ExtensionAPI) {
     name: "schedule",
     label: "Schedule",
     description:
-      "Set a timer that will ping the agent when it fires. " +
-      "Accepts duration (30s, 5m, 1h) or absolute time (5:11pm, 17:30). " +
-      "Uses your system timezone: " + (detectedTimezone || "unknown") + ".",
-    promptSnippet: "Schedule a timer with duration or absolute time",
+      "CALL THIS FROM YOUR TOOLS LIST (not bash, not /schedule). " +
+      "Same pattern as read/write: schedule({duration, note}). " +
+      "Duration: 30s, 5m, 1h. Absolute: 5:11pm, 17:30. " +
+      "Timezone: " + (detectedTimezone || "unknown") + ".",
+    promptSnippet: "CALL schedule({duration, note}) FROM YOUR TOOLS LIST — same as read/write. NOT bash, NOT /schedule. Example: schedule({duration:\"5m\", note:\"check build\"}).",
     promptGuidelines: [
-      "Use schedule when you need to wait for a background task to complete.",
-      "Use schedule for reminders at specific times (e.g., 5:11pm).",
-      "Use schedule instead of busy-waiting or sleep loops.",
+      "Call schedule({duration, note}) from your tools list, just like read/write/edit.",
+      "NEVER call schedule from bash or as a shell command — that fails.",
+      "NEVER use /schedule — that's the user command, not for agents.",
+      "Supports durations (30s, 5m, 1h) and absolute times (5:11pm, 17:30).",
+      "Use instead of busy-waiting or sleep loops.",
     ],
     parameters: Type.Object({
       duration: Type.String({
@@ -97,6 +102,7 @@ export default function scheduleExtension(pi: ExtensionAPI) {
       }
 
       if (!ms) {
+        log("error", "Invalid time input", { input: params.duration });
         return {
           content: [
             {
@@ -116,6 +122,7 @@ export default function scheduleExtension(pi: ExtensionAPI) {
 
       // Check if absolute time is in the past
       if (isAbsolute && ms < 0) {
+        log("warn", "Time already passed today", { input: params.duration, timezone: detectedTimezone });
         return {
           content: [
             {
@@ -135,6 +142,7 @@ export default function scheduleExtension(pi: ExtensionAPI) {
 
       const timer = setTimeout(() => {
         ctx.ui.setStatus("schedule", undefined);
+        log("info", "Timer fired", { id, note: params.note });
         sendTimerNotification(pi, "⏰ Timer: " + params.note);
         activeTimers.delete(id);
         scheduleMeta.delete(id);
@@ -149,6 +157,8 @@ export default function scheduleExtension(pi: ExtensionAPI) {
       scheduleMeta.set(id, { message: params.note, firesAt });
 
       ensureCountdownInterval(ctx);
+
+      log("info", "Timer set", { id, note: params.note, duration: params.duration, firesAt });
 
       return {
         content: [
@@ -252,6 +262,8 @@ export default function scheduleExtension(pi: ExtensionAPI) {
         countdownInterval = null;
       }
 
+      log("info", "Timer cancelled", { id: params.id });
+
       return {
         content: [{ type: "text", text: "✅ Cancelled: " + params.id }],
         details: { id: params.id, cancelled: true },
@@ -282,12 +294,14 @@ export default function scheduleExtension(pi: ExtensionAPI) {
       }
 
       if (!ms) {
+        log("error", "Invalid time input (command)", { input: timeInput });
         ctx.ui.notify("❌ Invalid time/duration: " + timeInput, "error");
         return;
       }
 
       // Check if absolute time is in the past
       if (isAbsolute && ms < 0) {
+        log("warn", "Time already passed today (command)", { input: timeInput, timezone: detectedTimezone });
         ctx.ui.notify(
           "❌ That time has already passed today: " + timeInput +
           " (timezone: " + (detectedTimezone || "unknown") + ")",
@@ -301,6 +315,7 @@ export default function scheduleExtension(pi: ExtensionAPI) {
 
       const timer = setTimeout(() => {
         ctx.ui.setStatus("schedule", undefined);
+        log("info", "Timer fired (command)", { id, note });
         sendTimerNotification(pi, "⏰ Timer: " + note);
         activeTimers.delete(id);
         scheduleMeta.delete(id);
@@ -315,6 +330,8 @@ export default function scheduleExtension(pi: ExtensionAPI) {
       scheduleMeta.set(id, { message: note, firesAt });
 
       ensureCountdownInterval(ctx);
+
+      log("info", "Timer set (command)", { id, note, duration: timeInput, firesAt });
 
       ctx.ui.notify(
         "✅ Scheduled: " + note +
@@ -445,6 +462,48 @@ function parseDuration(input: string): number | null {
   }
 }
 
+// ── Logging ──
+// Every tool/script MUST log. See _AI/guides/rules/logging-standard.md
+// We append to logs/schedule.jsonl alongside this file.
+
+function log(level: string, msg: string, extra: Record<string, any> = {}): void {
+  const entry = JSON.stringify({
+    ts: new Date().toISOString(),
+    level,
+    tool: "schedule",
+    msg,
+    ...extra,
+  }) + "\n";
+
+  try {
+    // Use vault-relative path so logs survive across environments
+    // __dirname may not resolve correctly in Pi's extension runtime,
+    // so we try multiple locations and use the first one that works.
+    const candidates = [
+      join(__dirname, "logs"),
+      join(process.cwd(), ".pi", "extensions", "schedule", "logs"),
+    ];
+
+    let logDir: string | null = null;
+    for (const dir of candidates) {
+      try {
+        mkdirSync(dir, { recursive: true });
+        logDir = dir;
+        break;
+      } catch {
+        continue;
+      }
+    }
+
+    if (logDir) {
+      appendFileSync(join(logDir, "schedule.jsonl"), entry);
+    }
+  } catch {
+    // Logging must never crash the extension.
+    // If we're here, nothing worked — silently skip.
+  }
+}
+
 // ── Helpers ──
 
 function formatDuration(ms: number): string {
@@ -490,7 +549,7 @@ function sendTimerNotification(pi: ExtensionAPI, message: string, attempt: numbe
         sendTimerNotification(pi, message, attempt + 1);
       }, delay);
     } else {
-      console.error("[schedule] Failed after " + maxRetries + " retries: " + message);
+      log("error", "Failed to send timer notification after retries", { message, retries: maxRetries });
     }
   }
 }

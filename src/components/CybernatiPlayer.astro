@@ -10,12 +10,12 @@ const base = getBaseUrl();
     <!-- Top Header: Dynamic playing title & Cybernati branding -->
     <div class="cyber-header glass-panel mb-2 flex flex-shrink-0 items-center justify-between rounded-lg px-2.5 py-1 shadow-md">
       <div class="flex items-center">
-        <div id="video-title" class="text-xs font-bold tracking-wider text-zinc-400 uppercase truncate max-w-[280px] sm:max-w-[420px] m-0 p-0 leading-none" style="font-family: var(--font-courier-prime)">
+        <div id="video-title" class="text-xs font-bold tracking-wider text-zinc-400 uppercase truncate max-w-[280px] sm:max-w-[420px] m-0 p-0 leading-none" style="font-family: var(--font-mono)">
           SCANNING FOR SIGNAL...
         </div>
       </div>
       <div class="flex items-center gap-2">
-        <a href={base} target="_top" class="text-xs font-bold tracking-widest text-purple-400 hover:text-purple-300 transition-colors m-0 p-0 leading-none" style="font-family: 'Special Elite', cursive;">CYBERNATI™</a>
+        <a href={base} target="_top" class="text-xs font-bold tracking-widest text-highlight-400 hover:text-highlight-300 transition-colors m-0 p-0 leading-none" style="font-family: 'Special Elite', cursive;">CYBERNATI™</a>
       </div>
     </div>
 
@@ -24,7 +24,7 @@ const base = getBaseUrl();
       <div id="player-mount" class="h-full w-full">
         <!-- Standby Signal message during initialization -->
         <div id="terminal-status-msg" class="flex h-full w-full flex-col items-center justify-center gap-3 bg-zinc-950 text-center">
-          <span class="material-symbols-outlined text-4xl animate-spin text-purple-400">sync</span>
+          <span class="material-symbols-outlined text-4xl animate-spin text-highlight-400">sync</span>
           <span class="text-xs uppercase tracking-widest text-zinc-400" style="font-family: var(--font-mono)">Aligning Remote Feed Nodes...</span>
         </div>
       </div>
@@ -40,10 +40,10 @@ const base = getBaseUrl();
       <!-- PiP Hover Controls Overlay -->
       <div id="pip-controls-overlay" class="absolute bottom-3 left-3 z-30 flex items-center justify-center rounded-lg border border-zinc-800 bg-zinc-950/90 backdrop-blur-md px-2.5 py-1.5 opacity-0 pointer-events-none transition-all duration-300 shadow-xl border border-white/5 w-auto">
         <div class="flex items-center gap-1.5">
-          <button id="pip-mute-toggle" class="flex items-center justify-center rounded p-1 text-zinc-400 hover:bg-zinc-800 hover:text-purple-400" aria-label="Toggle mute state">
+          <button id="pip-mute-toggle" class="flex items-center justify-center rounded p-1 text-zinc-400 hover:bg-zinc-800 hover:text-highlight-400" aria-label="Toggle mute state">
             <span id="pip-volume-icon-symbol" class="material-symbols-outlined text-base">volume_off</span>
           </button>
-          <input type="range" id="pip-volume-control" class="h-1 w-14 cursor-pointer accent-purple-400 bg-zinc-800 rounded-lg appearance-none" min="0" max="100" value="0" aria-label="Volume Slider" />
+          <input type="range" id="pip-volume-control" class="h-1 w-14 cursor-pointer accent-highlight-500 bg-zinc-800 rounded-lg appearance-none" min="0" max="100" value="0" aria-label="Volume Slider" />
         </div>
         
         <!-- PiP Exit Button -->
@@ -55,13 +55,7 @@ const base = getBaseUrl();
 
     <!-- Collapsible Related Notes overlay -->
     <div id="related-notes-panel" class="absolute bottom-[92px] left-4 right-4 z-50 rounded-2xl glass-panel shadow-2xl max-h-0 overflow-hidden transition-all duration-300 ease-in-out opacity-0">
-      <div class="p-4 flex flex-col gap-3">
-        <div class="flex items-center justify-between border-b border-zinc-800 pb-2">
-          <span class="text-[10px] font-bold uppercase tracking-widest text-zinc-400" style="font-family: var(--font-mono)">Related Notes</span>
-          <button id="close-notes-btn" class="flex items-center justify-center rounded p-1 text-zinc-400 hover:bg-zinc-800 hover:text-white" aria-label="Close notes panel">
-            <span class="material-symbols-outlined text-sm">close</span>
-          </button>
-        </div>
+      <div class="p-4">
         <div id="related-links" class="flex flex-wrap gap-2 max-h-[160px] overflow-y-auto custom-scroll pr-1 text-zinc-300">
           <span class="text-xs text-zinc-500 uppercase italic">No related vault notes detected.</span>
         </div>
@@ -71,20 +65,12 @@ const base = getBaseUrl();
     <!-- Collapsible Share Panel overlay -->
     <div id="share-panel" class="absolute bottom-[92px] left-4 right-4 z-50 rounded-2xl glass-panel shadow-2xl max-h-0 overflow-hidden transition-all duration-300 ease-in-out opacity-0">
       <div class="p-4 flex flex-col gap-3">
-        <div class="flex items-center justify-between border-b border-zinc-800 pb-2">
-          <span class="text-[10px] font-bold uppercase tracking-widest text-zinc-400" style="font-family: var(--font-mono)">Share Cybernati Feed</span>
-          <button id="close-share-btn" class="flex items-center justify-center rounded p-1 text-zinc-400 hover:bg-zinc-800 hover:text-white" aria-label="Close share panel">
-            <span class="material-symbols-outlined text-sm">close</span>
-          </button>
-        </div>
-        
-        <div class="flex flex-col gap-3 mt-1">
-          <!-- Share Link -->
+        <div class="flex flex-col gap-3"> <!-- Share Link -->
           <div class="flex flex-col gap-1">
             <label class="text-[9px] uppercase tracking-wider text-zinc-500 font-bold" style="font-family: var(--font-mono)">Direct Link</label>
             <div class="flex items-center gap-2 rounded-lg bg-zinc-950/60 border border-zinc-800 p-1 pl-2.5">
               <input type="text" id="share-link-input" readonly class="bg-transparent text-xs text-zinc-300 w-full outline-none select-all" />
-              <button id="copy-link-btn" class="cyber-btn flex items-center gap-1 px-3 py-1.5 rounded-md bg-zinc-900 border border-zinc-850 hover:border-purple-500 hover:bg-purple-950/20 hover:text-purple-300 text-xs text-zinc-400 transition-colors" style="background-color: rgba(24, 24, 27, 0.9) !important; border: 1px solid rgba(63, 63, 70, 0.8) !important;">
+              <button id="copy-link-btn" class="cyber-btn flex items-center gap-1 px-3 py-1.5 rounded-md bg-zinc-900 border border-zinc-850 hover:border-highlight-500 hover:bg-highlight-950/20 hover:text-highlight-300 text-xs text-zinc-400 transition-colors" style="background-color: rgba(24, 24, 27, 0.9) !important; border: 1px solid rgba(63, 63, 70, 0.8) !important;">
                 <span class="material-symbols-outlined text-xs">content_copy</span>
                 <span id="copy-link-text">Copy</span>
               </button>
@@ -96,7 +82,7 @@ const base = getBaseUrl();
             <label class="text-[9px] uppercase tracking-wider text-zinc-500 font-bold" style="font-family: var(--font-mono)">Embed Player Frame</label>
             <div class="flex items-center gap-2 rounded-lg bg-zinc-950/60 border border-zinc-800 p-1 pl-2.5">
               <input type="text" id="share-embed-input" readonly class="bg-transparent text-xs text-zinc-300 w-full outline-none select-all" />
-              <button id="copy-embed-btn" class="cyber-btn flex items-center gap-1 px-3 py-1.5 rounded-md bg-zinc-900 border border-zinc-850 hover:border-purple-500 hover:bg-purple-950/20 hover:text-purple-300 text-xs text-zinc-400 transition-colors" style="background-color: rgba(24, 24, 27, 0.9) !important; border: 1px solid rgba(63, 63, 70, 0.8) !important;">
+              <button id="copy-embed-btn" class="cyber-btn flex items-center gap-1 px-3 py-1.5 rounded-md bg-zinc-900 border border-zinc-850 hover:border-highlight-500 hover:bg-highlight-950/20 hover:text-highlight-300 text-xs text-zinc-400 transition-colors" style="background-color: rgba(24, 24, 27, 0.9) !important; border: 1px solid rgba(63, 63, 70, 0.8) !important;">
                 <span class="material-symbols-outlined text-xs">code</span>
                 <span id="copy-embed-text">Copy</span>
               </button>
@@ -108,13 +94,7 @@ const base = getBaseUrl();
 
     <!-- Collapsible Queue Panel overlay -->
     <div id="queue-panel" class="absolute bottom-[92px] left-4 right-4 z-50 rounded-2xl glass-panel shadow-2xl max-h-0 overflow-hidden transition-all duration-300 ease-in-out opacity-0">
-      <div class="p-4 flex flex-col gap-3">
-        <div class="flex items-center justify-between border-b border-zinc-800 pb-2">
-          <span class="text-[10px] font-bold uppercase tracking-widest text-zinc-400" style="font-family: var(--font-mono)">Broadcast Schedule / Queue</span>
-          <button id="close-queue-btn" class="flex items-center justify-center rounded p-1 text-zinc-400 hover:bg-zinc-800 hover:text-white" aria-label="Close schedule panel">
-            <span class="material-symbols-outlined text-sm">close</span>
-          </button>
-        </div>
+      <div class="p-4">
         <div id="queue-links" class="flex flex-col gap-2 max-h-[160px] overflow-y-auto custom-scroll pr-1">
           <span class="text-xs text-zinc-500 uppercase italic">Loading schedule...</span>
         </div>
@@ -127,12 +107,12 @@ const base = getBaseUrl();
       <div class="flex flex-row items-center justify-between w-full gap-3">
         <!-- Left Controls: Up Next, Vault Notes, Desync -->
         <div class="flex items-center gap-2">
-          <button id="queue-trigger-btn" class="cyber-btn flex items-center gap-1.5 rounded-lg border border-zinc-800 bg-zinc-900/60 px-3 py-1.5 text-xs font-medium text-zinc-300 hover:border-purple-500 hover:bg-purple-950/20 hover:text-purple-300" aria-label="Open broadcast queue schedule">
+          <button id="queue-trigger-btn" class="cyber-btn flex items-center gap-1.5 rounded-lg border border-zinc-800 bg-zinc-900/60 px-3 py-1.5 text-xs font-medium text-zinc-300 hover:border-highlight-500 hover:bg-highlight-950/20 hover:text-highlight-300" aria-label="Open broadcast queue schedule">
             <span class="material-symbols-outlined text-sm">queue_music</span>
             <span>Up Next</span>
           </button>
 
-          <button id="notes-trigger-btn" class="cyber-btn flex items-center gap-1.5 rounded-lg border border-zinc-800 bg-zinc-900/60 px-3 py-1.5 text-xs font-medium text-zinc-300 hover:border-purple-500 hover:bg-purple-950/20 hover:text-purple-300" aria-label="Open related Obsidian notes">
+          <button id="notes-trigger-btn" class="cyber-btn flex items-center gap-1.5 rounded-lg border border-zinc-800 bg-zinc-900/60 px-3 py-1.5 text-xs font-medium text-zinc-300 hover:border-highlight-500 hover:bg-highlight-950/20 hover:text-highlight-300" aria-label="Open related Obsidian notes">
             <span class="material-symbols-outlined text-sm">menu_book</span>
             <span>Vault Notes</span>
           </button>
@@ -147,23 +127,23 @@ const base = getBaseUrl();
         <div class="flex items-center gap-2">
           <!-- Volume Group -->
           <div class="flex items-center gap-1">
-            <button id="mute-toggle" class="flex items-center justify-center rounded-lg p-2 text-zinc-400 hover:bg-zinc-800 hover:text-purple-400" aria-label="Toggle mute state" aria-checked="true">
+            <button id="mute-toggle" class="flex items-center justify-center rounded-lg p-2 text-zinc-400 hover:bg-zinc-800 hover:text-highlight-400" aria-label="Toggle mute state" aria-checked="true">
               <span id="volume-icon-symbol" class="material-symbols-outlined text-lg">volume_off</span>
             </button>
-            <input type="range" id="volume-control" class="h-1 w-16 cursor-pointer accent-purple-400 bg-zinc-800 rounded-lg appearance-none" min="0" max="100" value="0" aria-label="Volume Slider" />
+            <input type="range" id="volume-control" class="h-1 w-16 cursor-pointer accent-highlight-500 bg-zinc-800 rounded-lg appearance-none" min="0" max="100" value="0" aria-label="Volume Slider" />
           </div>
 
           <!-- Utility Group (Share, PiP, Fullscreen) -->
           <div class="flex items-center gap-1">
-            <button id="share-trigger-btn" class="flex items-center justify-center rounded-lg p-2 text-zinc-400 hover:bg-zinc-800 hover:text-purple-400" title="Share Feed" aria-label="Share Cybernati Feed">
+            <button id="share-trigger-btn" class="flex items-center justify-center rounded-lg p-2 text-zinc-400 hover:bg-zinc-800 hover:text-highlight-400" title="Share Feed" aria-label="Share Cybernati Feed">
               <span class="material-symbols-outlined text-lg">share</span>
             </button>
 
-            <button id="pip-btn" class="flex items-center justify-center rounded-lg p-2 text-zinc-400 hover:bg-zinc-800 hover:text-purple-400" title="Picture in Picture" aria-label="Enable Picture-in-Picture">
+            <button id="pip-btn" class="flex items-center justify-center rounded-lg p-2 text-zinc-400 hover:bg-zinc-800 hover:text-highlight-400" title="Picture in Picture" aria-label="Enable Picture-in-Picture">
               <span class="material-symbols-outlined text-lg">picture_in_picture_alt</span>
             </button>
 
-            <button id="fullscreen-toggle" class="flex items-center justify-center rounded-lg p-2 text-zinc-400 hover:bg-zinc-800 hover:text-purple-400" title="Fullscreen" aria-label="Toggle full screen">
+            <button id="fullscreen-toggle" class="flex items-center justify-center rounded-lg p-2 text-zinc-400 hover:bg-zinc-800 hover:text-highlight-400" title="Fullscreen" aria-label="Toggle full screen">
               <span class="material-symbols-outlined text-lg">fullscreen</span>
             </button>
           </div>
@@ -202,14 +182,14 @@ const base = getBaseUrl();
     transition: all 0.15s ease !important;
   }
   #global-cyber-player button.cyber-btn:hover {
-    background-color: rgba(88, 28, 135, 0.25) !important;
-    border-color: #a855f7 !important;
-    color: #f3e8ff !important;
+    background-color: rgb(var(--color-highlight-950, 88 28 135) / 0.25) !important;
+    border-color: rgb(var(--color-highlight-500, 168 85 247)) !important;
+    color: rgb(var(--color-highlight-200, 243 232 255)) !important;
   }
   #global-cyber-player button.cyber-btn.is-active {
-    background-color: rgba(88, 28, 135, 0.2) !important;
-    border-color: #a855f7 !important;
-    color: #d8b4fe !important;
+    background-color: rgb(var(--color-highlight-950, 88 28 135) / 0.2) !important;
+    border-color: rgb(var(--color-highlight-500, 168 85 247)) !important;
+    color: rgb(var(--color-highlight-300, 216 180 254)) !important;
   }
 
   /* Global Player Styles */
@@ -243,7 +223,7 @@ const base = getBaseUrl();
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
     border-radius: 8px;
     overflow: hidden;
-    border: 2px solid var(--cyber-primary);
+    border: 2px solid rgb(var(--color-highlight-500, 168 85 247));
     cursor: move;
   }
   
@@ -277,8 +257,8 @@ const base = getBaseUrl();
     border: 1px solid rgba(255, 255, 255, 0.05);
   }
   #global-cyber-player .progress-bar-fill {
-    background: linear-gradient(90deg, var(--cyber-primary, #a855f7) 0%, #c084fc 100%) !important;
-    box-shadow: 0 0 12px rgba(168, 85, 247, 0.7) !important;
+    background: linear-gradient(90deg, rgb(var(--color-highlight-500, 168 85 247)) 0%, rgb(var(--color-highlight-300, 192 132 252)) 100%) !important;
+    box-shadow: 0 0 12px rgb(var(--color-highlight-500, 168 85 247) / 0.7) !important;
     transition: width 1s linear !important;
   }
   #global-cyber-player .custom-scroll::-webkit-scrollbar {
@@ -292,7 +272,7 @@ const base = getBaseUrl();
     border-radius: 2px;
   }
   #global-cyber-player .custom-scroll::-webkit-scrollbar-thumb:hover {
-    background: rgba(var(--cyber-primary-rgb), 0.3);
+    background: rgb(var(--color-highlight-500, 168 85 247) / 0.3) !important;
   }
   #global-cyber-player .material-symbols-outlined {
     font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
@@ -536,37 +516,38 @@ const base = getBaseUrl();
         }
       },
 
-      // WHY: Dynamically renders the list of upcoming tracks in the current schedule/playlist.
-      // It highlights the currently playing track with a purple background/border and a pulsing active indicator.
+      // WHY: Dynamically renders the single upcoming track in the current schedule/playlist.
+      // It shows only the title of the next video that will be played.
       renderQueue: function() {
         const queueEl = document.getElementById('queue-links');
         if (!queueEl || !this.playlistData || !this.playlistData.schedule) return;
         
         const schedule = this.playlistData.schedule;
+        if (schedule.length === 0) return;
+
         const now = Math.floor(Date.now() / 1000);
         const pos = now % this.playlistData.totalLoopDuration;
         
-        queueEl.innerHTML = schedule.map((p, index) => {
-          const isActive = pos >= p.start && pos < p.end;
-          const formatTime = (secs) => {
-            const m = Math.floor(secs / 60);
-            const s = Math.floor(secs % 60);
-            return `${m}:${s < 10 ? '0' : ''}${s}`;
-          };
-          
-          return `
-            <div class="flex items-center justify-between w-full p-2.5 rounded-lg border ${isActive ? 'border-purple-500 bg-purple-950/20 text-purple-300 font-bold' : 'border-zinc-800 bg-zinc-900/40 text-zinc-300'} transition-all" style="box-sizing: border-box !important;">
-              <div class="flex items-center gap-2.5 overflow-hidden">
-                <span class="text-[10px] ${isActive ? 'text-purple-400 font-bold' : 'text-zinc-500'} font-mono">${index + 1}</span>
-                <span class="text-xs truncate max-w-[160px] sm:max-w-[280px]">${p.title.toUpperCase()}</span>
-              </div>
-              <div class="flex items-center gap-2 flex-shrink-0">
-                <span class="text-[10px] text-zinc-500 font-mono">${formatTime(p.duration)}</span>
-                ${isActive ? '<span class="flex h-2 w-2 relative"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-purple-500"></span></span>' : ''}
-              </div>
-            </div>
-          `;
-        }).join('');
+        let nextIndex = 0;
+        for (let i = 0; i < schedule.length; i++) {
+          const p = schedule[i];
+          if (pos >= p.start && pos < p.end) {
+            nextIndex = (i + 1) % schedule.length;
+            break;
+          }
+        }
+        
+        const nextVideo = schedule[nextIndex];
+        if (!nextVideo) {
+          queueEl.innerHTML = '<span class="text-xs text-zinc-500 uppercase italic">No upcoming feeds.</span>';
+          return;
+        }
+        
+        queueEl.innerHTML = `
+          <div class="py-1 text-xs text-highlight-400 font-bold transition-all uppercase truncate" style="box-sizing: border-box !important;">
+            ${nextVideo.title.toUpperCase()}
+          </div>
+        `;
       },
 
       destroy: function() {
@@ -678,8 +659,8 @@ const base = getBaseUrl();
             if (v.control) v.control.value = sliderVal;
             if (v.mute) {
               v.mute.setAttribute('aria-checked', self.isMuted ? 'true' : 'false');
-              if (self.isMuted) v.mute.classList.remove('text-purple-400');
-              else v.mute.classList.add('text-purple-400');
+              if (self.isMuted) v.mute.classList.remove('text-highlight-400');
+              else v.mute.classList.add('text-highlight-400');
             }
           });
         };
@@ -1039,7 +1020,7 @@ const base = getBaseUrl();
             self.isDesynced = !self.isDesynced;
             if (self.isDesynced) {
               desyncBtn.classList.add('is-active');
-              desyncBtn.classList.add('border-purple-500', 'text-purple-300', 'bg-purple-950/20');
+              desyncBtn.classList.add('border-highlight-500', 'text-highlight-300', 'bg-highlight-950/20');
               desyncBtn.classList.remove('border-zinc-800', 'bg-zinc-900/60');
               desyncText.textContent = "Sync Feed";
               if (self.updateTimer) clearInterval(self.updateTimer);
@@ -1047,7 +1028,7 @@ const base = getBaseUrl();
               self.startDesyncSequence();
             } else {
               desyncBtn.classList.remove('is-active');
-              desyncBtn.classList.remove('border-purple-500', 'text-purple-300', 'bg-purple-950/20');
+              desyncBtn.classList.remove('border-highlight-500', 'text-highlight-300', 'bg-highlight-950/20');
               desyncBtn.classList.add('border-zinc-800', 'bg-zinc-900/60');
               desyncText.textContent = "Desync";
               if (self.desyncTimer) clearInterval(self.desyncTimer);
@@ -1055,6 +1036,52 @@ const base = getBaseUrl();
             }
           };
         }
+
+        // Close overlays on clicking outside
+        window.addEventListener('click', (e) => {
+          const target = e.target;
+          
+          const isOutside = (panelId, triggerId) => {
+            const panel = document.getElementById(panelId);
+            const trigger = document.getElementById(triggerId);
+            if (!panel || panel.classList.contains('opacity-0')) return false;
+            
+            if (trigger && (trigger === target || trigger.contains(target))) return false;
+            if (panel && (panel === target || panel.contains(target))) return false;
+            
+            return true;
+          };
+
+          if (isOutside('related-notes-panel', 'notes-trigger-btn')) {
+            const panel = document.getElementById('related-notes-panel');
+            if (panel) {
+              panel.classList.add('max-h-0');
+              panel.classList.remove('max-h-[300px]');
+              panel.classList.add('opacity-0');
+              panel.classList.remove('opacity-100');
+            }
+          }
+          
+          if (isOutside('queue-panel', 'queue-trigger-btn')) {
+            const panel = document.getElementById('queue-panel');
+            if (panel) {
+              panel.classList.add('max-h-0');
+              panel.classList.remove('max-h-[300px]');
+              panel.classList.add('opacity-0');
+              panel.classList.remove('opacity-100');
+            }
+          }
+          
+          if (isOutside('share-panel', 'share-trigger-btn')) {
+            const panel = document.getElementById('share-panel');
+            if (panel) {
+              panel.classList.add('max-h-0');
+              panel.classList.remove('max-h-[300px]');
+              panel.classList.add('opacity-0');
+              panel.classList.remove('opacity-100');
+            }
+          }
+        });
       },
 
       // WHY: The core feature of Cybernati is that all users visiting a playlist are watching the exact same video at the exact same timestamp.
@@ -1183,7 +1210,7 @@ const base = getBaseUrl();
             linksEl.innerHTML = prog.related.map(link => {
               let linkSlug = link.slug;
               if (linkSlug.startsWith('/') && !linkSlug.startsWith(base)) linkSlug = base.replace(/\/$/, '') + linkSlug;
-              return `<a href="${linkSlug}" class="cyber-related-link px-3 py-1.5 rounded-lg text-xs font-semibold border border-zinc-800 bg-zinc-900 text-zinc-100 hover:border-purple-500 hover:text-purple-300 transition duration-150">${link.name}</a>`;
+              return `<a href="${linkSlug}" class="cyber-related-link px-3 py-1.5 rounded-lg text-xs font-semibold border border-zinc-800 bg-zinc-900 text-zinc-100 hover:border-highlight-500 hover:text-highlight-300 transition duration-150">${link.name}</a>`;
             }).join('');
             
             linksEl.querySelectorAll('.cyber-related-link').forEach(linkEl => {

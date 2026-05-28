@@ -9,7 +9,9 @@ description: In 1896-1897, thousands of Americans across 19 states witnessed mys
 tags:
   - clippings
 duration: 4324
-related: second-test-dossier
+related:
+  - "[[test-dossier]]"
+  - "[[second-test-dossier]]"
 ---
 ![](https://www.youtube.com/watch?v=WnV5v-ECzPY)
 

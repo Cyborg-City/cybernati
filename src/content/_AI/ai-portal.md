@@ -19,23 +19,28 @@ Welcome, AI agent! This is the primary orientation note for **Cybernati**, a per
 Here is an overview of how this vault is structured:
 
 ### Content Folders (User Only)
-- **`posts/`**: Blog posts published to the live site.
-- **`pages/`**: Static pages like About, Contact, or other custom standalone pages.
-- **`projects/`**: Project notes detailing active/completed personal projects.
-- **`docs/`**: Documentation notes, guides, and reference material.
-- **`special/`**: Core site pages with fixed URLs (e.g., Homepage, 404, specific category listings).
+
+| Folder | Purpose |
+|--------|---------|
+| `posts/` | Blog posts published to the live site. |
+| `pages/` | Static pages like About, Contact, or other custom standalone pages. |
+| `projects/` | Project notes detailing active/completed personal projects. |
+| `docs/` | Documentation notes, guides, and reference material. |
+| `special/` | Core site pages with fixed URLs (e.g., Homepage, 404, specific category listings). |
 
 ### System & Workflow Folders (Agent-Authorized & Collaborative)
-- **`_AI/`**: This directory! Contains AI configurations, specialized agent-only skills, and brainstorm drafts.
-  - **`_AI/issues/`**: Active task and bug tracking system. If a feature or bug is identified, create a note here using the `0000-issue.md` template. Codebase developer agents can read and execute these issues independently.
-- **`_Internet-Archive/`**: Storage for UAP documents (under `PURSUE_releases/`), Internet Archive (IA) item notes, logs, and upload scripts.
-- **`_writers-room/`**: Collaborative writing room for you and the user to draft and co-author content. Your drafts are ignored by Git (via `.gitignore`), ensuring clean commits while keeping the directory structure tracked on GitHub.
-- **`_private/`**: Collaboration files and shared records. These files are **not published** to the live website but are tracked in the Git repository to facilitate file sharing and co-working between collaborators.
-- **`bases/`**: Obsidian `.base` reference files. These serve as a fancy central dashboard inside Obsidian to overview and manage all site content across `posts/`, `pages/`, `docs/`, `projects/`, etc.
-- **`.obsidian/`**: The real Obsidian vault configuration, plugins, and settings.
-  > [!NOTE]
-  > Obsidian acts as a **headless CMS** for the Astro site. Therefore, configuration and plugin settings inside `.obsidian/` directly affect how Astro parses and renders pages on the live site (e.g., how wikilinks, callouts, and frontmatter are processed).
-- **`_Clippings/`**: This is where the **Obsidian Web Clipper** saves web clippings and captured research notes. While specialized workflows (e.g., sorting or summarization) will be established later, agents can use this folder to inspect source clippings and referenced research.
+
+| Folder | Purpose |
+|--------|---------|
+| `_AI/` | AI configurations, specialized skills, brainstorm drafts. This directory. |
+| `_AI/issues/` | Task & bug tracking. Use the `0000-issue.md` template for new entries. Codebase agents read and execute these independently. |
+| `_AI/guides/` | Agent runbook — procedural guides for tools, extensions, and workflows. See [guide-TOC.md](guides/guide-TOC.md) for the full catalog. |
+| `_Internet-Archive/` | UAP documents, IA item notes, logs, and upload scripts. |
+| `_writers-room/` | Collaborative drafting with the user. Your drafts are gitignored; clean commits. |
+| `_private/` | Shared collaboration files. **Not published** to the live site. |
+| `bases/` | Obsidian `.base` reference files — a central dashboard inside Obsidian. |
+| `.obsidian/` | Real vault config, plugins, settings. Acts as **headless CMS** — changes here affect Astro rendering (wikilinks, callouts, frontmatter). |
+| `_Clippings/` | Obsidian Web Clipper storage for captured research notes. |
 
 ---
 

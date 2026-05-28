@@ -32,3 +32,9 @@ The **[AI Portal](_AI/ai-portal.md)** is the living source of truth for all work
 
 ### 3. Scripting Standards
 - **Explain Your Code**: When writing scripts, leave clear comments explaining the *why* of the code you wrote to aid collaboration and future agent comprehension.
+
+### 4. Logging Standard
+- **Logging is mandatory.** Every tool or script that executes code MUST write a JSONL log entry at minimum when it runs.
+- Log file lives at `<script-dir>/logs/<tool-name>.jsonl`.
+- Every entry requires: `ts` (ISO timestamp), `level` (info/warn/error), `tool` (name), `msg` (human-readable summary).
+- Install logging first, logic second. See the [logging standard guide](_AI/guides/rules/logging-standard.md) for the full spec.

@@ -8,6 +8,7 @@
     "noIndex": "checkbox",
     "featured": "checkbox",
     "date": "date",
-    "related": "multitext"
+    "related": "multitext",
+    "targetKeyword": "text"
   }
 }

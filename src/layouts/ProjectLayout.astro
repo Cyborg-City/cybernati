@@ -152,8 +152,8 @@ const { prev: prevProject, next: nextProject } = getAdjacentPosts(visibleProject
           let imageSrc = cleanImagePath;
           let imageBasePath = '';
           
-          if (typeof cleanImagePath === 'string' && cleanImagePath.startsWith('http')) {
-            // External URL - pass as-is
+          if (typeof cleanImagePath === 'string' && (cleanImagePath.startsWith('http') || cleanImagePath.startsWith('/'))) {
+            // External or absolute public path - pass as-is
             imageSrc = cleanImagePath;
             imageBasePath = '';
           } else {

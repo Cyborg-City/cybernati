@@ -1,27 +1,15 @@
 {
-  "totalLoopDuration": 5107,
+  "totalLoopDuration": 4324,
   "schedule": [
-    {
-      "id": "IBaw2oqVz8w",
-      "title": "\"Mystery Airship\" Sightings, 1896 - 1897",
-      "duration": 753,
-      "related": [
-        {
-          "name": "Test Dossier",
-          "slug": "/dossier/test-dossier/"
-        }
-      ],
-      "date": 1500854400000,
-      "type": "video",
-      "playlist": "uap",
-      "start": 0,
-      "end": 753
-    },
     {
       "id": "WnV5v-ECzPY",
       "title": "THE 1897 AIRSHIP MYSTERY: America's First UFO Wave That Predated Roswell Before Planes Even Existed",
       "duration": 4324,
       "related": [
+        {
+          "name": "Test Dossier",
+          "slug": "/dossier/test-dossier/"
+        },
         {
           "name": "Second Test Dossier",
           "slug": "/dossier/second-test-dossier/"
@@ -30,8 +18,8 @@
       "date": 1751846400000,
       "type": "video",
       "playlist": "uap",
-      "start": 783,
-      "end": 5107
+      "start": 0,
+      "end": 4324
     }
   ],
   "interstitials": [

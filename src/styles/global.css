@@ -202,6 +202,32 @@ p:has(.katex-display) {
 
   /* Highlight/selection colors */
   --selection-bg: 112 135 148;
+
+  /* Default Primary Colors (Dracula Theme inspired for dark-mode default) */
+  --color-primary-50: 255 255 255;
+  --color-primary-100: 250 248 255;
+  --color-primary-200: 226 232 240;
+  --color-primary-300: 203 213 225;
+  --color-primary-400: 148 163 184;
+  --color-primary-500: 98 114 164;
+  --color-primary-600: 68 71 90;
+  --color-primary-700: 61 64 80;
+  --color-primary-800: 40 42 55;
+  --color-primary-900: 33 34 44;
+  --color-primary-950: 25 26 33;
+
+  /* Default Highlight Colors (Gorgeous Dracula Purple accents as default) */
+  --color-highlight-50: 245 243 255;
+  --color-highlight-100: 237 233 254;
+  --color-highlight-200: 221 214 254;
+  --color-highlight-300: 196 181 253;
+  --color-highlight-400: 167 139 250;
+  --color-highlight-500: 139 92 246;
+  --color-highlight-600: 164 116 230;
+  --color-highlight-700: 139 92 246;
+  --color-highlight-800: 124 58 237;
+  --color-highlight-900: 109 40 217;
+  --color-highlight-950: 76 29 149;
 }
 
 .dark {

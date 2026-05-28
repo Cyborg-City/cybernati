@@ -34,7 +34,7 @@
     "editor:configure-toolbar"
   ],
   "newFileLocation": "folder",
-  "newFileFolderPath": "posts",
+  "newFileFolderPath": "_writers-room",
   "newLinkFormat": "relative",
   "mobileQuickRibbonItem": "",
   "vimMode": false,

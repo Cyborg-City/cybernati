@@ -1,7 +1,7 @@
 # Issue: Design and Add Content Collections for Dossiers, Wiki, and Atomic Notes
 
 **Date Created**: 2026-05-23  
-**Status**: Open  
+**Status**: Closed — Completed 2026-05-28  
 **Severity**: High  
 **Assigned To**: Future Developer Agent  
 
@@ -96,3 +96,4 @@ The developer agent executing this task must complete the following steps:
 
 * **[2026-05-23]**: Issue initialized.
 * **[2026-05-25]**: Spec heavily refined with the user to outline public folder compilation, zero-maintenance backlinks, and minimal frontmatter properties.
+* **[2026-05-28]**: **Closed** — Dossier, Vault, and Media collections implemented with schemas, routes, and listing pages. (Wiki and Atomic collections deferred; dossier naming standardized to singular.)

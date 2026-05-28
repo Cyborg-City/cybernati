@@ -38,6 +38,16 @@ const IMAGE_SYNC_CONFIGS = [
     source: 'src/content/special/attachments',
     target: 'public/special/attachments',
     name: 'special'
+  },
+  {
+    source: 'src/content/dossier/attachments',
+    target: 'public/dossier/attachments',
+    name: 'dossier'
+  },
+  {
+    source: 'src/content/vault/attachments',
+    target: 'public/vault/attachments',
+    name: 'vault'
   }
 ];
 
@@ -367,7 +377,7 @@ async function syncAllImages() {
   }
 
   // Sync folder-based images for all content types
-  const contentTypes = ['posts', 'pages', 'projects', 'docs', 'special'];
+  const contentTypes = ['posts', 'pages', 'projects', 'docs', 'special', 'dossier', 'vault'];
   for (const contentType of contentTypes) {
     await syncFolderBasedImages(contentType);
   }

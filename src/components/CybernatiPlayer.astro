@@ -354,10 +354,10 @@ const base = getBaseUrl();
     right: 10px !important;
     margin-bottom: 0 !important;
     z-index: 30 !important;
-    opacity: 1;
-    pointer-events: auto;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    transform: translateY(-5px) !important;
     transition: opacity 0.3s cubic-bezier(0.25, 1, 0.5, 1), transform 0.3s cubic-bezier(0.25, 1, 0.5, 1) !important;
-    transform: translateY(0);
   }
 
   #global-cyber-player .cyber-footer {
@@ -367,40 +367,30 @@ const base = getBaseUrl();
     right: 10px !important;
     margin-top: 0 !important;
     z-index: 30 !important;
-    opacity: 1;
-    pointer-events: auto;
-    transition: opacity 0.3s cubic-bezier(0.25, 1, 0.5, 1), transform 0.3s cubic-bezier(0.25, 1, 0.5, 1) !important;
-    transform: translateY(0);
-  }
-
-  /* ONLY when in fullscreen, the header and footer hide by default and rely on the .is-visible class */
-  #player-root:fullscreen .cyber-header {
-    opacity: 0 !important;
-    pointer-events: none !important;
-    transform: translateY(-5px) !important;
-  }
-
-  #player-root:fullscreen .cyber-footer {
     opacity: 0 !important;
     pointer-events: none !important;
     transform: translateY(5px) !important;
+    transition: opacity 0.3s cubic-bezier(0.25, 1, 0.5, 1), transform 0.3s cubic-bezier(0.25, 1, 0.5, 1) !important;
   }
 
-  #player-root:fullscreen .cyber-header.is-visible {
+  /* When the player is not in PiP mode (both embedded and fullscreen), the header and footer reveal via the .is-visible class */
+  #global-cyber-player:not(.is-pip) .cyber-header.is-visible {
     opacity: 1 !important;
     pointer-events: auto !important;
     transform: translateY(0) !important;
   }
 
-  #player-root:fullscreen .cyber-footer.is-visible {
+  #global-cyber-player:not(.is-pip) .cyber-footer.is-visible {
     opacity: 1 !important;
     pointer-events: auto !important;
     transform: translateY(0) !important;
   }
 
-  /* Hide mouse cursor in fullscreen when overlays are hidden */
-  #player-root:fullscreen.hide-cursor,
-  #player-root:fullscreen.hide-cursor * {
+  /* Hide mouse cursor when overlays are hidden */
+  #global-cyber-player.hide-cursor,
+  #global-cyber-player.hide-cursor *,
+  #player-root.hide-cursor,
+  #player-root.hide-cursor * {
     cursor: none !important;
   }
 
@@ -1818,7 +1808,7 @@ const base = getBaseUrl();
 
       setupOverlaysAutoHide: function() {
         const self = this;
-        const player = document.getElementById('global-cyber-player');
+        const player = document.getElementById('global-cyber-player') || this.el;
         const root = document.getElementById('player-root');
         const header = document.querySelector('#global-cyber-player .cyber-header');
         const footer = document.querySelector('#global-cyber-player .cyber-footer');
@@ -1840,49 +1830,51 @@ const base = getBaseUrl();
         };
 
         const showControls = () => {
-          if (isFullscreen()) {
-            header.classList.add('is-visible');
-            footer.classList.add('is-visible');
-            root.classList.remove('hide-cursor');
-            
-            if (inactivityTimeout) clearTimeout(inactivityTimeout);
-            
+          header.classList.add('is-visible');
+          footer.classList.add('is-visible');
+          player.classList.remove('hide-cursor');
+          if (root) root.classList.remove('hide-cursor');
+          
+          if (inactivityTimeout) clearTimeout(inactivityTimeout);
+          
+          // Auto-hide controls only if the video is playing and no overlay panel is open
+          const isPlaying = localStorage.getItem('cyber-player-playing') === 'true';
+          if (isPlaying) {
             inactivityTimeout = setTimeout(() => {
-              if (!isAnyPanelOpen() && isFullscreen()) {
+              if (!isAnyPanelOpen()) {
                 hideControls();
               }
-            }, 5000);
-          } else {
-            header.classList.remove('is-visible');
-            footer.classList.remove('is-visible');
-            root.classList.remove('hide-cursor');
-            if (inactivityTimeout) clearTimeout(inactivityTimeout);
+            }, 3000); // 3 seconds timeout
           }
         };
 
         const hideControls = () => {
-          if (!isFullscreen() || isAnyPanelOpen()) return;
+          if (isAnyPanelOpen()) return;
           header.classList.remove('is-visible');
           footer.classList.remove('is-visible');
-          root.classList.add('hide-cursor');
+          player.classList.add('hide-cursor');
+          if (isFullscreen() && root) {
+            root.classList.add('hide-cursor');
+          }
         };
 
         // Reveal on mouse move, clicks, touch, or keyboard navigation inside the player bounds
-        player.addEventListener('mousemove', showControls);
-        player.addEventListener('click', showControls);
-        player.addEventListener('touchstart', showControls);
-        player.addEventListener('keydown', showControls);
+        player.addEventListener('mousemove', showControls, { passive: true });
+        player.addEventListener('click', showControls, { passive: true });
+        player.addEventListener('touchstart', showControls, { passive: true });
+        player.addEventListener('keydown', showControls, { passive: true });
 
-        // Faster fade out (1.5 seconds) on mouseleave to provide clean, snappier visuals when leaving the player
+        // Faster fade out (1.2 seconds) on mouseleave to provide clean, snappier visuals when leaving the player
         player.addEventListener('mouseleave', () => {
-          if (!isFullscreen()) return;
+          const isPlaying = localStorage.getItem('cyber-player-playing') === 'true';
+          if (!isPlaying) return; // Keep visible if not playing
           if (inactivityTimeout) clearTimeout(inactivityTimeout);
           inactivityTimeout = setTimeout(() => {
-            if (!isAnyPanelOpen() && isFullscreen()) {
+            if (!isAnyPanelOpen()) {
               hideControls();
             }
-          }, 1500);
-        });
+          }, 1200);
+        }, { passive: true });
 
         // Force reveal immediately whenever trigger buttons are clicked to support fluid overlay usage
         const triggers = ['notes-trigger-btn', 'share-trigger-btn', 'queue-trigger-btn'];
@@ -1892,21 +1884,14 @@ const base = getBaseUrl();
             btn.addEventListener('click', () => {
               showControls();
               if (inactivityTimeout) clearTimeout(inactivityTimeout);
-            });
+            }, { passive: true });
           }
         });
 
         // Listen for browser fullscreen transitions to seamlessly sync states
         document.addEventListener('fullscreenchange', () => {
-          if (isFullscreen()) {
-            showControls(); // Trigger initial 5s reveal on entering fullscreen
-          } else {
-            header.classList.remove('is-visible');
-            footer.classList.remove('is-visible');
-            root.classList.remove('hide-cursor');
-            if (inactivityTimeout) clearTimeout(inactivityTimeout);
-          }
-        });
+          showControls();
+        }, { passive: true });
 
         // Trigger initial reveal/sync on startup
         showControls();

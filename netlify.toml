@@ -176,6 +176,24 @@
   force = true
 
 [[redirects]]
+  from = "/posts/from-classified-to-curated-how-the-government-still-controls-the-uap-narrative"
+  to = "/posts/from-classified-to-curated-project-pursue"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/posts/from-classified-to-curated-project-pursue-explained"
+  to = "/posts/from-classified-to-curated-project-pursue"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/posts/project-pursue-explained-130-years-of-uap-secrecy"
+  to = "/posts/from-classified-to-curated-project-pursue"
+  status = 301
+  force = true
+
+[[redirects]]
   from = "/posts/mermaid-test"
   to = "/posts/obsidian-embeds-demo"
   status = 301

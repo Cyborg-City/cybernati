@@ -4,6 +4,16 @@ const base = getBaseUrl();
 ---
 
 <div id="global-cyber-player" class="is-hidden not-prose">
+  <!-- Invisible Resize Handles for PiP -->
+  <div class="pip-resizer pip-resizer-t" data-direction="t"></div>
+  <div class="pip-resizer pip-resizer-r" data-direction="r"></div>
+  <div class="pip-resizer pip-resizer-b" data-direction="b"></div>
+  <div class="pip-resizer pip-resizer-l" data-direction="l"></div>
+  <div class="pip-resizer pip-resizer-tl" data-direction="tl"></div>
+  <div class="pip-resizer pip-resizer-tr" data-direction="tr"></div>
+  <div class="pip-resizer pip-resizer-bl" data-direction="bl"></div>
+  <div class="pip-resizer pip-resizer-br" data-direction="br">
+  </div>
   
   <div id="player-root" class="relative flex h-full w-full flex-col p-2.5 box-sizing-border-box">
     
@@ -226,6 +236,30 @@ const base = getBaseUrl();
     border: 2px solid rgb(var(--color-highlight-500, 168 85 247));
     cursor: move;
   }
+
+  /* Invisible Resize Handles for PiP */
+  .pip-resizer {
+    position: absolute;
+    z-index: 99999;
+    display: none;
+    background: transparent;
+    user-select: none;
+  }
+  #global-cyber-player.is-pip .pip-resizer {
+    display: block;
+  }
+  
+  /* Edges */
+  .pip-resizer-t { top: -4px; left: 8px; right: 8px; height: 8px; cursor: ns-resize; }
+  .pip-resizer-b { bottom: -4px; left: 8px; right: 8px; height: 8px; cursor: ns-resize; }
+  .pip-resizer-l { left: -4px; top: 8px; bottom: 8px; width: 8px; cursor: ew-resize; }
+  .pip-resizer-r { right: -4px; top: 8px; bottom: 8px; width: 8px; cursor: ew-resize; }
+  
+  /* Corners */
+  .pip-resizer-tl { top: -6px; left: -6px; width: 12px; height: 12px; cursor: nwse-resize; }
+  .pip-resizer-tr { top: -6px; right: -6px; width: 12px; height: 12px; cursor: nesw-resize; }
+  .pip-resizer-bl { bottom: -6px; left: -6px; width: 12px; height: 12px; cursor: nesw-resize; }
+  .pip-resizer-br { bottom: -6px; right: -6px; width: 12px; height: 12px; cursor: nwse-resize; }
   
   #global-cyber-player.is-hidden {
     display: none !important;
@@ -457,6 +491,8 @@ const base = getBaseUrl();
           // Ensure it's positioned correctly
           globalPlayer.style.bottom = 'auto';
           globalPlayer.style.right = 'auto';
+          globalPlayer.style.width = '';
+          globalPlayer.style.height = '';
           
           this.isFloating = false;
 
@@ -480,6 +516,17 @@ const base = getBaseUrl();
             // Clear any inline positioning styles set during slotting or dragging
             globalPlayer.style.bottom = '';
             globalPlayer.style.right = '';
+            
+            // Restore custom resized size if saved in localStorage
+            const savedWidth = localStorage.getItem('cyber-player-pip-width');
+            const savedHeight = localStorage.getItem('cyber-player-pip-height');
+            if (savedWidth && savedHeight) {
+              globalPlayer.style.width = savedWidth + 'px';
+              globalPlayer.style.height = savedHeight + 'px';
+            } else {
+              globalPlayer.style.width = '';
+              globalPlayer.style.height = '';
+            }
             
             // Move back to body to ensure it isn't destroyed by Swup
             const parentChanged = globalPlayer.parentNode !== document.body;
@@ -510,6 +557,20 @@ const base = getBaseUrl();
         if (forcePip) {
           globalPlayer.classList.remove('is-hidden', 'is-slotted');
           globalPlayer.classList.add('is-pip');
+          
+          // Clear styles and restore custom resized size
+          globalPlayer.style.bottom = '';
+          globalPlayer.style.right = '';
+          const savedWidth = localStorage.getItem('cyber-player-pip-width');
+          const savedHeight = localStorage.getItem('cyber-player-pip-height');
+          if (savedWidth && savedHeight) {
+            globalPlayer.style.width = savedWidth + 'px';
+            globalPlayer.style.height = savedHeight + 'px';
+          } else {
+            globalPlayer.style.width = '';
+            globalPlayer.style.height = '';
+          }
+          
           document.body.appendChild(globalPlayer);
           this.isFloating = true;
         } else {
@@ -825,7 +886,7 @@ const base = getBaseUrl();
 
         // Draggable logic for PiP
         // WHY: We track isDragging and check if the mouse has moved more than 5px to mark it as a "drag" rather than a "click", preventing accidental video toggling when repositioning the PiP window.
-        let isDragging = false, startX, startY, initialRight, initialBottom;
+        let isDragging = false, startX, startY, initialRight, initialBottom, currentDragWidth, currentDragHeight;
         self.wasDragged = false;
         if (globalPlayer) {
           const onMouseMove = (e) => {
@@ -839,9 +900,9 @@ const base = getBaseUrl();
               self.wasDragged = true;
             }
             
-            // Constrain to viewport
-            let newRight = Math.max(0, Math.min(window.innerWidth - 320, initialRight - dx));
-            let newBottom = Math.max(0, Math.min(window.innerHeight - 180, initialBottom - dy));
+            // Constrain to viewport using dynamic width/height
+            let newRight = Math.max(0, Math.min(window.innerWidth - currentDragWidth, initialRight - dx));
+            let newBottom = Math.max(0, Math.min(window.innerHeight - currentDragHeight, initialBottom - dy));
             
             globalPlayer.style.right = newRight + 'px';
             globalPlayer.style.bottom = newBottom + 'px';
@@ -871,6 +932,8 @@ const base = getBaseUrl();
               startX = e.clientX;
               startY = e.clientY;
               const rect = globalPlayer.getBoundingClientRect();
+              currentDragWidth = rect.width;
+              currentDragHeight = rect.height;
               initialRight = window.innerWidth - rect.right;
               initialBottom = window.innerHeight - rect.bottom;
               
@@ -879,6 +942,117 @@ const base = getBaseUrl();
               document.addEventListener('mouseup', onMouseUp);
             });
           }
+        }
+
+        // Invisible Edge/Corner Resizing Logic for PiP (Locked 16:9 Aspect Ratio)
+        let isResizing = false;
+        let resizeDir = '';
+        let startResizeX, startResizeY;
+        let initialRect, initialWidth, initialHeight;
+        
+        if (globalPlayer) {
+          const onResizeMouseMove = (e) => {
+            if (!isResizing) return;
+            e.preventDefault();
+            
+            const dx = e.clientX - startResizeX;
+            const dy = e.clientY - startResizeY;
+            
+            let newWidth = initialWidth;
+            let newHeight = initialHeight;
+            
+            // Determine primary sizing based on drag direction
+            if (['l', 'r', 'tl', 'tr', 'bl', 'br'].includes(resizeDir)) {
+              // Width-driven sizing
+              if (['l', 'tl', 'bl'].includes(resizeDir)) {
+                newWidth = initialWidth - dx;
+              } else {
+                newWidth = initialWidth + dx;
+              }
+              // Constrain width
+              newWidth = Math.max(240, Math.min(640, newWidth));
+              newHeight = Math.round(newWidth / (16 / 9));
+            } else if (['t', 'b'].includes(resizeDir)) {
+              // Height-driven sizing
+              if (resizeDir === 't') {
+                newHeight = initialHeight - dy;
+              } else {
+                newHeight = initialHeight + dy;
+              }
+              // Constrain height
+              newHeight = Math.max(135, Math.min(360, newHeight));
+              newWidth = Math.round(newHeight * (16 / 9));
+            }
+            
+            // Apply dimensions
+            globalPlayer.style.width = newWidth + 'px';
+            globalPlayer.style.height = newHeight + 'px';
+            
+            // Adjust position offsets depending on anchor point
+            // Anchor Bottom-Right (fixed bottom/right offsets) for tl, t, l resizing
+            if (['tl', 't', 'l'].includes(resizeDir)) {
+              const newRight = window.innerWidth - initialRect.right;
+              const newBottom = window.innerHeight - initialRect.bottom;
+              globalPlayer.style.right = newRight + 'px';
+              globalPlayer.style.bottom = newBottom + 'px';
+            }
+            // Anchor Top-Left (fixed top/left coordinates) for br, b, r resizing
+            else if (['br', 'b', 'r'].includes(resizeDir)) {
+              const newRight = window.innerWidth - initialRect.left - newWidth;
+              const newBottom = window.innerHeight - initialRect.top - newHeight;
+              globalPlayer.style.right = newRight + 'px';
+              globalPlayer.style.bottom = newBottom + 'px';
+            }
+            // Anchor Bottom-Left (fixed bottom/left) for tr resizing
+            else if (resizeDir === 'tr') {
+              const newRight = window.innerWidth - initialRect.left - newWidth;
+              const newBottom = window.innerHeight - initialRect.bottom;
+              globalPlayer.style.right = newRight + 'px';
+              globalPlayer.style.bottom = newBottom + 'px';
+            }
+            // Anchor Top-Right (fixed top/right) for bl resizing
+            else if (resizeDir === 'bl') {
+              const newRight = window.innerWidth - initialRect.right;
+              const newBottom = window.innerHeight - initialRect.top - newHeight;
+              globalPlayer.style.right = newRight + 'px';
+              globalPlayer.style.bottom = newBottom + 'px';
+            }
+          };
+          
+          const onResizeMouseUp = () => {
+            if (isResizing) {
+              isResizing = false;
+              document.removeEventListener('mousemove', onResizeMouseMove);
+              document.removeEventListener('mouseup', onResizeMouseUp);
+              
+              // Save resized state in localStorage
+              const rect = globalPlayer.getBoundingClientRect();
+              localStorage.setItem('cyber-player-pip-width', Math.round(rect.width).toString());
+              localStorage.setItem('cyber-player-pip-height', Math.round(rect.height).toString());
+              
+              globalPlayer.style.transition = 'all 0.3s cubic-bezier(0.25, 1, 0.5, 1)';
+            }
+          };
+          
+          globalPlayer.querySelectorAll('.pip-resizer').forEach(resizer => {
+            resizer.addEventListener('mousedown', (e) => {
+              if (!self.isFloating) return;
+              e.stopPropagation();
+              e.preventDefault();
+              
+              isResizing = true;
+              resizeDir = resizer.getAttribute('data-direction');
+              startResizeX = e.clientX;
+              startResizeY = e.clientY;
+              initialRect = globalPlayer.getBoundingClientRect();
+              initialWidth = initialRect.width;
+              initialHeight = initialRect.height;
+              
+              globalPlayer.style.transition = 'none';
+              document.addEventListener('mousemove', onResizeMouseMove);
+              document.addEventListener('mouseup', onResizeMouseUp);
+            });
+          });
         }
 
         const notesTrigger = document.getElementById('notes-trigger-btn');

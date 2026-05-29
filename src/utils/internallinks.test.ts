@@ -55,6 +55,18 @@ describe('internallinks wikilink parsing and resolution', () => {
       expect(matches).toHaveLength(1);
       expect(matches[0].slug).toBe('folder-based-post');
     });
+
+    it('should correctly handle absolute and relative paths with leading slashes or dots', () => {
+      const content1 = 'Absolute: [[/dossier/the-project-pursue-reference-dossier/index|PURSUE documents are real]]';
+      const matches1 = extractWikilinks(content1);
+      expect(matches1).toHaveLength(1);
+      expect(matches1[0].slug).toBe('the-project-pursue-reference-dossier');
+
+      const content2 = 'Relative: [[../../dossier/the-project-pursue-reference-dossier/index|PURSUE documents are real]]';
+      const matches2 = extractWikilinks(content2);
+      expect(matches2).toHaveLength(1);
+      expect(matches2[0].slug).toBe('the-project-pursue-reference-dossier');
+    });
   });
 
   describe('resolveWikilink', () => {

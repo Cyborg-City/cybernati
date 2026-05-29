@@ -510,6 +510,7 @@ function extractLinkTextFromUrlWithAnchor(
 // Remark plugin for processing wikilinks (Obsidian-style) - original behavior
 export function remarkWikilinks() {
   return function transformer(tree: any, file: any) {
+    console.log("REMARK_WIKILINKS TRANSFORMER RUNNING for file:", file?.path || file?.history);
     const nodesToReplace: Array<{
       parent: any;
       index: number;
@@ -574,11 +575,21 @@ export function remarkWikilinks() {
           });
         } else {
           // Process link wikilink - WIKILINKS ONLY WORK WITH POSTS
-          const { link, anchor } = parseLinkWithAnchor(linkText);
+          // Clean relative path segments (e.g. ../../dossier/... -> dossier/...)
+          const cleanLinkText = linkText.replace(/^[\.\/\\\s]+/, "");
+          const { link, anchor } = parseLinkWithAnchor(cleanLinkText);
+
+          console.log("REMARK_WIKILINKS DEBUG:", {
+            linkText,
+            cleanLinkText,
+            link,
+            startsWithDossier: link.startsWith("dossier/"),
+            includesSlash: link.includes("/")
+          });
 
           // Check if this is a same-page anchor (starts with #)
           // Format: [[#heading]] or [[#heading|text]]
-          const isSamePageAnchor = linkText.startsWith("#") || link === "";
+          const isSamePageAnchor = cleanLinkText.startsWith("#") || link === "";
 
           // Handle different link formats
           let url: string;
@@ -665,7 +676,6 @@ export function remarkWikilinks() {
             url: url,
             title: null,
             data: {
-              hName: "a",
               hProperties: {
                 className: ["wikilink"],
                 "data-wikilink": wikilinkData,
@@ -734,10 +744,12 @@ export function extractWikilinks(content: string): WikilinkMatch[] {
         : [linkContent, linkContent];
 
       // Parse anchor if present
-      const { link: baseLink } = parseLinkWithAnchor(link.trim());
+      // Clean relative path segments (e.g. ../../dossier/... -> dossier/...)
+      const cleanLink = link.trim().replace(/^[\.\/\\\s]+/, "");
+      const { link: baseLink } = parseLinkWithAnchor(cleanLink);
 
       // Skip same-page anchors ([[#heading]]) - they don't reference other posts
-      if (link.trim().startsWith("#") || baseLink === "") {
+      if (cleanLink.startsWith("#") || baseLink === "") {
         continue;
       }
 
@@ -1125,11 +1137,21 @@ export function remarkStandardLinks() {
               node.data.hProperties = {};
             }
 
-            // Add wikilink class for styling consistency
+            // Add wikilink class for styling consistency, preventing duplicates
+            // Why: Standard markdown links and Obsidian wikilinks both get visited,
+            // so we must safely merge and deduplicate to avoid generating "wikilink wikilink"
+            // double classes which clutter the DOM and look unprofessional.
             const existingClasses = node.data.hProperties.className || [];
-            node.data.hProperties.className = Array.isArray(existingClasses)
-              ? [...existingClasses, "wikilink"]
-              : [existingClasses, "wikilink"].filter(Boolean);
+            let classes: string[] = [];
+            if (Array.isArray(existingClasses)) {
+              classes = [...existingClasses];
+            } else if (typeof existingClasses === "string") {
+              classes = existingClasses.split(/\s+/).filter(Boolean);
+            }
+            if (!classes.includes("wikilink")) {
+              classes.push("wikilink");
+            }
+            node.data.hProperties.className = classes;
           }
         }
 

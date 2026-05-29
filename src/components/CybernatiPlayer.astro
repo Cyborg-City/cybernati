@@ -354,16 +354,10 @@ const base = getBaseUrl();
     right: 10px !important;
     margin-bottom: 0 !important;
     z-index: 30 !important;
-    opacity: 0;
-    pointer-events: none;
+    opacity: 1;
+    pointer-events: auto;
     transition: opacity 0.3s cubic-bezier(0.25, 1, 0.5, 1), transform 0.3s cubic-bezier(0.25, 1, 0.5, 1) !important;
-    transform: translateY(-5px);
-  }
-
-  #global-cyber-player .cyber-header.is-visible {
-    opacity: 1 !important;
-    pointer-events: auto !important;
-    transform: translateY(0) !important;
+    transform: translateY(0);
   }
 
   #global-cyber-player .cyber-footer {
@@ -373,16 +367,41 @@ const base = getBaseUrl();
     right: 10px !important;
     margin-top: 0 !important;
     z-index: 30 !important;
-    opacity: 0;
-    pointer-events: none;
+    opacity: 1;
+    pointer-events: auto;
     transition: opacity 0.3s cubic-bezier(0.25, 1, 0.5, 1), transform 0.3s cubic-bezier(0.25, 1, 0.5, 1) !important;
-    transform: translateY(5px);
+    transform: translateY(0);
   }
 
-  #global-cyber-player .cyber-footer.is-visible {
+  /* ONLY when in fullscreen, the header and footer hide by default and rely on the .is-visible class */
+  #player-root:fullscreen .cyber-header {
+    opacity: 0 !important;
+    pointer-events: none !important;
+    transform: translateY(-5px) !important;
+  }
+
+  #player-root:fullscreen .cyber-footer {
+    opacity: 0 !important;
+    pointer-events: none !important;
+    transform: translateY(5px) !important;
+  }
+
+  #player-root:fullscreen .cyber-header.is-visible {
     opacity: 1 !important;
     pointer-events: auto !important;
     transform: translateY(0) !important;
+  }
+
+  #player-root:fullscreen .cyber-footer.is-visible {
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    transform: translateY(0) !important;
+  }
+
+  /* Hide mouse cursor in fullscreen when overlays are hidden */
+  #player-root:fullscreen.hide-cursor,
+  #player-root:fullscreen.hide-cursor * {
+    cursor: none !important;
   }
 
   /* PiP overrides */
@@ -1762,11 +1781,16 @@ const base = getBaseUrl();
       setupOverlaysAutoHide: function() {
         const self = this;
         const player = document.getElementById('global-cyber-player');
+        const root = document.getElementById('player-root');
         const header = document.querySelector('#global-cyber-player .cyber-header');
         const footer = document.querySelector('#global-cyber-player .cyber-footer');
-        if (!player || !header || !footer) return;
+        if (!player || !root || !header || !footer) return;
 
         let inactivityTimeout = null;
+
+        const isFullscreen = () => {
+          return !!document.fullscreenElement;
+        };
 
         const isAnyPanelOpen = () => {
           const notesPanel = document.getElementById('related-notes-panel');
@@ -1778,22 +1802,31 @@ const base = getBaseUrl();
         };
 
         const showControls = () => {
-          header.classList.add('is-visible');
-          footer.classList.add('is-visible');
-          
-          if (inactivityTimeout) clearTimeout(inactivityTimeout);
-          
-          inactivityTimeout = setTimeout(() => {
-            if (!isAnyPanelOpen()) {
-              hideControls();
-            }
-          }, 5000);
+          if (isFullscreen()) {
+            header.classList.add('is-visible');
+            footer.classList.add('is-visible');
+            root.classList.remove('hide-cursor');
+            
+            if (inactivityTimeout) clearTimeout(inactivityTimeout);
+            
+            inactivityTimeout = setTimeout(() => {
+              if (!isAnyPanelOpen() && isFullscreen()) {
+                hideControls();
+              }
+            }, 5000);
+          } else {
+            header.classList.remove('is-visible');
+            footer.classList.remove('is-visible');
+            root.classList.remove('hide-cursor');
+            if (inactivityTimeout) clearTimeout(inactivityTimeout);
+          }
         };
 
         const hideControls = () => {
-          if (isAnyPanelOpen()) return;
+          if (!isFullscreen() || isAnyPanelOpen()) return;
           header.classList.remove('is-visible');
           footer.classList.remove('is-visible');
+          root.classList.add('hide-cursor');
         };
 
         // Reveal on mouse move, clicks, touch, or keyboard navigation inside the player bounds
@@ -1804,9 +1837,10 @@ const base = getBaseUrl();
 
         // Faster fade out (1.5 seconds) on mouseleave to provide clean, snappier visuals when leaving the player
         player.addEventListener('mouseleave', () => {
+          if (!isFullscreen()) return;
           if (inactivityTimeout) clearTimeout(inactivityTimeout);
           inactivityTimeout = setTimeout(() => {
-            if (!isAnyPanelOpen()) {
+            if (!isAnyPanelOpen() && isFullscreen()) {
               hideControls();
             }
           }, 1500);
@@ -1817,11 +1851,26 @@ const base = getBaseUrl();
         triggers.forEach(id => {
           const btn = document.getElementById(id);
           if (btn) {
-            btn.addEventListener('click', showControls);
+            btn.addEventListener('click', () => {
+              showControls();
+              if (inactivityTimeout) clearTimeout(inactivityTimeout);
+            });
           }
         });
 
-        // Trigger initial reveal on load to introduce the HUD, then let it naturally fade out
+        // Listen for browser fullscreen transitions to seamlessly sync states
+        document.addEventListener('fullscreenchange', () => {
+          if (isFullscreen()) {
+            showControls(); // Trigger initial 5s reveal on entering fullscreen
+          } else {
+            header.classList.remove('is-visible');
+            footer.classList.remove('is-visible');
+            root.classList.remove('hide-cursor');
+            if (inactivityTimeout) clearTimeout(inactivityTimeout);
+          }
+        });
+
+        // Trigger initial reveal/sync on startup
         showControls();
       },
 

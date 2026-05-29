@@ -230,7 +230,8 @@ export function optimizePostImagePath(
     }
 
     // Folder-based post - sync script copies images to post folder root
-    if (postId && postSlug) {
+    if (postId || postSlug) {
+      const postSlugOrId = postSlug || postId;
       // Remove leading "./" if present
       let imageName = cleanPath.startsWith("./") ? cleanPath.slice(2) : cleanPath;
       
@@ -240,7 +241,7 @@ export function optimizePostImagePath(
       }
       
       // For folder-based posts, images are in /posts/{postId}/
-      const folderPath = `/posts/${postSlug}/${imageName}`;
+      const folderPath = `/posts/${postSlugOrId}/${imageName}`;
       // Convert to WebP if applicable (sync-images.js creates WebP versions)
       return getOptimizedFormat(folderPath);
     }
@@ -321,8 +322,9 @@ export function optimizeContentImagePath(
     }
     
     // For folder-based content, images are in /{urlPath}/{contentSlug}/
-    if (contentId && contentSlug) {
-      const folderPath = `/${urlPath}/${contentSlug}/${imageName}`;
+    if (contentId || contentSlug) {
+      const contentSlugOrId = contentSlug || contentId;
+      const folderPath = `/${urlPath}/${contentSlugOrId}/${imageName}`;
       return getOptimizedFormat(folderPath);
     }
 

@@ -51,6 +51,8 @@ live site. Don't take shortcuts that break Obsidian-native behavior.
    without explicit approval. Investigate root causes.
 10. **Match existing patterns.** This codebase already solves most problems consistently.
     Search before inventing.
+11. **ALWAYS USE TDD (Red, Green, Refactor)**: A failing test must be written first before writing any functional/implementation code.
+12. **Software Design Principles**: Always write code using DRY (Don't Repeat Yourself) and SOLID design principles. Write DAMP (Descriptive and Meaningful Phrases) tests, and strictly adhere to the Beyonce rule ("If you liked it, then you shoulda put a test on it").
 
 ---
 

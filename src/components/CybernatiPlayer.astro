@@ -1845,6 +1845,61 @@ const base = getBaseUrl();
                 else document.exitFullscreen();
               }
               break;
+            case 'p':
+              e.preventDefault();
+              if (self.isFloating) {
+                // If in PiP, toggle back to the source page if recorded, otherwise dock on current page
+                if (self.dockedUrl && window.location.pathname !== self.dockedUrl) {
+                  if (window.swup) window.swup.navigate(self.dockedUrl);
+                  else window.location.href = self.dockedUrl;
+                } else {
+                  self.isManuallyPip = false;
+                  self.isFloating = false;
+                  self.checkSlotAndMount();
+                }
+              } else {
+                // Toggle from slotted to floating PiP mode
+                self.isManuallyPip = true;
+                self.isFloating = true;
+                self.checkSlotAndMount();
+              }
+              break;
+            case 'r':
+              e.preventDefault();
+              if (self.isFloating) {
+                // Toggle the PiP compact Related Notes panel
+                const pipNotesBtn = document.getElementById('pip-notes-btn');
+                const pipNotesPanel = document.getElementById('pip-notes-panel');
+                if (pipNotesBtn && pipNotesPanel) {
+                  const isOpen = pipNotesPanel.classList.contains('is-visible');
+                  if (isOpen) {
+                    pipNotesPanel.classList.remove('is-visible');
+                    pipNotesPanel.classList.add('max-h-0');
+                    pipNotesPanel.classList.remove('max-h-[140px]');
+                    pipNotesBtn.classList.remove('text-highlight-400');
+                  } else {
+                    pipNotesPanel.classList.add('is-visible');
+                    pipNotesPanel.classList.remove('max-h-0');
+                    pipNotesPanel.classList.add('max-h-[140px]');
+                    pipNotesBtn.classList.add('text-highlight-400');
+                    self.renderLinks(document.getElementById('pip-related-links'), true);
+                  }
+                }
+              } else {
+                // Toggle the standard slotted/fullscreen Related Notes panel
+                const notesPanel = document.getElementById('related-notes-panel');
+                if (notesPanel) {
+                  const isOpen = notesPanel.classList.contains('opacity-100');
+                  closeAllPanels();
+                  if (!isOpen) {
+                    notesPanel.classList.remove('max-h-0');
+                    notesPanel.classList.add('max-h-[300px]');
+                    notesPanel.classList.remove('opacity-0');
+                    notesPanel.classList.add('opacity-100');
+                  }
+                }
+              }
+              break;
             case 'arrowup':
               e.preventDefault();
               let upVol = Math.min((self.currentVolume || 0) + 5, 100);

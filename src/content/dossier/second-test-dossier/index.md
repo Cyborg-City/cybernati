@@ -1,15 +1,18 @@
 ---
-title: "Second Test Dossier"
+title: Second Test Dossier
 date: 2026-05-26T12:00:00Z
-description: "Another placeholder dossier to test the tag filtering logic."
-tags: ["another-tag", "dossier", "example"]
+description: Another placeholder dossier to test the tag filtering logic.
+tags:
+  - another-tag
+  - dossier
+  - example
 image: ""
 imageAlt: ""
 imageOG: false
 hideCoverImage: false
 hideTOC: false
-targetKeyword: "test2"
-draft: false
+targetKeyword: test2
+draft: true
 ---
 
 

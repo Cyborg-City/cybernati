@@ -52,9 +52,7 @@ const base = getBaseUrl();
         <div id="pip-video-title" class="text-xs font-bold tracking-wider text-zinc-200 uppercase truncate m-0 p-0 leading-none" style="font-family: var(--font-mono)">
           SCANNING FOR SIGNAL...
         </div>
-      </div>
-
-      <!-- PiP Hover Controls Overlay -->
+      </div>      <!-- PiP Hover Controls Overlay -->
       <div id="pip-controls-overlay" class="absolute bottom-3 left-3 z-30 flex items-center justify-center gap-2.5 rounded-lg border border-zinc-800 bg-zinc-950/90 backdrop-blur-md px-2.5 py-1.5 opacity-0 pointer-events-none transition-all duration-300 shadow-xl border border-white/5 w-auto">
         <div class="flex items-center gap-1.5">
           <button id="pip-mute-toggle" class="flex items-center justify-center rounded p-1 text-zinc-400 hover:bg-zinc-800 hover:text-highlight-400" aria-label="Toggle mute state">
@@ -63,15 +61,30 @@ const base = getBaseUrl();
           <input type="range" id="pip-volume-control" class="h-1 w-14 cursor-pointer accent-highlight-500 bg-zinc-800 rounded-lg appearance-none" min="0" max="100" value="0" aria-label="Volume Slider" />
         </div>
         
-        <!-- PiP Exit Button -->
-        <button id="pip-exit-btn" class="flex items-center justify-center rounded p-1 text-zinc-400 hover:bg-zinc-800 hover:text-red-400 transition-colors" title="Close Player" aria-label="Close Player">
-          <span class="material-symbols-outlined text-base">close</span>
+        <!-- PiP Vault Notes Button -->
+        <button id="pip-notes-btn" class="flex items-center justify-center rounded p-1 text-zinc-400 hover:bg-zinc-800 hover:text-highlight-400 transition-colors" title="Vault Notes" aria-label="Vault Notes">
+          <span class="material-symbols-outlined text-base">menu_book</span>
         </button>
 
         <!-- PiP Return Button -->
         <button id="pip-return-btn" class="flex items-center justify-center rounded p-1 text-zinc-400 hover:bg-zinc-800 hover:text-highlight-400 transition-colors hidden" title="Return to Page" aria-label="Return to Page">
           <span class="material-symbols-outlined text-base">pip_exit</span>
         </button>
+
+        <!-- PiP Exit Button -->
+        <button id="pip-exit-btn" class="flex items-center justify-center rounded p-1 text-zinc-400 hover:bg-zinc-800 hover:text-red-400 transition-colors" title="Close Player" aria-label="Close Player">
+          <span class="material-symbols-outlined text-base">close</span>
+        </button>
+      </div>
+
+      <!-- PiP Hover Vault Notes Panel Overlay -->
+      <div id="pip-notes-panel" class="absolute bottom-14 left-3 right-3 z-30 rounded-lg border border-zinc-800 bg-zinc-950/90 backdrop-blur-md px-3 py-2.5 opacity-0 pointer-events-none transition-all duration-300 shadow-xl border border-white/5 max-h-0 overflow-hidden">
+        <div class="flex flex-col gap-1.5">
+          <div class="text-[9px] uppercase tracking-wider text-zinc-500 font-bold" style="font-family: var(--font-mono)">Related Vault Notes</div>
+          <div id="pip-related-links" class="flex flex-wrap gap-1.5 max-h-[80px] overflow-y-auto custom-scroll text-zinc-300 pr-1">
+            <span class="text-[10px] text-zinc-500 uppercase italic">No related vault notes detected.</span>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -350,6 +363,16 @@ const base = getBaseUrl();
     opacity: 1;
     pointer-events: auto;
     transform: translateY(0);
+  }
+
+  #global-cyber-player #pip-notes-panel {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease, max-height 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+  }
+  #global-cyber-player.is-pip #pip-notes-panel.is-visible {
+    opacity: 1;
+    pointer-events: auto;
   }
 </style>
 
@@ -900,6 +923,27 @@ const base = getBaseUrl();
           };
         }
 
+        // PiP Vault Notes Button
+        const pipNotesBtn = document.getElementById('pip-notes-btn');
+        const pipNotesPanel = document.getElementById('pip-notes-panel');
+        if (pipNotesBtn && pipNotesPanel) {
+          pipNotesBtn.onclick = (e) => {
+            e.stopPropagation();
+            const isOpen = pipNotesPanel.classList.contains('is-visible');
+            if (isOpen) {
+              pipNotesPanel.classList.remove('is-visible');
+              pipNotesPanel.classList.add('max-h-0');
+              pipNotesPanel.classList.remove('max-h-[140px]');
+              pipNotesBtn.classList.remove('text-highlight-400');
+            } else {
+              pipNotesPanel.classList.add('is-visible');
+              pipNotesPanel.classList.remove('max-h-0');
+              pipNotesPanel.classList.add('max-h-[140px]');
+              pipNotesBtn.classList.add('text-highlight-400');
+            }
+          };
+        }
+
         const clickOverlay = document.getElementById('player-click-overlay');
         if (clickOverlay) {
           clickOverlay.onclick = (e) => {
@@ -935,6 +979,16 @@ const base = getBaseUrl();
           overlayHideTimer = setTimeout(() => {
             if (pipOverlay) pipOverlay.classList.remove('is-visible');
             if (pipHeaderOverlay) pipHeaderOverlay.classList.remove('is-visible');
+            
+            // Auto-collapse notes panel when controls overlay fades out
+            if (pipNotesPanel) {
+              pipNotesPanel.classList.remove('is-visible');
+              pipNotesPanel.classList.add('max-h-0');
+              pipNotesPanel.classList.remove('max-h-[140px]');
+            }
+            if (pipNotesBtn) {
+              pipNotesBtn.classList.remove('text-highlight-400');
+            }
           }, 3000);
         };
 
@@ -1488,18 +1542,21 @@ const base = getBaseUrl();
               e.target.playVideo(); // Force play to be safe
             }
           }
-        });
+        });        const linksEl = document.getElementById('related-links');
+        const pipLinksEl = document.getElementById('pip-related-links');
 
-        const linksEl = document.getElementById('related-links');
-        if (linksEl) {
+        const renderLinks = (container, isPip) => {
+          if (!container) return;
           if (prog.related && prog.related.length > 0) {
-            linksEl.innerHTML = prog.related.map(link => {
+            container.innerHTML = prog.related.map(link => {
               let linkSlug = link.slug;
               if (linkSlug.startsWith('/') && !linkSlug.startsWith(base)) linkSlug = base.replace(/\/$/, '') + linkSlug;
-              return `<a href="${linkSlug}" class="cyber-related-link px-3 py-1.5 rounded-lg text-xs font-semibold border border-zinc-800 bg-zinc-900 text-zinc-100 hover:border-highlight-500 hover:text-highlight-300 transition duration-150">${link.name}</a>`;
+              const paddingClass = isPip ? 'px-2 py-1 text-[10px]' : 'px-3 py-1.5 text-xs';
+              const linkClass = isPip ? 'cyber-pip-related-link' : 'cyber-related-link';
+              return `<a href="${linkSlug}" class="${linkClass} ${paddingClass} rounded-lg font-semibold border border-zinc-800 bg-zinc-900 text-zinc-100 hover:border-highlight-500 hover:text-highlight-300 transition duration-150">${link.name}</a>`;
             }).join('');
-            
-            linksEl.querySelectorAll('.cyber-related-link').forEach(linkEl => {
+
+            container.querySelectorAll('a').forEach(linkEl => {
               linkEl.onclick = (e) => {
                 e.preventDefault();
                 // Ensure player goes into PiP when clicking a related note
@@ -1516,9 +1573,13 @@ const base = getBaseUrl();
               };
             });
           } else {
-            linksEl.innerHTML = '<span class="text-xs text-zinc-500 uppercase italic">No related vault notes detected.</span>';
+            const sizeClass = isPip ? 'text-[10px]' : 'text-xs';
+            container.innerHTML = `<span class="${sizeClass} text-zinc-500 uppercase italic">No related vault notes detected.</span>`;
           }
-        }
+        };
+
+        renderLinks(linksEl, false);
+        renderLinks(pipLinksEl, true);
       },
 
       mountStandby: function(interstitials) {
@@ -1532,19 +1593,22 @@ const base = getBaseUrl();
         if (pipTitleEl) pipTitleEl.innerHTML = "SIGNAL LOST: STANDBY";
 
         if (this.currentInterstitialIndex === null) this.currentInterstitialIndex = Math.floor(Math.random() * interstitials.length);
-        
+
         let intUrl = interstitials[this.currentInterstitialIndex];
         if (intUrl.startsWith('/') && !intUrl.startsWith(base)) intUrl = base.replace(/\/$/, '') + intUrl;
-        
+
         const existing = mount.querySelector('video');
         if (existing && existing.getAttribute('src') === intUrl) return;
-        
+
         if (this.player && this.player.destroy) { try { this.player.destroy(); } catch (e) {} this.player = null; this.currentVideoId = null; }
-        
+
         mount.innerHTML = `<video src="${intUrl}" autoplay muted loop style="width:100%; height:100%; object-fit:cover; background:black;"></video>`;
-        
+
         const linksEl = document.getElementById('related-links');
         if (linksEl) linksEl.innerHTML = '<span class="text-xs text-zinc-500 uppercase italic">TRANSMITTING CYBERNATI SIGNAL INTERSTITIAL...</span>';
+
+        const pipLinksEl = document.getElementById('pip-related-links');
+        if (pipLinksEl) pipLinksEl.innerHTML = '<span class="text-[10px] text-zinc-500 uppercase italic">TRANSMITTING SIGNAL INTERSTITIAL...</span>';
       }
     };
 

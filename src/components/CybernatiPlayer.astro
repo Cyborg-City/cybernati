@@ -34,7 +34,10 @@ const base = getBaseUrl();
       <div id="player-mount" class="h-full w-full">
         <!-- Standby Signal message during initialization -->
         <div id="terminal-status-msg" class="flex h-full w-full flex-col items-center justify-center gap-3 bg-zinc-950 text-center">
-          <span class="material-symbols-outlined text-4xl animate-spin text-highlight-400">sync</span>
+          <svg class="w-8 h-8 text-highlight-400 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" opacity="0.25"/>
+            <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
           <span class="text-xs uppercase tracking-widest text-zinc-400" style="font-family: var(--font-mono)">Aligning Remote Feed Nodes...</span>
         </div>
       </div>
@@ -205,6 +208,7 @@ const base = getBaseUrl();
   }
 
   /* Specific styling for standard buttons (Vault Notes, Desync) to override parent/prose themes */
+  /* Specific styling for standard buttons (Vault Notes, Desync) to override parent/prose themes */
   #global-cyber-player button.cyber-btn {
     background-color: rgba(24, 24, 27, 0.75) !important;
     border: 1px solid rgba(63, 63, 70, 0.6) !important;
@@ -213,8 +217,10 @@ const base = getBaseUrl();
     font-size: 0.75rem !important;
     font-weight: 500 !important;
     color: #e4e4e7 !important;
-    font-family: var(--font-outfit), sans-serif !important;
-    transition: all 0.15s ease !important;
+    /* WHY: Use the globally available --font-prose variable instead of the undefined --font-outfit variable to ensure buttons render in the correct premium font. */
+    font-family: var(--font-prose), sans-serif !important;
+    /* WHY: transition: all forces the browser to evaluate every property on every frame. Restricting it to target properties yields much smoother transitions. */
+    transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease !important;
   }
   #global-cyber-player button.cyber-btn:hover {
     background-color: rgb(var(--color-highlight-950, 88 28 135) / 0.25) !important;
@@ -229,9 +235,16 @@ const base = getBaseUrl();
 
   /* Global Player Styles */
   #global-cyber-player {
-    transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+    /* WHY: List target properties specifically instead of 'all' to avoid costly full repaints, and promote the element to a compositor layer via will-change / translateZ for hardware acceleration. */
+    transition: bottom 0.3s cubic-bezier(0.25, 1, 0.5, 1),
+                right  0.3s cubic-bezier(0.25, 1, 0.5, 1),
+                width  0.3s cubic-bezier(0.25, 1, 0.5, 1),
+                height 0.3s cubic-bezier(0.25, 1, 0.5, 1),
+                opacity 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+    will-change: transform;
+    transform: translateZ(0);
     background-color: #030303;
-    font-family: var(--font-outfit);
+    font-family: var(--font-prose), sans-serif;
     color: #e4e4e7;
   }
   
@@ -260,6 +273,8 @@ const base = getBaseUrl();
     overflow: hidden;
     border: 2px solid rgb(var(--color-highlight-500, 168 85 247));
     cursor: move;
+    /* WHY: Hint properties that will change during interactive dragging/resizing for hardware accelerated compositing layers. */
+    will-change: bottom, right, width, height;
   }
 
   /* Invisible Resize Handles for PiP */
@@ -306,6 +321,12 @@ const base = getBaseUrl();
     border-radius: 0 !important;
     height: 100% !important;
     width: 100% !important;
+  }
+
+  /* WHY: contain: layout style paint tells the browser that this element is fully isolated,
+     preventing updates inside the player viewport from triggering costly document-wide layout recalculations. */
+  #player-viewport {
+    contain: layout style paint;
   }
 
   /* Core UI from original player */
@@ -375,11 +396,18 @@ const base = getBaseUrl();
     opacity: 1;
     pointer-events: auto;
   }
+
+  /* WHY: The no-transition helper class suppresses CSS transitions during re-parenting operations
+     to prevent visual layout flash or stretching across the screen. */
+  #global-cyber-player.no-transition {
+    transition: none !important;
+  }
 </style>
 
 <script>
   import { toLogVolume } from '@/utils/player-math';
   import { shouldFloatToPip } from '@/utils/player-state';
+  import { YoutubeApiLoader } from '@/utils/player-loader';
 
   (function() {
     // Avoid double-initialization
@@ -387,8 +415,10 @@ const base = getBaseUrl();
     window.CyberPlayerInit = true;
 
     const base = window.location.pathname.startsWith('/cybernati/') ? '/cybernati/' : '/';
+    const ytLoader = new YoutubeApiLoader();
 
     window.CyberPlayer = {
+      el: null,
       player: null,
       currentVolume: 25,
       isMuted: true,
@@ -407,37 +437,44 @@ const base = getBaseUrl();
       dockedUrl: null,
 
       ensureYoutubeAPI: function(callback) {
-        // WHY: Dynamically load the YouTube Iframe Player API on-demand only when a video is about to be rendered. This avoids loading external scripts and executing heavy player code on pages where the player is not used, significantly speeding up initial page loads.
-        if (window.YT && window.YT.Player) {
-          callback();
-          return;
-        }
+        // WHY: Dynamically load the YouTube Iframe Player API on-demand. Using the YoutubeApiLoader
+        // class ensures we coordinate simultaneous loading attempts cleanly and execute callbacks
+        // instantly when YouTube calls onYouTubeIframeAPIReady, avoiding expensive polling intervals.
+        ytLoader.ensureLoaded(
+          callback,
+          () => !!(window.YT && window.YT.Player),
+          (onReady) => {
+            const prev = window.onYouTubeIframeAPIReady;
+            window.onYouTubeIframeAPIReady = () => {
+              if (prev) prev();
+              onReady();
+            };
 
-        // If the script tag hasn't been added yet, add it
-        if (!document.querySelector('script[src*="youtube.com/iframe_api"]')) {
-          const tag = document.createElement('script');
-          tag.src = "https://www.youtube.com/iframe_api";
-          document.head.appendChild(tag);
-        }
-
-        // Poll for ready state
-        const checkReady = setInterval(() => {
-          if (window.YT && window.YT.Player) {
-            clearInterval(checkReady);
-            callback();
+            if (!document.querySelector('script[src*="youtube.com/iframe_api"]')) {
+              const tag = document.createElement('script');
+              tag.src = "https://www.youtube.com/iframe_api";
+              document.head.appendChild(tag);
+            }
           }
-        }, 100);
+        );
       },
 
       // State handling
       // WHY: Initializes the global player once per session. Sets up Swup listeners and a MutationObserver to automatically move the player in and out of the DOM slot during page transitions without destroying the player instance.
       initGlobal: function() {
+        this.el = document.getElementById('global-cyber-player');
         this.setupUI();
         this.checkSlotAndMount();
 
-        // WHY: Set up a MutationObserver to watch the DOM for the dynamic appearance of '#cyber-player-slot' or iframe embeds. This guarantees that if a video page is loaded or transitioned into, the player is hijacked instantly, eliminating any race conditions or timing gaps!
+        // WHY: Set up a MutationObserver to watch the DOM for the dynamic appearance of '#cyber-player-slot' or iframe embeds.
+        // A 50ms debounce collapses rapid DOM bursts (Swup transition, HMR, player's own innerHTML writes) into a single checkSlotAndMount call,
+        // eliminating redundant querySelectorAll('iframe') scans on every micro-mutation.
+        let mutationDebounceTimer = null;
         const observer = new MutationObserver(() => {
-          this.checkSlotAndMount(this.isSwupTransitioning);
+          clearTimeout(mutationDebounceTimer);
+          mutationDebounceTimer = setTimeout(() => {
+            this.checkSlotAndMount(this.isSwupTransitioning);
+          }, 50);
         });
         observer.observe(document.body, { childList: true, subtree: true });
 
@@ -447,8 +484,11 @@ const base = getBaseUrl();
           // WHY: As soon as a user clicks a link and Swup starts the transition, we must immediately rescue the global player DOM from the container about to be replaced. We move it back to document.body and temporarily transition it to PiP mode if explicitly requested by the user!
           window.swup.hooks.on('visit:start', () => {
             this.isSwupTransitioning = true; // Mark transition as active
-            const globalPlayer = document.getElementById('global-cyber-player');
+            const globalPlayer = document.getElementById('global-cyber-player') || this.el;
             if (globalPlayer && globalPlayer.classList.contains('is-slotted')) {
+              // WHY: Temporary suspension of CSS transition animations prevents visual layout flash/stretch
+              // across the viewport as the player DOM node is physically re-parented back to document.body.
+              globalPlayer.classList.add('no-transition');
               globalPlayer.remove(); // Remove from slotted parent immediately
               
               // WHY: PiP mode is strictly opt-in. We only transition to floating/PiP if the user has explicitly requested/activated PiP (either isFloating or isManuallyPip is true).
@@ -465,10 +505,14 @@ const base = getBaseUrl();
                 globalPlayer.classList.add('is-pip');
                 globalPlayer.classList.remove('is-hidden'); // Visual Override: Ensure always visible!
                 this.isFloating = true;
+                document.body.appendChild(globalPlayer);
+                
+                // Force layout reflow synchronously to apply position and layout changes with no-transition class
+                globalPlayer.offsetHeight;
+                globalPlayer.classList.remove('no-transition');
               } else {
                 this.destroy(); // Halts and destroys the YouTube player cleanly!
               }
-              document.body.appendChild(globalPlayer);
             }
           });
 
@@ -510,7 +554,7 @@ const base = getBaseUrl();
       // It also handles "iframe hijacking" for Obsidian fallbacks. If an author uses a standard markdown iframe to embed the player (which works perfectly in Obsidian), the live site will intercept that iframe, hide it, and snap the Global Player into its place to maintain persistent audio!
       checkSlotAndMount: function(dismantleOnly) {
         let slot = document.getElementById('cyber-player-slot');
-        const globalPlayer = document.getElementById('global-cyber-player');
+        const globalPlayer = document.getElementById('global-cyber-player') || this.el;
         if (!globalPlayer) return;
 
         // Iframe Hijacking for Obsidian compatibility
@@ -575,6 +619,9 @@ const base = getBaseUrl();
             return;
           }
 
+          // WHY: Disable transitions during docking re-parenting to prevent visual stretching
+          // or flashing across the page.
+          globalPlayer.classList.add('no-transition');
           globalPlayer.classList.remove('is-hidden', 'is-pip');
           globalPlayer.classList.add('is-slotted');
           
@@ -591,6 +638,10 @@ const base = getBaseUrl();
           globalPlayer.style.height = '';
           
           this.isFloating = false;
+
+          // Force reflow and restore transition styling
+          globalPlayer.offsetHeight;
+          globalPlayer.classList.remove('no-transition');
 
           // If playlist changed, load new data
           if (this.currentPlaylist !== playlist || this.currentType !== type) {
@@ -615,6 +666,8 @@ const base = getBaseUrl();
               globalPlayer.classList.remove('is-hidden'); // Visual Override: Ensure always visible!
               return; // Already floating, do nothing!
             }
+            // WHY: Disable transitions during floating re-parenting to prevent visual layout flash.
+            globalPlayer.classList.add('no-transition');
             globalPlayer.classList.remove('is-slotted');
             globalPlayer.classList.add('is-pip');
             globalPlayer.classList.remove('is-hidden'); // Visual Override: Ensure always visible!
@@ -638,6 +691,10 @@ const base = getBaseUrl();
             const parentChanged = globalPlayer.parentNode !== document.body;
             document.body.appendChild(globalPlayer);
             this.isFloating = true;
+
+            // Force reflow and restore transitions
+            globalPlayer.offsetHeight;
+            globalPlayer.classList.remove('no-transition');
 
             if (parentChanged) {
               // Force re-create YouTube player since iframe was re-parented
@@ -674,7 +731,7 @@ const base = getBaseUrl();
         
         localStorage.setItem('cyber-player-pip-playlist', `${type}/${playlist}`);
 
-        const globalPlayer = document.getElementById('global-cyber-player');
+        const globalPlayer = document.getElementById('global-cyber-player') || this.el;
         if (forcePip) {
           globalPlayer.classList.remove('is-hidden', 'is-slotted');
           globalPlayer.classList.add('is-pip');
@@ -767,17 +824,23 @@ const base = getBaseUrl();
         if (mount) {
           mount.innerHTML = `
             <div id="terminal-status-msg" class="flex h-full w-full flex-col items-center justify-center gap-3 bg-zinc-950 text-center">
-              <span class="material-symbols-outlined text-4xl animate-spin text-highlight-400">sync</span>
+              <svg class="w-8 h-8 text-highlight-400 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" opacity="0.25"/>
+                <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              </svg>
               <span class="text-xs uppercase tracking-widest text-zinc-400" style="font-family: var(--font-mono)">Aligning Remote Feed Nodes...</span>
             </div>
           `;
         }
 
-        const globalPlayer = document.getElementById('global-cyber-player');
+        const globalPlayer = document.getElementById('global-cyber-player') || this.el;
         if (globalPlayer) {
+          globalPlayer.classList.add('no-transition');
           globalPlayer.classList.remove('is-slotted', 'is-pip');
           globalPlayer.classList.add('is-hidden');
           document.body.appendChild(globalPlayer); // Move back to body
+          globalPlayer.offsetHeight; // Force reflow
+          globalPlayer.classList.remove('no-transition');
         }
         
         localStorage.setItem('cyber-player-playing', 'false');
@@ -827,7 +890,7 @@ const base = getBaseUrl();
             
             // Ensure player goes into PiP when navigating to the homepage via logo click
             if (!self.isFloating) {
-              const gp = document.getElementById('global-cyber-player');
+              const gp = document.getElementById('global-cyber-player') || self.el;
               gp.classList.remove('is-slotted');
               gp.classList.add('is-pip');
               document.body.appendChild(gp);
@@ -1056,11 +1119,13 @@ const base = getBaseUrl();
           }, 3000);
         };
 
-        const globalPlayer = document.getElementById('global-cyber-player');
+        const globalPlayer = document.getElementById('global-cyber-player') || self.el;
         if (globalPlayer) {
-          globalPlayer.addEventListener('mousemove', () => { self.showOverlay(); self.scheduleHideOverlay(); });
-          globalPlayer.addEventListener('mouseenter', () => { self.showOverlay(); });
-          globalPlayer.addEventListener('mouseleave', () => { self.scheduleHideOverlay(); });
+          // WHY: Passive listeners declare to the browser that these event handlers will never call preventDefault(),
+          // allowing the browser's compositing thread to execute scrolling/movement instantly without waiting for JavaScript.
+          globalPlayer.addEventListener('mousemove', () => { self.showOverlay(); self.scheduleHideOverlay(); }, { passive: true });
+          globalPlayer.addEventListener('mouseenter', () => { self.showOverlay(); }, { passive: true });
+          globalPlayer.addEventListener('mouseleave', () => { self.scheduleHideOverlay(); }, { passive: true });
         }
 
         // Draggable logic for PiP
@@ -1486,6 +1551,13 @@ const base = getBaseUrl();
         if (!schedule || schedule.length === 0) return;
         const self = this;
         
+        // WHY: Cache these four elements before the interval starts to avoid querying the DOM
+        // four times per second on every tick of the update loop.
+        const progressBar = document.getElementById('sync-progress');
+        const titleEl = document.getElementById('video-title');
+        const pipTitleEl = document.getElementById('pip-video-title');
+        const nextEl = document.getElementById('next-title');
+        
         const update = () => {
           if (self.isDesynced) return;
           const now = Math.floor(Date.now() / 1000);
@@ -1503,11 +1575,6 @@ const base = getBaseUrl();
               nextIndex = (i + 1) % schedule.length; break;
             }
           }
-          
-          const progressBar = document.getElementById('sync-progress');
-          const titleEl = document.getElementById('video-title');
-          const pipTitleEl = document.getElementById('pip-video-title');
-          const nextEl = document.getElementById('next-title');
           
           if (!standby && active) {
             if (progressBar) progressBar.style.width = `${((offset / active.duration) * 100)}%`;
@@ -1600,8 +1667,33 @@ const base = getBaseUrl();
           if (this.player && this.player.destroy) { try { this.player.destroy(); } catch (e) {} }
           this.player = null;
           
-          mount.innerHTML = '<div id="yt-player" class="h-full w-full"></div>';
+          // WHY: Mount the video player behind a frosted loading overlay to prevent a sudden visual black screen/flash.
+          // The overlay displays a thematic "Aligning Remote Feed Nodes..." text and is faded out smoothly once
+          // the video stream has initialized and successfully started playing.
+          mount.innerHTML = `
+            <div id="yt-player" class="h-full w-full absolute inset-0"></div>
+            <div id="player-loading-overlay" class="absolute inset-0 flex h-full w-full flex-col items-center justify-center gap-3 bg-zinc-950 text-center z-10" style="transition: opacity 0.3s ease;">
+              <svg class="w-8 h-8 text-highlight-400 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" opacity="0.25"/>
+                <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+              <span class="text-xs uppercase tracking-widest text-zinc-400" style="font-family: var(--font-mono)">Aligning Remote Feed Nodes...</span>
+            </div>
+          `;
           const self = this;
+
+          // Helper function to fade out and clean up the loading overlay smoothly
+          const removeOverlay = () => {
+            const overlay = document.getElementById('player-loading-overlay');
+            if (overlay) {
+              overlay.style.opacity = '0';
+              setTimeout(() => {
+                if (overlay.parentNode) {
+                  overlay.parentNode.removeChild(overlay);
+                }
+              }, 300);
+            }
+          };
 
           this.player = new window.YT.Player('yt-player', {
             height: '100%', width: '100%', videoId: prog.id,
@@ -1611,6 +1703,14 @@ const base = getBaseUrl();
                 if (self.isMuted) { e.target.mute(); }
                 else { e.target.unMute(); e.target.setVolume(toLogVolume(self.currentVolume)); }
                 e.target.playVideo(); // Force play to be safe
+                // Fallback timeout to guarantee the loading screen is removed even on slower connections or strict autoplay block configurations
+                setTimeout(removeOverlay, 1500);
+              },
+              onStateChange: (ev) => {
+                // ev.data === 1 corresponds to YT.PlayerState.PLAYING
+                if (ev.data === 1) {
+                  removeOverlay();
+                }
               }
             }
           });
@@ -1633,7 +1733,7 @@ const base = getBaseUrl();
                 e.preventDefault();
                 // Ensure player goes into PiP when clicking a related note
                 if (!self.isFloating) {
-                  const gp = document.getElementById('global-cyber-player');
+                  const gp = document.getElementById('global-cyber-player') || self.el;
                   gp.classList.remove('is-slotted');
                   gp.classList.add('is-pip');
                   document.body.appendChild(gp);

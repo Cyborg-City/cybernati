@@ -10,10 +10,10 @@ tags:
   - clippings
 duration: 4324
 related:
-  - "[[test-dossier]]"
-  - "[[second-test-dossier]]"
+  - "[[from-classified-to-curated-how-the-government-still-controls-the-uap-narrative]]"
+  - "[[the-project-pursue-reference-dossier]]"
+  - "[[/posts/project-pursue-a-beginners-guide/index|Project Pursue a Beginners Guide]]"
 modified: 2026-05-29T01:42:07.372Z
-
 ---
 ![](https://www.youtube.com/watch?v=WnV5v-ECzPY)
 

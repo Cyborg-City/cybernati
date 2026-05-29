@@ -91,12 +91,16 @@
       "duration": 4324,
       "related": [
         {
-          "name": "Test Dossier",
-          "slug": "/dossier/test-dossier/"
+          "name": "From Classified to Curated: Project PURSUE",
+          "slug": "/posts/from-classified-to-curated-project-pursue/"
         },
         {
-          "name": "Second Test Dossier",
-          "slug": "/dossier/second-test-dossier/"
+          "name": "The Project PURSUE Reference Dossier",
+          "slug": "/dossier/the-project-pursue-reference-dossier/"
+        },
+        {
+          "name": "Project Pursue a Beginners Guide",
+          "slug": "/posts//posts/project-pursue-a-beginners-guide/index/"
         }
       ],
       "date": 1751846400000,

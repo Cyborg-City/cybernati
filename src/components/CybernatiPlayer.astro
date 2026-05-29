@@ -644,7 +644,13 @@ const base = getBaseUrl();
               this.recreateYTPlayer();
             }
           } else {
-            // Not playing or not explicitly PiP, destroy it completely.
+            // Not playing or not explicitly PiP, destroy it completely if not already hidden and in body.
+            // WHY: This early return is critical! Since destroy() appends the player back to document.body,
+            // it triggers the MutationObserver. If we did not return early, this would create an infinite recursive
+            // loop that completely freezes the browser main thread (unresponsive page)!
+            if (globalPlayer.classList.contains('is-hidden') && globalPlayer.parentNode === document.body) {
+              return;
+            }
             this.destroy();
           }
         }

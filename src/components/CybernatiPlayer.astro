@@ -1551,7 +1551,7 @@ const base = getBaseUrl();
             container.innerHTML = prog.related.map(link => {
               let linkSlug = link.slug;
               if (linkSlug.startsWith('/') && !linkSlug.startsWith(base)) linkSlug = base.replace(/\/$/, '') + linkSlug;
-              const paddingClass = isPip ? 'px-2 py-1 text-[10px]' : 'px-3 py-1.5 text-xs';
+              const paddingClass = isPip ? 'px-2.5 py-1 text-xs' : 'px-3.5 py-2 text-sm';
               const linkClass = isPip ? 'cyber-pip-related-link' : 'cyber-related-link';
               return `<a href="${linkSlug}" class="${linkClass} ${paddingClass} rounded-lg font-semibold border border-zinc-800 bg-zinc-900 text-zinc-100 hover:border-highlight-500 hover:text-highlight-300 transition duration-150">${link.name}</a>`;
             }).join('');
@@ -1573,7 +1573,7 @@ const base = getBaseUrl();
               };
             });
           } else {
-            const sizeClass = isPip ? 'text-[10px]' : 'text-xs';
+            const sizeClass = isPip ? 'text-xs' : 'text-sm';
             container.innerHTML = `<span class="${sizeClass} text-zinc-500 uppercase italic">No related vault notes detected.</span>`;
           }
         };
@@ -1605,10 +1605,10 @@ const base = getBaseUrl();
         mount.innerHTML = `<video src="${intUrl}" autoplay muted loop style="width:100%; height:100%; object-fit:cover; background:black;"></video>`;
 
         const linksEl = document.getElementById('related-links');
-        if (linksEl) linksEl.innerHTML = '<span class="text-xs text-zinc-500 uppercase italic">TRANSMITTING CYBERNATI SIGNAL INTERSTITIAL...</span>';
+        if (linksEl) linksEl.innerHTML = '<span class="text-sm text-zinc-500 uppercase italic">TRANSMITTING CYBERNATI SIGNAL INTERSTITIAL...</span>';
 
         const pipLinksEl = document.getElementById('pip-related-links');
-        if (pipLinksEl) pipLinksEl.innerHTML = '<span class="text-[10px] text-zinc-500 uppercase italic">TRANSMITTING SIGNAL INTERSTITIAL...</span>';
+        if (pipLinksEl) pipLinksEl.innerHTML = '<span class="text-xs text-zinc-500 uppercase italic">TRANSMITTING SIGNAL INTERSTITIAL...</span>';
       }
     };
 

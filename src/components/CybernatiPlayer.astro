@@ -83,6 +83,11 @@ const base = getBaseUrl();
           <span class="material-symbols-outlined text-base">menu_book</span>
         </button>
 
+        <!-- PiP Fullscreen Button -->
+        <button id="pip-fullscreen-btn" class="flex items-center justify-center rounded p-1 text-zinc-400 hover:bg-zinc-800 hover:text-highlight-400 transition-colors" title="Toggle Fullscreen" aria-label="Toggle Fullscreen">
+          <span class="material-symbols-outlined text-base">fullscreen</span>
+        </button>
+
         <!-- PiP Return Button -->
         <button id="pip-return-btn" class="flex items-center justify-center rounded p-1 text-zinc-400 hover:bg-zinc-800 hover:text-highlight-400 transition-colors hidden" title="Return to Page" aria-label="Return to Page">
           <span class="material-symbols-outlined text-base">pip_exit</span>
@@ -1269,6 +1274,19 @@ const base = getBaseUrl();
           };
         }
 
+        // PiP Fullscreen Button
+        const pipFullscreen = document.getElementById('pip-fullscreen-btn');
+        if (pipFullscreen) {
+          pipFullscreen.onclick = (e) => {
+            e.stopPropagation();
+            const root = document.getElementById('player-root');
+            if (root) {
+              if (!document.fullscreenElement) root.requestFullscreen();
+              else document.exitFullscreen();
+            }
+          };
+        }
+
         // PiP Vault Notes Button
         const pipNotesBtn = document.getElementById('pip-notes-btn');
         const pipNotesPanel = document.getElementById('pip-notes-panel');
@@ -1792,6 +1810,53 @@ const base = getBaseUrl();
         
         // Synchronize initial muted UI volume elements immediately on page load
         syncVolumeDOM();
+
+        // Global Keyboard Hotkeys
+        // WHY: Listen for hotkeys (M for mute, F for fullscreen, Arrows Up/Down for volume) on window.
+        // We aggressively guard this with document.activeElement checks so that typing in inputs, textareas,
+        // search panels, or Giscus comment frames does NOT trigger player controls!
+        window.addEventListener('keydown', (e) => {
+          const active = document.activeElement;
+          if (active && (
+            active.tagName === 'INPUT' || 
+            active.tagName === 'TEXTAREA' || 
+            active.isContentEditable
+          )) {
+            return; // Exit: User is typing!
+          }
+
+          // Only process keyboard controls when the player is actively initialized/playing
+          const isPlaying = localStorage.getItem('cyber-player-playing') === 'true';
+          if (!isPlaying || !self.currentPlaylist) return;
+
+          switch (e.key.toLowerCase()) {
+            case 'm':
+              e.preventDefault();
+              const nextMuted = !self.isMuted;
+              let nextVol = self.currentVolume;
+              if (!nextMuted && self.currentVolume === 0) nextVol = 25;
+              updateVolumeState(nextMuted, nextVol, false);
+              break;
+            case 'f':
+              e.preventDefault();
+              const root = document.getElementById('player-root');
+              if (root) {
+                if (!document.fullscreenElement) root.requestFullscreen();
+                else document.exitFullscreen();
+              }
+              break;
+            case 'arrowup':
+              e.preventDefault();
+              let upVol = Math.min((self.currentVolume || 0) + 5, 100);
+              updateVolumeState(upVol === 0, upVol, true);
+              break;
+            case 'arrowdown':
+              e.preventDefault();
+              let downVol = Math.max((self.currentVolume || 0) - 5, 0);
+              updateVolumeState(downVol === 0, downVol, true);
+              break;
+          }
+        });
 
         // WHY: Wires up the auto-hide controls to smoothly reveal header/footer overlays on interaction and auto-fade on inactivity.
         self.setupOverlaysAutoHide();

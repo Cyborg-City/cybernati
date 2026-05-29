@@ -45,10 +45,8 @@ const base = getBaseUrl();
       <!-- Sync Progress Bar -->
       <div id="progress-container" class="absolute bottom-0 left-0 w-full h-1 bg-zinc-950/80 z-20" aria-label="Media play progress">
         <div id="sync-progress" class="progress-bar-fill h-full w-0"></div>
-      </div>
-
-      <!-- PiP Hover Controls Overlay -->
-      <div id="pip-controls-overlay" class="absolute bottom-3 left-3 z-30 flex items-center justify-center rounded-lg border border-zinc-800 bg-zinc-950/90 backdrop-blur-md px-2.5 py-1.5 opacity-0 pointer-events-none transition-all duration-300 shadow-xl border border-white/5 w-auto">
+      </div>      <!-- PiP Hover Controls Overlay -->
+      <div id="pip-controls-overlay" class="absolute bottom-3 left-3 z-30 flex items-center justify-center gap-2.5 rounded-lg border border-zinc-800 bg-zinc-950/90 backdrop-blur-md px-2.5 py-1.5 opacity-0 pointer-events-none transition-all duration-300 shadow-xl border border-white/5 w-auto">
         <div class="flex items-center gap-1.5">
           <button id="pip-mute-toggle" class="flex items-center justify-center rounded p-1 text-zinc-400 hover:bg-zinc-800 hover:text-highlight-400" aria-label="Toggle mute state">
             <span id="pip-volume-icon-symbol" class="material-symbols-outlined text-base">volume_off</span>
@@ -57,12 +55,12 @@ const base = getBaseUrl();
         </div>
         
         <!-- PiP Exit Button -->
-        <button id="pip-exit-btn" class="ml-2 flex items-center justify-center rounded p-1 text-zinc-400 hover:bg-zinc-800 hover:text-red-400 transition-colors" title="Close Player" aria-label="Close Player">
+        <button id="pip-exit-btn" class="flex items-center justify-center rounded p-1 text-zinc-400 hover:bg-zinc-800 hover:text-red-400 transition-colors" title="Close Player" aria-label="Close Player">
           <span class="material-symbols-outlined text-base">close</span>
         </button>
 
         <!-- PiP Return Button -->
-        <button id="pip-return-btn" class="ml-1.5 flex items-center justify-center rounded p-1 text-zinc-400 hover:bg-zinc-800 hover:text-highlight-400 transition-colors hidden" title="Return to Page" aria-label="Return to Page">
+        <button id="pip-return-btn" class="flex items-center justify-center rounded p-1 text-zinc-400 hover:bg-zinc-800 hover:text-highlight-400 transition-colors hidden" title="Return to Page" aria-label="Return to Page">
           <span class="material-symbols-outlined text-base">pip_exit</span>
         </button>
       </div>

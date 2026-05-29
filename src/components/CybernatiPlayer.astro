@@ -1742,11 +1742,26 @@ const base = getBaseUrl();
             const isPageRelated = link.closest('#linked-mentions-content');
             if (isPlayerRelated || isPageRelated) {
               if (self.currentPlaylist) {
+                // WHY: Prevent default navigation immediately. This stops Swup or the browser from starting
+                // the page transition before we have finished physically re-parenting the global player container
+                // to document.body and setting its PiP state!
+                e.preventDefault();
+                
                 self.dontDockOnNextPage = true;
                 if (!self.isFloating) {
                   self.isManuallyPip = true;
                   self.isFloating = true;
                   self.checkSlotAndMount();
+                }
+                
+                // Now that the player is safely floated, trigger the navigation manually!
+                const href = link.getAttribute('href');
+                if (href) {
+                  if (window.swup) {
+                    window.swup.navigate(href);
+                  } else {
+                    window.location.href = href;
+                  }
                 }
               }
             }

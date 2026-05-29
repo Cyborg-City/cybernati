@@ -319,6 +319,7 @@ const base = getBaseUrl();
       currentType: null,
       currentPlaylist: null,
       isFloating: false,
+      isManuallyPip: false,
 
       // State handling
       // WHY: Initializes the global player once per session. Sets up Swup listeners and a MutationObserver to automatically move the player in and out of the DOM slot during page transitions without destroying the player instance.
@@ -357,6 +358,7 @@ const base = getBaseUrl();
 
           // WHY: After Swup has completed rendering the new page and replacing the container DOM, we check if the new page contains a designated video player slot (or an iframe to hijack). If it does, we dock the player into the new slot.
           window.swup.hooks.on('page:view', () => {
+            this.isManuallyPip = false; // Reset manual override on page transition so it auto-docks on new video pages!
             this.checkSlotAndMount();
           });
         };
@@ -433,7 +435,7 @@ const base = getBaseUrl();
           }
         }
 
-        if (slot) {
+        if (slot && !this.isManuallyPip) {
           // Found a slot on the current page!
           const type = slot.getAttribute('data-type') || 'video';
           const playlist = slot.getAttribute('data-playlist') || 'channel-000';
@@ -447,7 +449,8 @@ const base = getBaseUrl();
           globalPlayer.classList.add('is-slotted');
           
           // Physically move the player DOM into the slot
-          if (globalPlayer.parentNode !== slot) {
+          const parentChanged = globalPlayer.parentNode !== slot;
+          if (parentChanged) {
             slot.appendChild(globalPlayer);
           }
           
@@ -460,9 +463,12 @@ const base = getBaseUrl();
           // If playlist changed, load new data
           if (this.currentPlaylist !== playlist || this.currentType !== type) {
             this.activate(type, playlist, false);
+          } else if (parentChanged) {
+            // Force re-create YouTube player since iframe was re-parented
+            this.recreateYTPlayer();
           }
         } else {
-          // No slot found. If playing, float it.
+          // No slot found or manually forced to PiP. If playing, float it.
           // WHY: This is the core of the seamless transition. If Swup navigates away from the player page, the player detects it is orphaned. Instead of dying, it snaps into PiP mode.
           if (this.currentPlaylist) {
             if (globalPlayer.classList.contains('is-pip') && globalPlayer.parentNode === document.body) {
@@ -470,9 +476,20 @@ const base = getBaseUrl();
             }
             globalPlayer.classList.remove('is-slotted');
             globalPlayer.classList.add('is-pip');
+            
+            // Clear any inline positioning styles set during slotting or dragging
+            globalPlayer.style.bottom = '';
+            globalPlayer.style.right = '';
+            
             // Move back to body to ensure it isn't destroyed by Swup
+            const parentChanged = globalPlayer.parentNode !== document.body;
             document.body.appendChild(globalPlayer);
             this.isFloating = true;
+
+            if (parentChanged) {
+              // Force re-create YouTube player since iframe was re-parented
+              this.recreateYTPlayer();
+            }
           } else {
             // Not playing, hide it completely.
             if (globalPlayer.classList.contains('is-hidden')) return;
@@ -570,6 +587,27 @@ const base = getBaseUrl();
         }
         
         localStorage.setItem('cyber-player-playing', 'false');
+      },
+
+      // WHY: Whenever the YouTube iframe is physically moved/re-parented in the DOM, 
+      // the browser automatically destroys and recreates the iframe. This makes the existing YT.Player instance dead.
+      // We call this helper to cleanly destroy the dead instance and rebuild a fresh YT.Player matching the current timeline offset.
+      recreateYTPlayer: function() {
+        if (!this.playlistData || !this.currentVideoId) return;
+        const activeVideo = this.playlistData.schedule.find(p => p.id === this.currentVideoId);
+        if (activeVideo) {
+          const now = Math.floor(Date.now() / 1000);
+          const pos = now % this.playlistData.totalLoopDuration;
+          const offset = pos - activeVideo.start;
+          
+          // Force destruction before mounting to ensure we bypass any early return checks!
+          if (this.player && this.player.destroy) {
+            try { this.player.destroy(); } catch (e) {}
+          }
+          this.player = null;
+          
+          this.mountVideo(activeVideo, offset);
+        }
       },
 
       // -- CORE UI LOGIC PORTED --
@@ -991,15 +1029,15 @@ const base = getBaseUrl();
         if (pipBtn) {
           pipBtn.onclick = () => {
             if (self.isFloating) {
-              // Return to slot if we are floating (though button is hidden in PiP usually)
+              // Return to slot
+              self.isManuallyPip = false;
+              self.isFloating = false;
               self.checkSlotAndMount();
             } else {
-              // Force float
-              const gp = document.getElementById('global-cyber-player');
-              gp.classList.remove('is-slotted');
-              gp.classList.add('is-pip');
-              document.body.appendChild(gp);
+              // Force float (PiP)
+              self.isManuallyPip = true;
               self.isFloating = true;
+              self.checkSlotAndMount();
             }
           };
         }

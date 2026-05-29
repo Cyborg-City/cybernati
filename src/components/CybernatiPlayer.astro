@@ -48,7 +48,7 @@ const base = getBaseUrl();
       </div>
 
       <!-- PiP Hover Header Overlay -->
-      <div id="pip-header-overlay" class="absolute top-3 left-3 right-3 z-30 flex items-center justify-between rounded-lg border border-zinc-800 bg-zinc-950/90 backdrop-blur-md px-2.5 py-1.5 opacity-0 pointer-events-none transition-all duration-300 shadow-xl border border-white/5">
+      <div id="pip-header-overlay" class="absolute top-3 left-3 right-3 z-30 flex items-center justify-between rounded-lg border border-zinc-800 bg-zinc-950/90 backdrop-blur-md px-2.5 py-1.5 opacity-0 pointer-events-none transition-all duration-300 shadow-xl border border-white/5 select-none">
         <div id="pip-video-title" class="text-xs font-bold tracking-wider text-zinc-200 uppercase truncate m-0 p-0 leading-none" style="font-family: var(--font-mono)">
           SCANNING FOR SIGNAL...
         </div>
@@ -358,10 +358,11 @@ const base = getBaseUrl();
     pointer-events: none;
     transition: opacity 0.25s ease, transform 0.25s ease;
     transform: translateY(-5px);
+    user-select: none;
   }
   #global-cyber-player.is-pip #pip-header-overlay.is-visible {
     opacity: 1;
-    pointer-events: auto;
+    pointer-events: none; /* Allows mouse down clicks to pass through to the absolute drag overlay handle underneath! */
     transform: translateY(0);
   }
 

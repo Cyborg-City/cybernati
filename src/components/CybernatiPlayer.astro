@@ -785,20 +785,11 @@ const base = getBaseUrl();
             slot.id = 'cyber-player-slot';
             slot.className = 'w-full my-6 relative bg-zinc-950 rounded-2xl overflow-hidden not-prose';
             
-            // Extract height from iframe. If no height/width are set (or set to 100%), it automatically fills available space and maintains a perfect 16:9 aspect ratio!
-            const iframeHeight = iframeMatch.getAttribute('height') || iframeMatch.style.height;
-            if (iframeHeight && iframeHeight !== '100%') {
-              if (iframeHeight.endsWith('px')) {
-                slot.style.height = iframeHeight;
-              } else if (!isNaN(Number(iframeHeight))) {
-                slot.style.height = iframeHeight + 'px';
-              } else {
-                slot.style.height = iframeHeight;
-              }
-            } else {
-              // GORGEOUS RESPONSIVE ASPECT RATIO FALLBACK: Fills the available space and maintains 16:9 aspect ratio!
-              slot.classList.add('aspect-video');
-            }
+            // WHY: For the hijacked slot on the live site, we ALWAYS enforce a perfect 16:9 aspect ratio
+            // using Tailwind's 'aspect-video' utility. Enforcing this makes the slot fully responsive,
+            // scaling the height proportionally as the page width changes. This completely eliminates
+            // vertical and horizontal black bars, ensuring the premium overlays align perfectly with the video boundaries!
+            slot.classList.add('aspect-video');
             
             // Extract type and playlist from iframe src (e.g. /cybernati/player/video/channel-000)
             const srcParts = iframeMatch.getAttribute('src').split('/player/');

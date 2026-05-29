@@ -45,7 +45,16 @@ const base = getBaseUrl();
       <!-- Sync Progress Bar -->
       <div id="progress-container" class="absolute bottom-0 left-0 w-full h-1 bg-zinc-950/80 z-20" aria-label="Media play progress">
         <div id="sync-progress" class="progress-bar-fill h-full w-0"></div>
-      </div>      <!-- PiP Hover Controls Overlay -->
+      </div>
+
+      <!-- PiP Hover Header Overlay -->
+      <div id="pip-header-overlay" class="absolute top-3 left-3 right-3 z-30 flex items-center justify-between rounded-lg border border-zinc-800 bg-zinc-950/90 backdrop-blur-md px-2.5 py-1.5 opacity-0 pointer-events-none transition-all duration-300 shadow-xl border border-white/5">
+        <div id="pip-video-title" class="text-[9px] font-bold tracking-wider text-zinc-300 uppercase truncate m-0 p-0 leading-none" style="font-family: var(--font-mono)">
+          SCANNING FOR SIGNAL...
+        </div>
+      </div>
+
+      <!-- PiP Hover Controls Overlay -->
       <div id="pip-controls-overlay" class="absolute bottom-3 left-3 z-30 flex items-center justify-center gap-2.5 rounded-lg border border-zinc-800 bg-zinc-950/90 backdrop-blur-md px-2.5 py-1.5 opacity-0 pointer-events-none transition-all duration-300 shadow-xl border border-white/5 w-auto">
         <div class="flex items-center gap-1.5">
           <button id="pip-mute-toggle" class="flex items-center justify-center rounded p-1 text-zinc-400 hover:bg-zinc-800 hover:text-highlight-400" aria-label="Toggle mute state">
@@ -326,6 +335,18 @@ const base = getBaseUrl();
     transform: translateY(5px);
   }
   #global-cyber-player.is-pip #pip-controls-overlay.is-visible {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+
+  #global-cyber-player #pip-header-overlay {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    transform: translateY(-5px);
+  }
+  #global-cyber-player.is-pip #pip-header-overlay.is-visible {
     opacity: 1;
     pointer-events: auto;
     transform: translateY(0);
@@ -901,16 +922,19 @@ const base = getBaseUrl();
         }
 
         const pipOverlay = document.getElementById('pip-controls-overlay');
+        const pipHeaderOverlay = document.getElementById('pip-header-overlay');
         let overlayHideTimer = null;
         self.showOverlay = () => {
           if (!self.isFloating) return;
           if (pipOverlay) pipOverlay.classList.add('is-visible');
+          if (pipHeaderOverlay) pipHeaderOverlay.classList.add('is-visible');
           clearTimeout(overlayHideTimer);
         };
         self.scheduleHideOverlay = () => {
           clearTimeout(overlayHideTimer);
           overlayHideTimer = setTimeout(() => {
             if (pipOverlay) pipOverlay.classList.remove('is-visible');
+            if (pipHeaderOverlay) pipHeaderOverlay.classList.remove('is-visible');
           }, 3000);
         };
 
@@ -1364,11 +1388,13 @@ const base = getBaseUrl();
           
           const progressBar = document.getElementById('sync-progress');
           const titleEl = document.getElementById('video-title');
+          const pipTitleEl = document.getElementById('pip-video-title');
           const nextEl = document.getElementById('next-title');
           
           if (!standby && active) {
             if (progressBar) progressBar.style.width = `${((offset / active.duration) * 100)}%`;
             if (titleEl) titleEl.innerHTML = active.title.toUpperCase();
+            if (pipTitleEl) pipTitleEl.innerHTML = active.title.toUpperCase();
             if (nextEl) nextEl.innerHTML = schedule[nextIndex].title.toUpperCase();
             
             if (self.currentVideoId !== active.id) {
@@ -1382,6 +1408,7 @@ const base = getBaseUrl();
           } else {
             if (progressBar) progressBar.style.width = `${Math.min(100, (wait / 30) * 100)}%`;
             if (titleEl) titleEl.innerHTML = "SIGNAL LOST: TRANSMITTING STANDBY...";
+            if (pipTitleEl) pipTitleEl.innerHTML = "SIGNAL LOST: STANDBY";
             if (nextEl) nextEl.innerHTML = schedule[nextIndex].title.toUpperCase();
             self.mountStandby(interstitials);
           }
@@ -1431,6 +1458,13 @@ const base = getBaseUrl();
       mountVideo: function(prog, offset) {
         const mount = document.getElementById('player-mount');
         if (!mount) return;
+
+        // Update both standard and PiP titles immediately
+        const titleEl = document.getElementById('video-title');
+        const pipTitleEl = document.getElementById('pip-video-title');
+        if (titleEl) titleEl.innerHTML = prog.title.toUpperCase();
+        if (pipTitleEl) pipTitleEl.innerHTML = prog.title.toUpperCase();
+
         if (this.currentVideoId === prog.id && this.player && this.player.getPlayerState && this.player.getPlayerState() > 0) return;
         
         if (this.player && this.player.destroy) { try { this.player.destroy(); } catch (e) {} }
@@ -1490,6 +1524,13 @@ const base = getBaseUrl();
       mountStandby: function(interstitials) {
         const mount = document.getElementById('player-mount');
         if (!mount || !interstitials || interstitials.length === 0) return;
+
+        // Update both standard and PiP titles for standby
+        const titleEl = document.getElementById('video-title');
+        const pipTitleEl = document.getElementById('pip-video-title');
+        if (titleEl) titleEl.innerHTML = "SIGNAL LOST: TRANSMITTING STANDBY...";
+        if (pipTitleEl) pipTitleEl.innerHTML = "SIGNAL LOST: STANDBY";
+
         if (this.currentInterstitialIndex === null) this.currentInterstitialIndex = Math.floor(Math.random() * interstitials.length);
         
         let intUrl = interstitials[this.currentInterstitialIndex];

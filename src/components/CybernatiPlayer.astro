@@ -653,6 +653,7 @@ const base = getBaseUrl();
       isManuallyPip: false,
       isSwupTransitioning: false,
       dockedUrl: null,
+      dontDockOnNextPage: false,
 
       ensureYoutubeAPI: function(callback) {
         // WHY: Dynamically load the YouTube Iframe Player API on-demand. Using the YoutubeApiLoader
@@ -742,7 +743,12 @@ const base = getBaseUrl();
           // WHY: After Swup has completed rendering the new page and replacing the container DOM, we check if the new page contains a designated video player slot (or an iframe to hijack). If it does, we dock the player into the new slot.
           window.swup.hooks.on('page:view', () => {
             this.isSwupTransitioning = false; // Transition complete
-            this.isManuallyPip = false; // Reset manual override on page transition so it auto-docks on new video pages!
+            if (this.dontDockOnNextPage) {
+              this.dontDockOnNextPage = false;
+              this.isManuallyPip = true; // Retain PiP floating state
+            } else {
+              this.isManuallyPip = false; // Reset manual override on page transition so it auto-docks on new video pages!
+            }
             this.checkSlotAndMount(false); // Dock and recreate YT player cleanly once DOM is fully settled
           });
         };
@@ -2081,11 +2087,14 @@ const base = getBaseUrl();
                  * WHY: Clicking a related note in the player indicates active navigation to a new topic.
                  * To prevent the strict opt-in filter from destroying the player during navigation,
                  * we explicitly promote the player to Picture-in-Picture mode before starting the Swup transition.
+                 * By setting self.dontDockOnNextPage = true, we signal that the player must remain in floating
+                 * PiP mode on the new page, preventing it from auto-docking into the target page's video slot.
                  * By setting self.isManuallyPip = true, self.isFloating = true, and calling self.checkSlotAndMount(),
                  * we leverage the robust, battle-tested player state machine. It will automatically re-parent
                  * the player to document.body, apply custom dimensions, and trigger recreating the YT player
                  * cleanly, ensuring uninterrupted playback as the new page loads.
                  */
+                self.dontDockOnNextPage = true;
                 if (!self.isFloating) {
                   self.isManuallyPip = true;
                   self.isFloating = true;

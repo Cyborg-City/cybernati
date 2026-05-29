@@ -1735,6 +1735,23 @@ const base = getBaseUrl();
         window.addEventListener('click', (e) => {
           const target = e.target;
           
+          // Intercept related note links and start/preserve PiP mode
+          const link = target ? target.closest('a') : null;
+          if (link) {
+            const isPlayerRelated = link.classList.contains('cyber-related-link') || link.classList.contains('cyber-pip-related-link');
+            const isPageRelated = link.closest('#linked-mentions-content');
+            if (isPlayerRelated || isPageRelated) {
+              if (self.currentPlaylist) {
+                self.dontDockOnNextPage = true;
+                if (!self.isFloating) {
+                  self.isManuallyPip = true;
+                  self.isFloating = true;
+                  self.checkSlotAndMount();
+                }
+              }
+            }
+          }
+          
           const isOutside = (panelId, triggerId) => {
             const panel = document.getElementById(panelId);
             const trigger = document.getElementById(triggerId);

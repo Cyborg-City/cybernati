@@ -379,6 +379,7 @@ const base = getBaseUrl();
 
 <script>
   import { toLogVolume } from '@/utils/player-math';
+  import { shouldFloatToPip } from '@/utils/player-state';
 
   (function() {
     // Avoid double-initialization
@@ -405,6 +406,29 @@ const base = getBaseUrl();
       isSwupTransitioning: false,
       dockedUrl: null,
 
+      ensureYoutubeAPI: function(callback) {
+        // WHY: Dynamically load the YouTube Iframe Player API on-demand only when a video is about to be rendered. This avoids loading external scripts and executing heavy player code on pages where the player is not used, significantly speeding up initial page loads.
+        if (window.YT && window.YT.Player) {
+          callback();
+          return;
+        }
+
+        // If the script tag hasn't been added yet, add it
+        if (!document.querySelector('script[src*="youtube.com/iframe_api"]')) {
+          const tag = document.createElement('script');
+          tag.src = "https://www.youtube.com/iframe_api";
+          document.head.appendChild(tag);
+        }
+
+        // Poll for ready state
+        const checkReady = setInterval(() => {
+          if (window.YT && window.YT.Player) {
+            clearInterval(checkReady);
+            callback();
+          }
+        }, 100);
+      },
+
       // State handling
       // WHY: Initializes the global player once per session. Sets up Swup listeners and a MutationObserver to automatically move the player in and out of the DOM slot during page transitions without destroying the player instance.
       initGlobal: function() {
@@ -420,17 +444,29 @@ const base = getBaseUrl();
         const setupSwupHooks = () => {
           if (!window.swup) return;
           
-          // WHY: As soon as a user clicks a link and Swup starts the transition, we must immediately rescue the global player DOM from the container about to be replaced. We move it back to document.body and temporarily transition it to PiP mode so it remains alive and playing!
+          // WHY: As soon as a user clicks a link and Swup starts the transition, we must immediately rescue the global player DOM from the container about to be replaced. We move it back to document.body and temporarily transition it to PiP mode if explicitly requested by the user!
           window.swup.hooks.on('visit:start', () => {
             this.isSwupTransitioning = true; // Mark transition as active
             const globalPlayer = document.getElementById('global-cyber-player');
             if (globalPlayer && globalPlayer.classList.contains('is-slotted')) {
-              globalPlayer.classList.remove('is-slotted');
-              if (this.currentPlaylist) {
+              globalPlayer.remove(); // Remove from slotted parent immediately
+              
+              // WHY: PiP mode is strictly opt-in. We only transition to floating/PiP if the user has explicitly requested/activated PiP (either isFloating or isManuallyPip is true).
+              // Otherwise, we destroy it immediately to stop all audio and network loading.
+              const shouldFloat = shouldFloatToPip({
+                currentPlaylist: this.currentPlaylist,
+                isFloating: this.isFloating,
+                isManuallyPip: this.isManuallyPip,
+                isMuted: this.isMuted
+              });
+
+              if (shouldFloat) {
+                globalPlayer.classList.remove('is-slotted');
                 globalPlayer.classList.add('is-pip');
+                globalPlayer.classList.remove('is-hidden'); // Visual Override: Ensure always visible!
                 this.isFloating = true;
               } else {
-                globalPlayer.classList.add('is-hidden');
+                this.destroy(); // Halts and destroys the YouTube player cleanly!
               }
               document.body.appendChild(globalPlayer);
             }
@@ -564,14 +600,24 @@ const base = getBaseUrl();
             this.recreateYTPlayer();
           }
         } else {
-          // No slot found or manually forced to PiP. If playing, float it.
-          // WHY: This is the core of the seamless transition. If Swup navigates away from the player page, the player detects it is orphaned. Instead of dying, it snaps into PiP mode.
-          if (this.currentPlaylist) {
+          // No slot found or manually forced to PiP. If playing, float it if explicitly requested by the user.
+          // WHY: PiP mode is strictly opt-in. We only transition to floating/PiP if the user has explicitly requested/activated PiP (either isFloating or isManuallyPip is true).
+          // Otherwise, we destroy it immediately to stop all audio and network loading.
+          const shouldFloat = shouldFloatToPip({
+            currentPlaylist: this.currentPlaylist,
+            isFloating: this.isFloating,
+            isManuallyPip: this.isManuallyPip,
+            isMuted: this.isMuted
+          });
+
+          if (shouldFloat) {
             if (globalPlayer.classList.contains('is-pip') && globalPlayer.parentNode === document.body) {
+              globalPlayer.classList.remove('is-hidden'); // Visual Override: Ensure always visible!
               return; // Already floating, do nothing!
             }
             globalPlayer.classList.remove('is-slotted');
             globalPlayer.classList.add('is-pip');
+            globalPlayer.classList.remove('is-hidden'); // Visual Override: Ensure always visible!
             
             // Clear any inline positioning styles set during slotting or dragging
             globalPlayer.style.bottom = '';
@@ -598,8 +644,7 @@ const base = getBaseUrl();
               this.recreateYTPlayer();
             }
           } else {
-            // Not playing, hide it completely.
-            if (globalPlayer.classList.contains('is-hidden')) return;
+            // Not playing or not explicitly PiP, destroy it completely.
             this.destroy();
           }
         }
@@ -709,7 +754,19 @@ const base = getBaseUrl();
         this.currentPlaylist = null;
         this.currentType = null;
         this.isFloating = false;
+        this.isManuallyPip = false; // Reset PiP manual override to ensure clean state on next visit.
         
+        // WHY: Clean up the player mount to halt any running HTML5 video elements (like loop interstitials) immediately, reclaiming memory and CPU cycles.
+        const mount = document.getElementById('player-mount');
+        if (mount) {
+          mount.innerHTML = `
+            <div id="terminal-status-msg" class="flex h-full w-full flex-col items-center justify-center gap-3 bg-zinc-950 text-center">
+              <span class="material-symbols-outlined text-4xl animate-spin text-highlight-400">sync</span>
+              <span class="text-xs uppercase tracking-widest text-zinc-400" style="font-family: var(--font-mono)">Aligning Remote Feed Nodes...</span>
+            </div>
+          `;
+        }
+
         const globalPlayer = document.getElementById('global-cyber-player');
         if (globalPlayer) {
           globalPlayer.classList.remove('is-slotted', 'is-pip');
@@ -1522,27 +1579,35 @@ const base = getBaseUrl();
 
         if (this.currentVideoId === prog.id && this.player && this.player.getPlayerState && this.player.getPlayerState() > 0) return;
         
-        if (this.player && this.player.destroy) { try { this.player.destroy(); } catch (e) {} }
-        this.player = null;
         this.currentVideoId = prog.id;
         this.currentInterstitialIndex = null;
-        
-        mount.innerHTML = '<div id="yt-player" class="h-full w-full"></div>';
-        const self = this;
-        
+
         // Ensure playing state is saved when mounting video
         localStorage.setItem('cyber-player-playing', 'true');
 
-        this.player = new window.YT.Player('yt-player', {
-          height: '100%', width: '100%', videoId: prog.id,
-          playerVars: { autoplay: 1, mute: 1, controls: 0, disablekb: 1, modestbranding: 1, rel: 0, start: Math.floor(offset) },
-          events: {
-            onReady: (e) => {
-              if (self.isMuted) { e.target.mute(); }
-              else { e.target.unMute(); e.target.setVolume(toLogVolume(self.currentVolume)); }
-              e.target.playVideo(); // Force play to be safe
+        // WHY: We defer loading the YouTube script API and player creation until the video actually needs to be mounted.
+        // This keeps other pages snappy and prevents external scripts from loading on every standard page view.
+        this.ensureYoutubeAPI(() => {
+          // Double check that we are still supposed to play this exact video
+          if (this.currentVideoId !== prog.id) return;
+          
+          if (this.player && this.player.destroy) { try { this.player.destroy(); } catch (e) {} }
+          this.player = null;
+          
+          mount.innerHTML = '<div id="yt-player" class="h-full w-full"></div>';
+          const self = this;
+
+          this.player = new window.YT.Player('yt-player', {
+            height: '100%', width: '100%', videoId: prog.id,
+            playerVars: { autoplay: 1, mute: 1, controls: 0, disablekb: 1, modestbranding: 1, rel: 0, start: Math.floor(offset) },
+            events: {
+              onReady: (e) => {
+                if (self.isMuted) { e.target.mute(); }
+                else { e.target.unMute(); e.target.setVolume(toLogVolume(self.currentVolume)); }
+                e.target.playVideo(); // Force play to be safe
+              }
             }
-          }
+          });
         });        const linksEl = document.getElementById('related-links');
         const pipLinksEl = document.getElementById('pip-related-links');
 
@@ -1613,19 +1678,9 @@ const base = getBaseUrl();
       }
     };
 
-    // Load YouTube API
-    if (!window.YT) {
-      const tag = document.createElement('script');
-      tag.src = "https://www.youtube.com/iframe_api";
-      document.head.appendChild(tag);
-    }
-    
-    const checkReady = setInterval(() => {
-      if (window.YT && window.YT.Player) {
-        clearInterval(checkReady);
-        window.CyberPlayer.initGlobal();
-      }
-    }, 500);
+    // WHY: Initialize the global player instantly on page load. Setup the listeners, MutationObserver, and Swup hooks
+    // right away without waiting for external YouTube API scripts to load, which keeps the page load fast and responsive.
+    window.CyberPlayer.initGlobal();
 
   })();
 </script>

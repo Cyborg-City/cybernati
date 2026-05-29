@@ -21,16 +21,13 @@ try {
   console.error(`Failed to clean .astro: ${error.message}`);
 }
 
-// Wipe Vite deps cache so modules are re-resolved
+// Wipe Vite cache completely so modules are re-resolved
 try {
-  const viteDeps = path.join(viteCacheDir, 'deps');
-  if (existsSync(viteDeps)) {
-    console.log(`Cleaning Vite deps cache: ${viteDeps}`);
-    rmSync(viteDeps, { recursive: true, force: true });
+  if (existsSync(viteCacheDir)) {
+    console.log(`Cleaning Vite cache: ${viteCacheDir}`);
+    rmSync(viteCacheDir, { recursive: true, force: true });
   }
-  if (!existsSync(viteCacheDir)) {
-    mkdirSync(viteCacheDir, { recursive: true });
-  }
+  mkdirSync(viteCacheDir, { recursive: true });
 } catch (error) {
   console.error(`Failed to clean Vite cache: ${error.message}`);
 }

@@ -1,6 +1,90 @@
 {
-  "totalLoopDuration": 4324,
+  "totalLoopDuration": 6503,
   "schedule": [
+    {
+      "id": "cMLaJsSrZuQ",
+      "title": "Ancient Aliens: Incredible Area 51 Secrets Revealed (Season 15) | History",
+      "duration": 259,
+      "related": [
+        {
+          "name": "From Classified to Curated: How the Government Still Controls the UAP Narrative",
+          "slug": "/posts/from-classified-to-curated-how-the-government-still-controls-the-uap-narrative/"
+        },
+        {
+          "name": "The Project PURSUE Reference Dossier",
+          "slug": "/dossier/the-project-pursue-reference-dossier/"
+        }
+      ],
+      "date": 1616025600000,
+      "modified": 1780018927365,
+      "type": "video",
+      "playlist": "uap",
+      "start": 0,
+      "end": 259
+    },
+    {
+      "id": "OarL8ymktIE",
+      "title": "Kenneth Arnold UFO Sighting, 1947",
+      "duration": 455,
+      "related": [
+        {
+          "name": "From Classified to Curated: How the Government Still Controls the UAP Narrative",
+          "slug": "/posts/from-classified-to-curated-how-the-government-still-controls-the-uap-narrative/"
+        },
+        {
+          "name": "The Project PURSUE Reference Dossier",
+          "slug": "/dossier/the-project-pursue-reference-dossier/"
+        }
+      ],
+      "date": 1477699200000,
+      "modified": 1780018927368,
+      "type": "video",
+      "playlist": "uap",
+      "start": 289,
+      "end": 744
+    },
+    {
+      "id": "IBaw2oqVz8w",
+      "title": "\"Mystery Airship\" Sightings, 1896 - 1897",
+      "duration": 753,
+      "related": [
+        {
+          "name": "From Classified to Curated: How the Government Still Controls the UAP Narrative",
+          "slug": "/posts/from-classified-to-curated-how-the-government-still-controls-the-uap-narrative/"
+        },
+        {
+          "name": "The Project PURSUE Reference Dossier",
+          "slug": "/dossier/the-project-pursue-reference-dossier/"
+        }
+      ],
+      "date": 1500854400000,
+      "modified": 1780018927369,
+      "type": "video",
+      "playlist": "uap",
+      "start": 774,
+      "end": 1527
+    },
+    {
+      "id": "Vf41CD5INGU",
+      "title": "Project Blue Book: Declassified – The True Story of the Foo Fighters | History",
+      "duration": 142,
+      "related": [
+        {
+          "name": "From Classified to Curated: How the Government Still Controls the UAP Narrative",
+          "slug": "/posts/from-classified-to-curated-how-the-government-still-controls-the-uap-narrative/"
+        },
+        {
+          "name": "The Project PURSUE Reference Dossier",
+          "slug": "/dossier/the-project-pursue-reference-dossier/"
+        }
+      ],
+      "date": 1551484800000,
+      "modified": 1780018927370,
+      "type": "video",
+      "playlist": "uap",
+      "start": 1557,
+      "end": 1699
+    },
     {
       "id": "WnV5v-ECzPY",
       "title": "THE 1897 AIRSHIP MYSTERY: America's First UFO Wave That Predated Roswell Before Planes Even Existed",
@@ -16,10 +100,53 @@
         }
       ],
       "date": 1751846400000,
+      "modified": 1780018927372,
       "type": "video",
       "playlist": "uap",
-      "start": 0,
-      "end": 4324
+      "start": 1729,
+      "end": 6053
+    },
+    {
+      "id": "odUSnDgU-oo",
+      "title": "The Mysterious Roswell UFO Incident of 1947",
+      "duration": 86,
+      "related": [
+        {
+          "name": "From Classified to Curated: How the Government Still Controls the UAP Narrative",
+          "slug": "/posts/from-classified-to-curated-how-the-government-still-controls-the-uap-narrative/"
+        },
+        {
+          "name": "The Project PURSUE Reference Dossier",
+          "slug": "/dossier/the-project-pursue-reference-dossier/"
+        }
+      ],
+      "date": 1326067200000,
+      "modified": 1780018927382,
+      "type": "video",
+      "playlist": "uap",
+      "start": 6083,
+      "end": 6169
+    },
+    {
+      "id": "ZmHOdER9hdc",
+      "title": "The Truth About the 2026 Declassified UFO Files | Project PURSUE Explained",
+      "duration": 304,
+      "related": [
+        {
+          "name": "From Classified to Curated: How the Government Still Controls the UAP Narrative",
+          "slug": "/posts/from-classified-to-curated-how-the-government-still-controls-the-uap-narrative/"
+        },
+        {
+          "name": "The Project PURSUE Reference Dossier",
+          "slug": "/dossier/the-project-pursue-reference-dossier/"
+        }
+      ],
+      "date": 1778284800000,
+      "modified": 1780018928461,
+      "type": "video",
+      "playlist": "uap",
+      "start": 6199,
+      "end": 6503
     }
   ],
   "interstitials": [

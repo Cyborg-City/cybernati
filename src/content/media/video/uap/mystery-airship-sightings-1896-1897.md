@@ -11,6 +11,9 @@ tags:
 related:
   - "[[from-classified-to-curated-how-the-government-still-controls-the-uap-narrative]]"
   - "[[the-project-pursue-reference-dossier]]"
+duration: 753
+modified: 2026-05-29T01:42:07.369Z
+
 ---
 ![](https://www.youtube.com/watch?v=IBaw2oqVz8w)
 

@@ -1731,13 +1731,20 @@ const base = getBaseUrl();
             container.querySelectorAll('a').forEach(linkEl => {
               linkEl.onclick = (e) => {
                 e.preventDefault();
-                // Ensure player goes into PiP when clicking a related note
+                
+                /**
+                 * WHY: Clicking a related note in the player indicates active navigation to a new topic.
+                 * To prevent the strict opt-in filter from destroying the player during navigation,
+                 * we explicitly promote the player to Picture-in-Picture mode before starting the Swup transition.
+                 * By setting self.isManuallyPip = true, self.isFloating = true, and calling self.checkSlotAndMount(),
+                 * we leverage the robust, battle-tested player state machine. It will automatically re-parent
+                 * the player to document.body, apply custom dimensions, and trigger recreating the YT player
+                 * cleanly, ensuring uninterrupted playback as the new page loads.
+                 */
                 if (!self.isFloating) {
-                  const gp = document.getElementById('global-cyber-player') || self.el;
-                  gp.classList.remove('is-slotted');
-                  gp.classList.add('is-pip');
-                  document.body.appendChild(gp);
+                  self.isManuallyPip = true;
                   self.isFloating = true;
+                  self.checkSlotAndMount();
                 }
                 const href = linkEl.getAttribute('href');
                 if (window.swup) window.swup.navigate(href);

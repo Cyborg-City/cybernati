@@ -53,6 +53,7 @@ live site. Don't take shortcuts that break Obsidian-native behavior.
     Search before inventing.
 11. **ALWAYS USE TDD (Red, Green, Refactor)**: A failing test must be written first before writing any functional/implementation code.
 12. **Software Design Principles**: Always write code using DRY (Don't Repeat Yourself) and SOLID design principles. Write DAMP (Descriptive and Meaningful Phrases) tests, and strictly adhere to the Beyonce rule ("If you liked it, then you shoulda put a test on it").
+13. **TSDoc / Explaining the "Why"**: Always write TSDoc-style comments explaining the architectural and logical "why" behind your code changes and helper functions.
 
 ---
 

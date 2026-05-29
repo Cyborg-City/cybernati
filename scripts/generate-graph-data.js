@@ -82,13 +82,30 @@ if (!existsSync(OUTPUT_DIR)) {
  * @param {string} collectionType - The collection type (e.g., 'posts')
  * @returns {string} - The generated ID
  */
-function generateNodeId(filePath, collectionType) {
-  // Remove collection prefix and extension
-  let id = filePath.replace(`src/content/${collectionType}/`, "");
-  id = id.replace(".md", "");
-  id = id.replace("/index", ""); // Handle folder-based posts
+export function generateNodeId(filePath, collectionType) {
+  let id = filePath;
 
-  // Clean up the ID: lowercase, replace spaces/special chars with hyphens
+  // 1. Remove src/content/ prefix if present
+  id = id.replace(/^src\/content\//, "");
+
+  // 2. Remove leading slash if present
+  if (id.startsWith("/")) {
+    id = id.substring(1);
+  }
+
+  // 3. Remove collection prefix if present (e.g. "posts/", "dossier/", "vault/")
+  for (const col of COLLECTIONS) {
+    if (id.startsWith(`${col}/`)) {
+      id = id.replace(`${col}/`, "");
+      break;
+    }
+  }
+
+  // 4. Remove .md and /index suffixes
+  id = id.replace(/\.md$/, "");
+  id = id.replace(/\/index$/, ""); // Handle folder-based posts
+
+  // 5. Clean up the ID: lowercase, replace spaces/special chars with hyphens
   id = id.toLowerCase().replace(/[^a-z0-9-]/g, "-");
 
   // Remove multiple consecutive hyphens
@@ -103,7 +120,7 @@ function generateNodeId(filePath, collectionType) {
 /**
  * Extract wikilinks from content (Obsidian-style)
  */
-function extractWikilinks(content) {
+export function extractWikilinks(content) {
   const matches = [];
   const wikilinkRegex = /!?\[\[([^\]]+)\]\]/g;
   let match;
@@ -140,7 +157,7 @@ function extractWikilinks(content) {
 /**
  * Extract standard markdown links from content
  */
-function extractStandardLinks(content) {
+export function extractStandardLinks(content) {
   const matches = [];
   const markdownLinkRegex = /\[([^\]]+)\]\(([^)]+)\)/g;
   let match;
@@ -186,7 +203,7 @@ function extractStandardLinks(content) {
 /**
  * Check if a URL is an internal link
  */
-function isInternalLink(url) {
+export function isInternalLink(url) {
   url = url.trim();
 
   // Skip external URLs
@@ -219,7 +236,7 @@ function isInternalLink(url) {
 /**
  * Extract link text from URL
  */
-function extractLinkTextFromUrl(url) {
+export function extractLinkTextFromUrl(url) {
   url = url.trim();
 
   // Parse anchor if present
@@ -534,5 +551,11 @@ async function generateGraphData() {
   }
 }
 
-// Run the script
-generateGraphData();
+// Run the script if executed directly
+const isMain = process.argv[1] && (
+  process.argv[1].endsWith('generate-graph-data.js') ||
+  process.argv[1].endsWith('generate-graph-data.ts')
+);
+if (isMain) {
+  generateGraphData();
+}

@@ -60,6 +60,11 @@ const base = getBaseUrl();
         <button id="pip-exit-btn" class="ml-2 flex items-center justify-center rounded p-1 text-zinc-400 hover:bg-zinc-800 hover:text-red-400 transition-colors" title="Close Player" aria-label="Close Player">
           <span class="material-symbols-outlined text-base">close</span>
         </button>
+
+        <!-- PiP Return Button -->
+        <button id="pip-return-btn" class="ml-1.5 flex items-center justify-center rounded p-1 text-zinc-400 hover:bg-zinc-800 hover:text-highlight-400 transition-colors hidden" title="Return to Page" aria-label="Return to Page">
+          <span class="material-symbols-outlined text-base">shortcut</span>
+        </button>
       </div>
     </div>
 
@@ -355,6 +360,7 @@ const base = getBaseUrl();
       isFloating: false,
       isManuallyPip: false,
       isSwupTransitioning: false,
+      dockedUrl: null,
 
       // State handling
       // WHY: Initializes the global player once per session. Sets up Swup listeners and a MutationObserver to automatically move the player in and out of the DOM slot during page transitions without destroying the player instance.
@@ -482,6 +488,9 @@ const base = getBaseUrl();
           const type = slot.getAttribute('data-type') || 'video';
           const playlist = slot.getAttribute('data-playlist') || 'channel-000';
 
+          // Save the current location as the docked page URL so we can return to it from PiP
+          this.dockedUrl = window.location.pathname;
+
           // If already docked and playlist/type hasn't changed, do nothing!
           if (globalPlayer.parentNode === slot && this.currentPlaylist === playlist && this.currentType === type) {
             return;
@@ -549,6 +558,16 @@ const base = getBaseUrl();
             // Not playing, hide it completely.
             if (globalPlayer.classList.contains('is-hidden')) return;
             this.destroy();
+          }
+        }
+
+        // Update the PiP Return button visibility based on whether we are floating and have a target URL
+        const returnBtn = document.getElementById('pip-return-btn');
+        if (returnBtn) {
+          if (this.isFloating && this.dockedUrl) {
+            returnBtn.classList.remove('hidden');
+          } else {
+            returnBtn.classList.add('hidden');
           }
         }
       },
@@ -847,6 +866,18 @@ const base = getBaseUrl();
         if (pipClose) {
           pipClose.onclick = () => {
             self.destroy();
+          };
+        }
+
+        // PiP Return Button
+        const pipReturn = document.getElementById('pip-return-btn');
+        if (pipReturn) {
+          pipReturn.onclick = (e) => {
+            e.stopPropagation();
+            if (self.dockedUrl) {
+              if (window.swup) window.swup.navigate(self.dockedUrl);
+              else window.location.href = self.dockedUrl;
+            }
           };
         }
 

@@ -420,7 +420,7 @@ async function run() {
 
     if (allVideos.length > 0) {
       const channelSchedule = calculateTimeline(allVideos);
-      const totalDuration = channelSchedule.length > 0 ? channelSchedule[channelSchedule.length - 1].end : 0;
+      const totalDuration = channelSchedule.length > 0 ? channelSchedule[channelSchedule.length - 1].end + 30 : 0;
       
       const channelPlaylist = {
         totalLoopDuration: totalDuration,
@@ -446,7 +446,7 @@ async function run() {
       items.sort((a, b) => a.modified - b.modified);
 
       const schedule = calculateTimeline(items);
-      const totalDuration = schedule.length > 0 ? schedule[schedule.length - 1].end : 0;
+      const totalDuration = schedule.length > 0 ? schedule[schedule.length - 1].end + 30 : 0;
 
       const playlistOutput = {
         totalLoopDuration: totalDuration,

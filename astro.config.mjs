@@ -131,7 +131,10 @@ image: {
       cache: process.env.NODE_ENV === 'production', // off in dev so post edits show immediately
       preload: true,
       accessibility: false,
-      updateHead: true,
+      updateHead: {
+        awaitAssets: true,
+        persistAssets: true
+      },
       updateBodyClass: false,
       globalInstance: true,
       plugins: [], // Disable all plugins including scroll

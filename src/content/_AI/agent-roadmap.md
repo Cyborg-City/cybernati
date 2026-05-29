@@ -5,7 +5,7 @@ This note is the living record of completed tasks, active work, and future plans
 ---
 
 ## 📌 Active Focus
-* **Current Task**: Finishing touches on the blog post + dossier draft. User is taking a pause to think over final edits before publishing.
+* **Current Task**: Planning and building the async command runner (Issue 0004). Workspace created at `_AI/async-command-runner/`.
 
 ---
 
@@ -53,7 +53,7 @@ A historical record of architectural and workflow decisions to prevent backslidi
 
 ### Phase 3: Astro Integration & Publishing
 * [x] **Astro Content Collections (Issue 0001)**: Dossier, Vault, and Media collections implemented with schemas, routes, and listing pages. [Closed 2026-05-28]
-* [ ] **Publish Workflow**: Blog post + dossier written, pending finishing touches and frontmatter cleanup before moving to live directories.
+* [x] **Publish Workflow**: Blog post + dossier published. Blog post at `posts/from-classified-to-curated-project-pursue/`. Dossier at `content/dossier/the-project-pursue-reference-dossier/`. [Published 2026-05-28]
 * [ ] **Build-Time Backlink Engine**: Write the markdown processor that dynamically extracts wikilinks from note bodies and injects backlink portals at page footers automatically.
 * [ ] **Chronos Timeline Integration (Issue 0002)**: Add a Remark/Rehype compiler plugin to parse Obsidian `chronos` codeblocks and render them as native, responsive HTML/CSS timelines.
 * ⏸️ **Media Player Integration (Issue 0003)**: Component and path resolver done; MDX registration and validation deferred for polish. [Pinned 2026-05-28]

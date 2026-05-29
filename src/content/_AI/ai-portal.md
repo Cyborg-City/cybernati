@@ -57,6 +57,7 @@ These skills reside in the workspace configuration (`.agents/skills/`) and assis
 These skills reside inside the vault itself (`_AI/skills/`) and are custom-tailored to Cybernati's data tasks:
 - **`PURSUE`** (`_AI/skills/PURSUE/`): Process, sort, catalog, and initiate uploads for declassified UAP document releases from the Department of War / AARO under the PURSUE Act. Sets up the configuration notes required for the bulletproof upload scripts.
 - **`process-clippings`** (`_AI/skills/process-clippings/`): Ingest, sort, and analyze web clippings captured via the Obsidian Web Clipper. Organizes clippings inside a collaborative `_writers-room/` workspace and generates a standardized `agent-report.md` for co-authoring.
+- **`4mat`** (`_AI/skills/4mat/`): Use the 4MAT Framework (Why, What, How, What If) to simplify and teach ideas. Write accessible content, explain complex topics, or structure lessons and presentations that engage all learning styles. Based on Dr. Bernice McCarthy's instructional design model.
 
 ---
 

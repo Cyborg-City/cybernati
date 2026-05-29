@@ -865,6 +865,582 @@
       "issuesCount": 0,
       "warningsCount": 3,
       "noticesCount": 9
+    },
+    {
+      "file": "posts/from-classified-to-curated-how-the-government-still-controls-the-uap-narrative/index.md",
+      "displayName": "From Classified to Curated: How the Government Still Controls the UAP Narrative",
+      "checks": {
+        "titleLength": [
+          {
+            "passed": false,
+            "message": "Title too long: 97 characters (\"From Classified to Curated: How the Government Still Controls the UAP Narrative\" + \" - Astro Modular\")",
+            "suggestion": "Aim for 30-60 characters",
+            "severity": "warning"
+          }
+        ],
+        "metaDescription": [
+          {
+            "passed": true,
+            "message": "Good description length: 148 characters",
+            "severity": "info"
+          }
+        ],
+        "titleH1Uniqueness": [
+          {
+            "passed": true,
+            "message": "Meta title and H1 are unique (prefix/suffix configured)",
+            "severity": "info"
+          }
+        ],
+        "keywordInTitle": [
+          {
+            "passed": false,
+            "message": "Keyword not found in title",
+            "suggestion": "Include your target keyword in the title",
+            "severity": "warning"
+          }
+        ],
+        "keywordInDescription": [
+          {
+            "passed": false,
+            "message": "Keyword not found in description",
+            "suggestion": "Include your target keyword in the description",
+            "severity": "warning"
+          }
+        ],
+        "keywordInHeadings": [
+          {
+            "passed": false,
+            "message": "Keyword not found in H1",
+            "suggestion": "Include your target keyword in the H1 heading for better SEO",
+            "severity": "warning"
+          }
+        ],
+        "keywordInSlug": [
+          {
+            "passed": false,
+            "message": "Target keyword \"UAP history\" not found in slug",
+            "suggestion": "Include your target keyword in the file name",
+            "severity": "warning"
+          }
+        ],
+        "slugFormat": [],
+        "keywordDensity": [
+          {
+            "passed": false,
+            "message": "Keyword density too low: 0.1%",
+            "suggestion": "Aim for at least 1% density",
+            "severity": "warning"
+          }
+        ],
+        "headingOrder": [
+          {
+            "passed": true,
+            "message": "Heading structure is correct",
+            "severity": "info"
+          }
+        ],
+        "contentLength": [
+          {
+            "passed": true,
+            "message": "Good content length: 1318 words",
+            "severity": "info"
+          }
+        ],
+        "duplicateTitles": [],
+        "duplicateDescriptions": [],
+        "duplicateContent": [],
+        "altText": [
+          {
+            "passed": true,
+            "message": "All media elements have alt text",
+            "severity": "info"
+          }
+        ],
+        "imageFileNames": [
+          {
+            "passed": true,
+            "message": "All images have good file names",
+            "severity": "info"
+          }
+        ],
+        "nakedLinks": [
+          {
+            "passed": true,
+            "message": "No naked links found",
+            "severity": "info"
+          }
+        ],
+        "brokenLinks": [
+          {
+            "passed": true,
+            "message": "No broken internal links found",
+            "severity": "info"
+          }
+        ],
+        "potentiallyBrokenLinks": [
+          {
+            "passed": true,
+            "message": "No potentially broken links found",
+            "severity": "info"
+          }
+        ],
+        "potentiallyBrokenEmbeds": [],
+        "externalBrokenLinks": [
+          {
+            "passed": true,
+            "message": "External link: https://web.archive.org/web/20260527160241/https://www.war.gov/UFO/",
+            "suggestion": "To find if any of these are broken, use the 'Check external links for 404s' button to trigger it.",
+            "severity": "notice",
+            "position": {
+              "line": 113,
+              "searchText": "https://web.archive.org/web/20260527160241/https://www.war.gov/UFO/",
+              "context": "And then something changed. Or did it?\n\nOn May 8, 2026, under an executive directive from President Donald Trump, **Project PURSUE** (Presidential Unsealing and Reporting System for UAP Encounters) was launched. Overseen by the Department of War with ODNI support, it established a rolling release of declassified UAP records through a public database at [war.gov/UFO](https://web.archive.org/web/20260527160241/https://www.war.gov/UFO/).\n\nWhat came out was extraordinary by any measure: unredacted Cold War FBI memos, Apollo moon mission transcripts showing astronauts reporting unexplained phenomena from the lunar surface, and full-motion sensor footage of anomalous objects tracked by modern military systems. For the first time, the public could browse the same documents that intelligence analysts were actively reviewing."
+            }
+          }
+        ],
+        "readingLevel": [
+          {
+            "passed": false,
+            "message": "Reading level too high: 12.6 (Moderately difficult to read)",
+            "suggestion": "Consider simplifying sentence structure and using shorter words",
+            "severity": "warning"
+          }
+        ]
+      },
+      "overallScore": 73,
+      "issuesCount": 0,
+      "warningsCount": 7,
+      "noticesCount": 1
+    },
+    {
+      "file": "posts/from-classified-to-curated-project-pursue-explained/index.md",
+      "displayName": "From Classified to Curated: Project PURSUE Explained",
+      "checks": {
+        "titleLength": [
+          {
+            "passed": false,
+            "message": "Title too long: 70 characters (\"From Classified to Curated: Project PURSUE Explained\" + \" - Astro Modular\")",
+            "suggestion": "Aim for 30-60 characters",
+            "severity": "warning"
+          }
+        ],
+        "metaDescription": [
+          {
+            "passed": false,
+            "message": "Description too long: 165 characters",
+            "suggestion": "Aim for 120-160 characters",
+            "severity": "warning"
+          }
+        ],
+        "titleH1Uniqueness": [
+          {
+            "passed": true,
+            "message": "Meta title and H1 are unique (prefix/suffix configured)",
+            "severity": "info"
+          }
+        ],
+        "keywordInTitle": [
+          {
+            "passed": true,
+            "message": "Keyword found in title",
+            "severity": "info"
+          }
+        ],
+        "keywordInDescription": [
+          {
+            "passed": true,
+            "message": "Keyword found in description",
+            "severity": "info"
+          }
+        ],
+        "keywordInHeadings": [
+          {
+            "passed": true,
+            "message": "Keyword found in H1",
+            "severity": "info"
+          }
+        ],
+        "keywordInSlug": [
+          {
+            "passed": true,
+            "message": "Target keyword \"PURSUE\" found in slug",
+            "severity": "info"
+          }
+        ],
+        "slugFormat": [],
+        "keywordDensity": [
+          {
+            "passed": false,
+            "message": "Keyword density too low: 0.5%",
+            "suggestion": "Aim for at least 1% density",
+            "severity": "warning"
+          }
+        ],
+        "headingOrder": [
+          {
+            "passed": true,
+            "message": "Heading structure is correct",
+            "severity": "info"
+          }
+        ],
+        "contentLength": [
+          {
+            "passed": true,
+            "message": "Good content length: 1318 words",
+            "severity": "info"
+          }
+        ],
+        "duplicateTitles": [],
+        "duplicateDescriptions": [],
+        "duplicateContent": [],
+        "altText": [
+          {
+            "passed": true,
+            "message": "All media elements have alt text",
+            "severity": "info"
+          }
+        ],
+        "imageFileNames": [
+          {
+            "passed": true,
+            "message": "All images have good file names",
+            "severity": "info"
+          }
+        ],
+        "nakedLinks": [
+          {
+            "passed": true,
+            "message": "No naked links found",
+            "severity": "info"
+          }
+        ],
+        "brokenLinks": [
+          {
+            "passed": true,
+            "message": "No broken internal links found",
+            "severity": "info"
+          }
+        ],
+        "potentiallyBrokenLinks": [
+          {
+            "passed": true,
+            "message": "No potentially broken links found",
+            "severity": "info"
+          }
+        ],
+        "potentiallyBrokenEmbeds": [],
+        "externalBrokenLinks": [
+          {
+            "passed": true,
+            "message": "External link: https://web.archive.org/web/20260527160241/https://www.war.gov/UFO/",
+            "suggestion": "To find if any of these are broken, use the 'Check external links for 404s' button to trigger it.",
+            "severity": "notice",
+            "position": {
+              "line": 116,
+              "searchText": "https://web.archive.org/web/20260527160241/https://www.war.gov/UFO/",
+              "context": "And then something changed. Or did it?\n\nOn May 8, 2026, under an executive directive from President Donald Trump, **Project PURSUE** (Presidential Unsealing and Reporting System for UAP Encounters) was launched. Overseen by the Department of War with ODNI support, it established a rolling release of declassified UAP records through a public database at [war.gov/UFO](https://web.archive.org/web/20260527160241/https://www.war.gov/UFO/).\n\nWhat came out was extraordinary by any measure: unredacted Cold War FBI memos, Apollo moon mission transcripts showing astronauts reporting unexplained phenomena from the lunar surface, and full-motion sensor footage of anomalous objects tracked by modern military systems. For the first time, the public could browse the same documents that intelligence analysts were actively reviewing."
+            }
+          }
+        ],
+        "readingLevel": [
+          {
+            "passed": false,
+            "message": "Reading level too high: 12.6 (Moderately difficult to read)",
+            "suggestion": "Consider simplifying sentence structure and using shorter words",
+            "severity": "warning"
+          }
+        ]
+      },
+      "overallScore": 66,
+      "issuesCount": 0,
+      "warningsCount": 4,
+      "noticesCount": 1
+    },
+    {
+      "file": "posts/project-pursue-explained-130-years-of-uap-secrecy/index.md",
+      "displayName": "Project PURSUE Explained: 130 Years of UAP Secrecy",
+      "checks": {
+        "titleLength": [
+          {
+            "passed": false,
+            "message": "Title too long: 68 characters (\"Project PURSUE Explained: 130 Years of UAP Secrecy\" + \" - Astro Modular\")",
+            "suggestion": "Aim for 30-60 characters",
+            "severity": "warning"
+          }
+        ],
+        "metaDescription": [
+          {
+            "passed": true,
+            "message": "Good description length: 154 characters",
+            "severity": "info"
+          }
+        ],
+        "titleH1Uniqueness": [
+          {
+            "passed": true,
+            "message": "Meta title and H1 are unique (prefix/suffix configured)",
+            "severity": "info"
+          }
+        ],
+        "keywordInTitle": [
+          {
+            "passed": true,
+            "message": "Keyword found in title",
+            "severity": "info"
+          }
+        ],
+        "keywordInDescription": [
+          {
+            "passed": true,
+            "message": "Keyword found in description",
+            "severity": "info"
+          }
+        ],
+        "keywordInHeadings": [
+          {
+            "passed": true,
+            "message": "Keyword found in H1",
+            "severity": "info"
+          }
+        ],
+        "keywordInSlug": [
+          {
+            "passed": true,
+            "message": "Target keyword \"PURSUE\" found in slug",
+            "severity": "info"
+          }
+        ],
+        "slugFormat": [],
+        "keywordDensity": [
+          {
+            "passed": false,
+            "message": "Keyword density too low: 0.5%",
+            "suggestion": "Aim for at least 1% density",
+            "severity": "warning"
+          }
+        ],
+        "headingOrder": [
+          {
+            "passed": true,
+            "message": "Heading structure is correct",
+            "severity": "info"
+          }
+        ],
+        "contentLength": [
+          {
+            "passed": true,
+            "message": "Good content length: 1318 words",
+            "severity": "info"
+          }
+        ],
+        "duplicateTitles": [],
+        "duplicateDescriptions": [],
+        "duplicateContent": [],
+        "altText": [
+          {
+            "passed": true,
+            "message": "All media elements have alt text",
+            "severity": "info"
+          }
+        ],
+        "imageFileNames": [
+          {
+            "passed": true,
+            "message": "All images have good file names",
+            "severity": "info"
+          }
+        ],
+        "nakedLinks": [
+          {
+            "passed": true,
+            "message": "No naked links found",
+            "severity": "info"
+          }
+        ],
+        "brokenLinks": [
+          {
+            "passed": true,
+            "message": "No broken internal links found",
+            "severity": "info"
+          }
+        ],
+        "potentiallyBrokenLinks": [
+          {
+            "passed": true,
+            "message": "No potentially broken links found",
+            "severity": "info"
+          }
+        ],
+        "potentiallyBrokenEmbeds": [],
+        "externalBrokenLinks": [
+          {
+            "passed": true,
+            "message": "External link: https://web.archive.org/web/20260527160241/https://www.war.gov/UFO/",
+            "suggestion": "To find if any of these are broken, use the 'Check external links for 404s' button to trigger it.",
+            "severity": "notice",
+            "position": {
+              "line": 118,
+              "searchText": "https://web.archive.org/web/20260527160241/https://www.war.gov/UFO/",
+              "context": "And then something changed. Or did it?\n\nOn May 8, 2026, under an executive directive from President Donald Trump, **Project PURSUE** (Presidential Unsealing and Reporting System for UAP Encounters) was launched. Overseen by the Department of War with ODNI support, it established a rolling release of declassified UAP records through a public database at [war.gov/UFO](https://web.archive.org/web/20260527160241/https://www.war.gov/UFO/).\n\nWhat came out was extraordinary by any measure: unredacted Cold War FBI memos, Apollo moon mission transcripts showing astronauts reporting unexplained phenomena from the lunar surface, and full-motion sensor footage of anomalous objects tracked by modern military systems. For the first time, the public could browse the same documents that intelligence analysts were actively reviewing."
+            }
+          }
+        ],
+        "readingLevel": [
+          {
+            "passed": false,
+            "message": "Reading level too high: 12.6 (Moderately difficult to read)",
+            "suggestion": "Consider simplifying sentence structure and using shorter words",
+            "severity": "warning"
+          }
+        ]
+      },
+      "overallScore": 81,
+      "issuesCount": 0,
+      "warningsCount": 3,
+      "noticesCount": 1
+    },
+    {
+      "file": "posts/from-classified-to-curated-project-pursue/index.md",
+      "displayName": "From Classified to Curated: Project PURSUE",
+      "checks": {
+        "titleLength": [
+          {
+            "passed": true,
+            "message": "Good title length: 60 characters (\"From Classified to Curated: Project PURSUE\" + \" - Astro Modular\")",
+            "severity": "info"
+          }
+        ],
+        "metaDescription": [
+          {
+            "passed": true,
+            "message": "Good description length: 154 characters",
+            "severity": "info"
+          }
+        ],
+        "titleH1Uniqueness": [
+          {
+            "passed": true,
+            "message": "Meta title and H1 are unique (prefix/suffix configured)",
+            "severity": "info"
+          }
+        ],
+        "keywordInTitle": [
+          {
+            "passed": true,
+            "message": "Keyword found in title",
+            "severity": "info"
+          }
+        ],
+        "keywordInDescription": [
+          {
+            "passed": true,
+            "message": "Keyword found in description",
+            "severity": "info"
+          }
+        ],
+        "keywordInHeadings": [
+          {
+            "passed": true,
+            "message": "Keyword found in H1",
+            "severity": "info"
+          }
+        ],
+        "keywordInSlug": [
+          {
+            "passed": true,
+            "message": "Target keyword \"PURSUE\" found in slug",
+            "severity": "info"
+          }
+        ],
+        "slugFormat": [],
+        "keywordDensity": [
+          {
+            "passed": false,
+            "message": "Keyword density too low: 0.5%",
+            "suggestion": "Aim for at least 1% density",
+            "severity": "warning"
+          }
+        ],
+        "headingOrder": [
+          {
+            "passed": true,
+            "message": "Heading structure is correct",
+            "severity": "info"
+          }
+        ],
+        "contentLength": [
+          {
+            "passed": true,
+            "message": "Good content length: 1318 words",
+            "severity": "info"
+          }
+        ],
+        "duplicateTitles": [],
+        "duplicateDescriptions": [],
+        "duplicateContent": [],
+        "altText": [
+          {
+            "passed": true,
+            "message": "All media elements have alt text",
+            "severity": "info"
+          }
+        ],
+        "imageFileNames": [
+          {
+            "passed": true,
+            "message": "All images have good file names",
+            "severity": "info"
+          }
+        ],
+        "nakedLinks": [
+          {
+            "passed": true,
+            "message": "No naked links found",
+            "severity": "info"
+          }
+        ],
+        "brokenLinks": [
+          {
+            "passed": true,
+            "message": "No broken internal links found",
+            "severity": "info"
+          }
+        ],
+        "potentiallyBrokenLinks": [
+          {
+            "passed": true,
+            "message": "No potentially broken links found",
+            "severity": "info"
+          }
+        ],
+        "potentiallyBrokenEmbeds": [],
+        "externalBrokenLinks": [
+          {
+            "passed": true,
+            "message": "External link: https://web.archive.org/web/20260527160241/https://www.war.gov/UFO/",
+            "suggestion": "To find if any of these are broken, use the 'Check external links for 404s' button to trigger it.",
+            "severity": "notice",
+            "position": {
+              "line": 119,
+              "searchText": "https://web.archive.org/web/20260527160241/https://www.war.gov/UFO/",
+              "context": "And then something changed. Or did it?\n\nOn May 8, 2026, under an executive directive from President Donald Trump, **Project PURSUE** (Presidential Unsealing and Reporting System for UAP Encounters) was launched. Overseen by the Department of War with ODNI support, it established a rolling release of declassified UAP records through a public database at [war.gov/UFO](https://web.archive.org/web/20260527160241/https://www.war.gov/UFO/).\n\nWhat came out was extraordinary by any measure: unredacted Cold War FBI memos, Apollo moon mission transcripts showing astronauts reporting unexplained phenomena from the lunar surface, and full-motion sensor footage of anomalous objects tracked by modern military systems. For the first time, the public could browse the same documents that intelligence analysts were actively reviewing."
+            }
+          }
+        ],
+        "readingLevel": [
+          {
+            "passed": false,
+            "message": "Reading level too high: 12.6 (Moderately difficult to read)",
+            "suggestion": "Consider simplifying sentence structure and using shorter words",
+            "severity": "warning"
+          }
+        ]
+      },
+      "overallScore": 88,
+      "issuesCount": 0,
+      "warningsCount": 2,
+      "noticesCount": 1
     }
   ],
   "lastScanTimestamp": 1778733113377,

@@ -1995,6 +1995,7 @@ const base = getBaseUrl();
       // WHY: When a new video starts on the broadcast schedule, we destroy the old YouTube iframe and create a new one.
       // We seek to the exactly calculated offset so that the client joins perfectly in-sync with the global schedule.
       mountVideo: function(prog, offset) {
+        const self = this;
         const mount = document.getElementById('player-mount');
         if (!mount) return;
 
@@ -2048,7 +2049,6 @@ const base = getBaseUrl();
               <span class="text-xs uppercase tracking-widest text-zinc-400 mt-1" style="font-family: var(--font-mono)">Aligning Remote Feed Nodes...</span>
             </div>
           `;
-          const self = this;
 
           // Helper function to fade out and clean up the loading overlay smoothly
           const removeOverlay = () => {

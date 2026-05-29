@@ -354,6 +354,7 @@ const base = getBaseUrl();
       currentPlaylist: null,
       isFloating: false,
       isManuallyPip: false,
+      isSwupTransitioning: false,
 
       // State handling
       // WHY: Initializes the global player once per session. Sets up Swup listeners and a MutationObserver to automatically move the player in and out of the DOM slot during page transitions without destroying the player instance.
@@ -363,7 +364,7 @@ const base = getBaseUrl();
 
         // WHY: Set up a MutationObserver to watch the DOM for the dynamic appearance of '#cyber-player-slot' or iframe embeds. This guarantees that if a video page is loaded or transitioned into, the player is hijacked instantly, eliminating any race conditions or timing gaps!
         const observer = new MutationObserver(() => {
-          this.checkSlotAndMount();
+          this.checkSlotAndMount(this.isSwupTransitioning);
         });
         observer.observe(document.body, { childList: true, subtree: true });
 
@@ -372,6 +373,7 @@ const base = getBaseUrl();
           
           // WHY: As soon as a user clicks a link and Swup starts the transition, we must immediately rescue the global player DOM from the container about to be replaced. We move it back to document.body and temporarily transition it to PiP mode so it remains alive and playing!
           window.swup.hooks.on('visit:start', () => {
+            this.isSwupTransitioning = true; // Mark transition as active
             const globalPlayer = document.getElementById('global-cyber-player');
             if (globalPlayer && globalPlayer.classList.contains('is-slotted')) {
               globalPlayer.classList.remove('is-slotted');
@@ -387,13 +389,14 @@ const base = getBaseUrl();
 
           // WHY: As soon as Swup replaces the DOM contents (before transition animations complete), we immediately run checkSlotAndMount to dismantle and replace the fallback iframe. This completely prevents duplicate background audio from starting!
           window.swup.hooks.on('content:replace', () => {
-            this.checkSlotAndMount();
+            this.checkSlotAndMount(true); // Dismantle fallback iframes immediately to stop audio, but don't dock yet
           });
 
           // WHY: After Swup has completed rendering the new page and replacing the container DOM, we check if the new page contains a designated video player slot (or an iframe to hijack). If it does, we dock the player into the new slot.
           window.swup.hooks.on('page:view', () => {
+            this.isSwupTransitioning = false; // Transition complete
             this.isManuallyPip = false; // Reset manual override on page transition so it auto-docks on new video pages!
-            this.checkSlotAndMount();
+            this.checkSlotAndMount(false); // Dock and recreate YT player cleanly once DOM is fully settled
           });
         };
 
@@ -420,7 +423,7 @@ const base = getBaseUrl();
 
       // WHY: Detects if the current page has a designated slot for the player.
       // It also handles "iframe hijacking" for Obsidian fallbacks. If an author uses a standard markdown iframe to embed the player (which works perfectly in Obsidian), the live site will intercept that iframe, hide it, and snap the Global Player into its place to maintain persistent audio!
-      checkSlotAndMount: function() {
+      checkSlotAndMount: function(dismantleOnly) {
         let slot = document.getElementById('cyber-player-slot');
         const globalPlayer = document.getElementById('global-cyber-player');
         if (!globalPlayer) return;
@@ -467,6 +470,11 @@ const base = getBaseUrl();
             iframeMatch.parentNode.insertBefore(slot, iframeMatch);
             iframeMatch.remove(); // Remove the iframe completely so it does not load or double-play in the background!
           }
+        }
+
+        // If we only wanted to dismantle the fallback iframe to prevent duplicate audio, we stop here!
+        if (dismantleOnly) {
+          return;
         }
 
         if (slot && !this.isManuallyPip) {

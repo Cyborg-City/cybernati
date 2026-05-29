@@ -208,6 +208,7 @@ const mediaCollection = defineCollection({
     title: z.string().default('Untitled Media'),
     description: z.string().nullable().optional().default('No description provided'),
     date: z.coerce.date().default(() => new Date()),
+    modified: z.coerce.date().nullable().optional(),
     source: z.string().default(''),
     duration: z.union([z.string(), z.number()]).nullable().optional().transform((val) => val !== null && val !== undefined ? String(val) : '').default(''),
     related: z.union([z.string(), z.array(z.string())]).nullable().optional().transform((val) => {

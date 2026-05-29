@@ -149,6 +149,8 @@ function parseFrontmatter(fileContent) {
       result.draft = val === 'true';
     } else if (key === 'date') {
       result.date = val;
+    } else if (key === 'modified') {
+      result.modified = val;
     } else if (key === 'published') {
       result.published = val;
     } else if (key === 'created') {
@@ -307,9 +309,51 @@ async function run() {
         }
       }
 
-      const content = await fs.readFile(file, 'utf-8');
-      const fm = parseFrontmatter(content);
+      let content = await fs.readFile(file, 'utf-8');
+      let fm = parseFrontmatter(content);
       if (!fm || fm.draft) continue;
+
+      // Ensure 'modified' property exists and is timestamped
+      const frontmatterMatch = content.match(/^---\r?\n([\s\S]*?)\r?\n---/);
+      if (frontmatterMatch) {
+        const fmContent = frontmatterMatch[1];
+        let modifiedFound = false;
+        let modifiedEmpty = false;
+        const fmLines = fmContent.split(/\r?\n/);
+        
+        for (const line of fmLines) {
+          const trimmed = line.trim();
+          if (trimmed.startsWith('modified:')) {
+            modifiedFound = true;
+            const val = trimmed.substring(9).trim();
+            if (!val) {
+              modifiedEmpty = true;
+            }
+            break;
+          }
+        }
+        
+        if (!modifiedFound || modifiedEmpty) {
+          const now = new Date().toISOString();
+          let newFmContent = fmContent;
+          if (modifiedEmpty) {
+            // Replace empty key
+            newFmContent = fmContent.replace(/modified:\s*(\r?\n|$)/, `modified: ${now}\n`);
+          } else {
+            // Append property right before the closing --- of frontmatter
+            newFmContent = fmContent.trimEnd() + `\nmodified: ${now}\n`;
+          }
+          
+          // Rebuild file content
+          const newFileContent = content.replace(fmContent, newFmContent);
+          await fs.writeFile(file, newFileContent, 'utf-8');
+          console.log(`📝 Added/timestamped 'modified' property to "${fileBasename}.md"`);
+          
+          // Parse again to ensure the in-memory object is accurate
+          content = newFileContent;
+          fm = parseFrontmatter(content);
+        }
+      }
 
       const source = fm.source || '';
       const ytId = extractYouTubeId(source);
@@ -340,6 +384,7 @@ async function run() {
         }
       }
 
+      const itemModified = fm.modified || '';
       const itemDate = fm.date || fm.published || fm.created || '';
       mediaItems.push({
         id: ytId,
@@ -347,6 +392,7 @@ async function run() {
         duration: durationSec,
         related: resolvedRelated,
         date: itemDate ? new Date(itemDate).getTime() : 0,
+        modified: itemModified ? new Date(itemModified).getTime() : 0,
         type,
         playlist
       });
@@ -367,10 +413,10 @@ async function run() {
       "/static/interstitials/int-03.mp4"
     ];
 
-    // Build default video/channel-000 list containing all video media items sorted by date
+    // Build default video/channel-000 list containing all video media items sorted by modified ascending
     const allVideos = mediaItems
       .filter(item => item.type === 'video')
-      .sort((a, b) => a.date - b.date);
+      .sort((a, b) => a.modified - b.modified);
 
     if (allVideos.length > 0) {
       const channelSchedule = calculateTimeline(allVideos);
@@ -396,8 +442,8 @@ async function run() {
     for (const [key, items] of Object.entries(playlists)) {
       const [type, playlistName] = key.split('/');
       
-      // Sort items by date ascending
-      items.sort((a, b) => a.date - b.date);
+      // Sort items by modified ascending
+      items.sort((a, b) => a.modified - b.modified);
 
       const schedule = calculateTimeline(items);
       const totalDuration = schedule.length > 0 ? schedule[schedule.length - 1].end : 0;

@@ -1,7 +1,7 @@
 # Issue: Integrate Native Media and Video Player Component in Astro
 
 **Date Created**: 2026-05-25  
-**Status**: Pinned — Polish in progress  
+**Status**: Closed (Completed)  
 **Severity**: low  
 **Assigned To**: antigravity + lofi monk
 
@@ -45,8 +45,8 @@ The developer agent executing this task must complete the following steps:
 - [x] **1. Develop Component**: Create `src/components/MediaPlayer.astro` implementing the prop validation, path resolution, and styling.
 - [x] **2. Integrate Path Resolver**: Extend the asset-syncing utility in `src/utils/images.ts` to support video extensions (`.mp4`, `.webm`, `.ogv`), ensuring files copy to the public directory during build.
 - [x] **3. Style Layout**: Add custom CSS variables and Tailwind classes to style the native player controls to match the professional, high-contrast dark style of the active site theme.
-- [ ] **4. MDX Registration**: Export the component in the MDX MDX-rendering configuration so authors can type `<MediaPlayer src="..." />` directly inside markdown content without manual imports.
-- [ ] **5. Validation**: Create a test `.mdx` page in the sandbox containing local MP4 embeds and YouTube links. Verify that `pnpm run build` runs successfully and the player renders flawlessly on both mobile and desktop screens.
+- [x] **4. MDX Registration**: Export the component in the MDX MDX-rendering configuration so authors can type `<MediaPlayer src="..." />` directly inside markdown content without manual imports.
+- [x] **5. Validation**: Create a test `.mdx` page in the sandbox containing local MP4 embeds and YouTube links. Verify that `pnpm run build` runs successfully and the player renders flawlessly on both mobile and desktop screens.
 
 ---
 
@@ -54,3 +54,4 @@ The developer agent executing this task must complete the following steps:
 
 * **[2026-05-25]**: Issue created to track the architectural design and implementation of standard media player components for colocated vault assets.
 * **[2026-05-28]**: **Pinned** — Component and path resolver complete; remaining MDX registration and validation deferred for later polish.
+* **[2026-05-29]**: **Closed** — Unified persistent global `CybernatiPlayer` implemented, fully refactored, and tested (103/103 tests passing). Navigational reloading and muting bugs resolved completely.

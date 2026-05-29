@@ -8,7 +8,7 @@ category: Technology
 tags:
   - test
   - video
-draft: false
+draft: true
 ---
 
 Hello world! This is a test post for the global player.

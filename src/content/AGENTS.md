@@ -38,3 +38,22 @@ The **[AI Portal](_AI/ai-portal.md)** is the living source of truth for all work
 - Log file lives at `<script-dir>/logs/<tool-name>.jsonl`.
 - Every entry requires: `ts` (ISO timestamp), `level` (info/warn/error), `tool` (name), `msg` (human-readable summary).
 - Install logging first, logic second. See the [logging standard guide](_AI/guides/rules/logging-standard.md) for the full spec.
+
+### 5. Schedule Tool (Pi Agent Only)
+
+> **Applies to: Pi coding agent only.** Other agents (Claude Code, Cursor, etc.) do not have this tool.
+
+The **schedule tool** is a Pi-exclusive feature that enables async workflows. Pi can fire off a long-running bash command, set a timer, end its turn, and come back when the timer fires — no busy-waiting or polling loops needed.
+
+**How Pi uses it:**
+
+1. Pi runs a long command with `bash` (e.g., `ia upload`, `pnpm build`).
+2. Pi calls `schedule(duration, note)` — sets a timer for N seconds/minutes.
+3. Pi ends its turn. Timer runs in the background.
+4. Timer fires — Pi gets pinged with the note it left itself and picks up where it left off.
+
+**Why it matters for this vault:** Large operations like uploading Internet Archive items, generating graph data, or running site builds can take minutes. With the schedule tool, Pi can kick these off and do other work (or wait quietly) instead of blocking.
+
+**Key tools:** `schedule()`, `schedules()`, `cancel_schedule()`
+
+See the [Schedule Tool Guide](_AI/guides/tools/schedule/how-to-use.md) for full documentation, syntax, and async strategies.

@@ -5,7 +5,8 @@ This note is the living record of completed tasks, active work, and future plans
 ---
 
 ## 📌 Active Focus
-* **Current Task**: Planning and building the async command runner (Issue 0004). Workspace created at `_AI/async-command-runner/`.
+* **Current Task**: Using the built-in `schedule` + `bash` tool pattern for async workflows. Issue 0004 (async command runner) is paused — we'll build it after we've lived with the manual pattern and know exactly what friction to solve.
+* **Experiment**: Fire off long commands, set timers, check back. No polling. Learn what a dedicated extension needs.
 
 ---
 

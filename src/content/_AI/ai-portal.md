@@ -48,6 +48,11 @@ Here is an overview of how this vault is structured:
 
 Agents have access to two types of skills to help automate workflows in this vault.
 
+### Built-In Tools (Pi Agent Only)
+These are not skills — they are built-in capabilities of the **Pi coding agent**. Other agents (Claude Code, Cursor, etc.) do not have access to these.
+
+- **`schedule` / `schedules` / `cancel_schedule`**: Enables async workflows — fire a long command, set a timer, end your turn, and get pinged when it's time to check. See the [Schedule Tool Guide](_AI/guides/tools/schedule/how-to-use.md) for syntax, strategies, and patterns.
+
 ### Global Workspace Skills (Environment)
 These skills reside in the workspace configuration (`.agents/skills/`) and assist with general system/tool integration:
 - **`obsidian-cli`** (`.agents/skills/obsidian-cli/`): The interface to interact directly with the Obsidian vault. Use this to read/write notes, search properties, list tags, manage daily notes, etc.

@@ -148,7 +148,7 @@ const base = getBaseUrl();
     <div id="queue-panel" class="absolute bottom-[92px] left-4 right-4 z-50 rounded-2xl glass-panel shadow-2xl max-h-0 overflow-hidden transition-all duration-300 ease-in-out opacity-0">
       <div class="p-4">
         <div id="queue-links" class="flex flex-col gap-2 max-h-[160px] overflow-y-auto custom-scroll pr-1">
-          <span class="text-xs text-zinc-500 uppercase italic">Loading schedule...</span>
+          <span class="text-sm text-zinc-500 uppercase italic">Loading schedule...</span>
         </div>
       </div>
     </div>
@@ -248,6 +248,16 @@ const base = getBaseUrl();
     font-size: 1.1rem !important;
     line-height: 1 !important;
   }
+  
+  /* Matches related notes overlay buttons to Next, Related, Desync tight aesthetics */
+  #global-cyber-player .cyber-related-link,
+  #global-cyber-player .cyber-pip-related-link {
+    padding: 0.05rem 0.375rem !important;
+    line-height: 1 !important;
+    border-radius: 0.25rem !important;
+    display: inline-flex !important;
+    align-items: center !important;
+  }
   #global-cyber-player button.cyber-btn:hover {
     background-color: rgb(var(--color-highlight-950, 88 28 135) / 0.25) !important;
     border-color: rgb(var(--color-highlight-500, 168 85 247)) !important;
@@ -260,6 +270,11 @@ const base = getBaseUrl();
   }
 
   /* Global Player Styles */
+  #player-root {
+    container-type: inline-size;
+    container-name: cyberplayer;
+  }
+
   #global-cyber-player {
     /* WHY: List target properties specifically instead of 'all' to avoid costly full repaints, and promote the element to a compositor layer via will-change / translateZ for hardware acceleration. */
     transition: bottom 0.3s cubic-bezier(0.25, 1, 0.5, 1),
@@ -329,6 +344,45 @@ const base = getBaseUrl();
   
   #global-cyber-player.is-hidden {
     display: none !important;
+  }
+
+  /* Overlay header and footer on top of the video container to enable beautiful glassmorphism backdrop-blur */
+  #global-cyber-player .cyber-header {
+    position: absolute !important;
+    top: 10px !important;
+    left: 10px !important;
+    right: 10px !important;
+    margin-bottom: 0 !important;
+    z-index: 30 !important;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s cubic-bezier(0.25, 1, 0.5, 1), transform 0.3s cubic-bezier(0.25, 1, 0.5, 1) !important;
+    transform: translateY(-5px);
+  }
+
+  #global-cyber-player .cyber-header.is-visible {
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    transform: translateY(0) !important;
+  }
+
+  #global-cyber-player .cyber-footer {
+    position: absolute !important;
+    bottom: 14px !important;
+    left: 10px !important;
+    right: 10px !important;
+    margin-top: 0 !important;
+    z-index: 30 !important;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s cubic-bezier(0.25, 1, 0.5, 1), transform 0.3s cubic-bezier(0.25, 1, 0.5, 1) !important;
+    transform: translateY(5px);
+  }
+
+  #global-cyber-player .cyber-footer.is-visible {
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    transform: translateY(0) !important;
   }
 
   /* PiP overrides */
@@ -476,6 +530,75 @@ const base = getBaseUrl();
     100% {
       opacity: 1;
       fill: rgb(var(--color-highlight-300)) !important;
+    }
+  }
+
+  /* ==========================================================================
+     Container Query Overrides for Responsive Spacing, Spacing, and Scaling 
+     (Lets the player scale elegantly from small iframes up to fullscreen)
+     ========================================================================== */
+
+  /* Queue overlay link text sizing defaults (for small embeds) */
+  #global-cyber-player #queue-links div,
+  #global-cyber-player #queue-links span {
+    font-size: 0.75rem !important; /* Tight text-xs size for narrow sidebar viewport bounds */
+  }
+
+  /* Medium Player container width (Desktop Dock, Large Embeds) */
+  @container cyberplayer (min-width: 600px) {
+    #global-cyber-player .cyber-footer button.cyber-btn {
+      padding: 0.25rem 0.625rem !important; /* Slightly more relaxed vertical padding */
+      border-radius: 0.375rem !important; /* Elegant medium-sharp rounded corners */
+      font-size: 0.8rem !important; /* Readability increase */
+      gap: 0.75rem !important; /* Increased element gap */
+    }
+    #global-cyber-player .cyber-footer button.cyber-btn .material-symbols-outlined {
+      font-size: 1.2rem !important; /* Proportionately larger icon */
+    }
+    #global-cyber-player .cyber-related-link {
+      padding: 0.25rem 0.625rem !important;
+      font-size: 0.8rem !important;
+      border-radius: 0.375rem !important;
+    }
+    #global-cyber-player #video-title {
+      font-size: 0.85rem !important; /* Scale up video title */
+      max-width: 520px !important; /* Expand truncation limit */
+    }
+    #global-cyber-player .cyber-header a {
+      font-size: 0.85rem !important; /* Scale up brand logo logo text */
+    }
+    #global-cyber-player #queue-links div,
+    #global-cyber-player #queue-links span {
+      font-size: 0.825rem !important; /* Scale up slightly for medium viewports */
+    }
+  }
+
+  /* Wide Player / Fullscreen Viewport container width (min-width: 900px) */
+  @container cyberplayer (min-width: 900px) {
+    #global-cyber-player .cyber-footer button.cyber-btn {
+      padding: 0.375rem 0.75rem !important; /* Fully relaxed, premium standard padding */
+      border-radius: 0.5rem !important; /* Original round corners */
+      font-size: 0.875rem !important; /* Standard legibility text-sm */
+      gap: 0.875rem !important;
+    }
+    #global-cyber-player .cyber-footer button.cyber-btn .material-symbols-outlined {
+      font-size: 1.3rem !important;
+    }
+    #global-cyber-player .cyber-related-link {
+      padding: 0.375rem 0.75rem !important;
+      font-size: 0.875rem !important;
+      border-radius: 0.5rem !important;
+    }
+    #global-cyber-player #video-title {
+      font-size: 1.05rem !important; /* Fully relaxed prominent text-base font size */
+      max-width: none !important; /* Full width space, no truncation needed */
+    }
+    #global-cyber-player .cyber-header a {
+      font-size: 1.05rem !important; /* Standard premium logo font size */
+    }
+    #global-cyber-player #queue-links div,
+    #global-cyber-player #queue-links span {
+      font-size: 0.875rem !important; /* fully relaxed text-sm for wide/fullscreen bounds */
     }
   }
 </style>
@@ -871,12 +994,12 @@ const base = getBaseUrl();
         
         const nextVideo = schedule[nextIndex];
         if (!nextVideo) {
-          queueEl.innerHTML = '<span class="text-xs text-zinc-500 uppercase italic">No upcoming feeds.</span>';
+          queueEl.innerHTML = '<span class="text-sm text-zinc-500 uppercase italic">No upcoming feeds.</span>';
           return;
         }
         
         queueEl.innerHTML = `
-          <div class="py-1 text-xs text-highlight-400 font-bold transition-all uppercase truncate" style="box-sizing: border-box !important;">
+          <div class="py-1 text-sm text-highlight-400 font-bold transition-all uppercase truncate" style="box-sizing: border-box !important;">
             ${nextVideo.title.toUpperCase()}
           </div>
         `;
@@ -1631,6 +1754,75 @@ const base = getBaseUrl();
         
         // Synchronize initial muted UI volume elements immediately on page load
         syncVolumeDOM();
+
+        // WHY: Wires up the auto-hide controls to smoothly reveal header/footer overlays on interaction and auto-fade on inactivity.
+        self.setupOverlaysAutoHide();
+      },
+
+      setupOverlaysAutoHide: function() {
+        const self = this;
+        const player = document.getElementById('global-cyber-player');
+        const header = document.querySelector('#global-cyber-player .cyber-header');
+        const footer = document.querySelector('#global-cyber-player .cyber-footer');
+        if (!player || !header || !footer) return;
+
+        let inactivityTimeout = null;
+
+        const isAnyPanelOpen = () => {
+          const notesPanel = document.getElementById('related-notes-panel');
+          const sharePanel = document.getElementById('share-panel');
+          const queuePanel = document.getElementById('queue-panel');
+          return (notesPanel && notesPanel.classList.contains('opacity-100')) ||
+                 (sharePanel && sharePanel.classList.contains('opacity-100')) ||
+                 (queuePanel && queuePanel.classList.contains('opacity-100'));
+        };
+
+        const showControls = () => {
+          header.classList.add('is-visible');
+          footer.classList.add('is-visible');
+          
+          if (inactivityTimeout) clearTimeout(inactivityTimeout);
+          
+          inactivityTimeout = setTimeout(() => {
+            if (!isAnyPanelOpen()) {
+              hideControls();
+            }
+          }, 5000);
+        };
+
+        const hideControls = () => {
+          if (isAnyPanelOpen()) return;
+          header.classList.remove('is-visible');
+          footer.classList.remove('is-visible');
+        };
+
+        // Reveal on mouse move, clicks, touch, or keyboard navigation inside the player bounds
+        player.addEventListener('mousemove', showControls);
+        player.addEventListener('click', showControls);
+        player.addEventListener('touchstart', showControls);
+        player.addEventListener('keydown', showControls);
+
+        // Faster fade out (1.5 seconds) on mouseleave to provide clean, snappier visuals when leaving the player
+        player.addEventListener('mouseleave', () => {
+          if (inactivityTimeout) clearTimeout(inactivityTimeout);
+          inactivityTimeout = setTimeout(() => {
+            if (!isAnyPanelOpen()) {
+              hideControls();
+            }
+          }, 1500);
+        });
+
+        // Force reveal immediately whenever trigger buttons are clicked to support fluid overlay usage
+        const triggers = ['notes-trigger-btn', 'share-trigger-btn', 'queue-trigger-btn'];
+        triggers.forEach(id => {
+          const btn = document.getElementById(id);
+          if (btn) {
+            btn.addEventListener('click', showControls);
+          }
+        });
+
+        // Trigger initial reveal on load to introduce the HUD, then let it naturally fade out
+        showControls();
       },
 
       // WHY: The core feature of Cybernati is that all users visiting a playlist are watching the exact same video at the exact same timestamp.
@@ -1827,9 +2019,9 @@ const base = getBaseUrl();
             container.innerHTML = prog.related.map(link => {
               let linkSlug = link.slug;
               if (linkSlug.startsWith('/') && !linkSlug.startsWith(base)) linkSlug = base.replace(/\/$/, '') + linkSlug;
-              const paddingClass = isPip ? 'px-2.5 py-1 text-xs' : 'px-3.5 py-2 text-sm';
+              const paddingClass = isPip ? 'px-2 py-0.5 text-[10px]' : 'px-2.5 py-1 text-xs';
               const linkClass = isPip ? 'cyber-pip-related-link' : 'cyber-related-link';
-              return `<a href="${linkSlug}" class="${linkClass} ${paddingClass} rounded-lg font-semibold border border-zinc-800 bg-zinc-900 text-zinc-100 hover:border-highlight-500 hover:text-highlight-300 transition duration-150">${link.name}</a>`;
+              return `<a href="${linkSlug}" class="${linkClass} ${paddingClass} rounded font-medium border border-zinc-800 bg-zinc-900/60 text-zinc-300 hover:border-highlight-500 hover:text-highlight-300 transition duration-150" style="font-family: var(--font-prose), sans-serif;">${link.name}</a>`;
             }).join('');
 
             container.querySelectorAll('a').forEach(linkEl => {

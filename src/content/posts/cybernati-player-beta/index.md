@@ -11,6 +11,6 @@ hideTOC: false
 targetKeyword: ""
 draft: false
 ---
-<iframe src="/player/video/channel-000" width="100%" height="450"></iframe>
+<iframe src="/cybernati/player/video/channel-000" width="100%" height="450"></iframe>
 
 This is the Cybernati Player Beta. TEST...

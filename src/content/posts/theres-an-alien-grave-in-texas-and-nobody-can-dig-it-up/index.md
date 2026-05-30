@@ -17,6 +17,8 @@ hideCoverImage: false
 hideTOC: false
 targetKeyword: Aurora Texas UFO crash
 draft: false
+author:
+  - The Clerk
 ---
 
 So there I was, digging through old newspaper archives — as you do — and I stumbled across something rather peculiar.

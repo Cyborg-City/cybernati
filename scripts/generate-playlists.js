@@ -407,11 +407,24 @@ async function run() {
       playlists[key].push(item);
     }
 
-    const interstitials = [
-      "/static/interstitials/int-01.mp4",
-      "/static/interstitials/int-02.mp4",
-      "/static/interstitials/int-03.mp4"
-    ];
+    // Dynamically scan the interstitials folder rather than hardcoding them!
+    const interstitialsDir = path.resolve('public/static/interstitials');
+    let interstitials = [];
+    try {
+      const files = await fs.readdir(interstitialsDir);
+      interstitials = files
+        .filter(file => /\.(mp4|webm|ogg|ogv)$/i.test(file))
+        .map(file => `/static/interstitials/${file}`)
+        .sort(); // Ensure stable, alphabetized sorting
+      console.log(`📹 Dynamically resolved ${interstitials.length} interstitial videos from disk.`);
+    } catch (e) {
+      console.warn("⚠️  Could not read interstitials directory on disk, using defaults:", e.message);
+      interstitials = [
+        "/static/interstitials/int-01.mp4",
+        "/static/interstitials/int-02.mp4",
+        "/static/interstitials/int-03.mp4"
+      ];
+    }
 
     // Build default video/channel-000 list containing all video media items sorted by modified ascending
     const allVideos = mediaItems

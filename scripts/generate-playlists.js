@@ -270,7 +270,21 @@ async function run() {
       const target = parts[0].trim();
       const alias = parts.length > 1 ? parts[1].trim() : null;
 
-      const targetData = allWikilinkTargets.get(target.toLowerCase());
+      // Extract the core note name to handle paths (e.g. posts/name/index or ../../posts/name/index)
+      const targetPath = target.replace(/\\/g, '/');
+      const pathSegments = targetPath.split('/').filter(p => p && p !== '..' && p !== '.');
+      
+      let coreTarget = target;
+      if (pathSegments.length > 0) {
+        const lastSeg = pathSegments[pathSegments.length - 1];
+        if (lastSeg.toLowerCase() === 'index' && pathSegments.length > 1) {
+          coreTarget = pathSegments[pathSegments.length - 2];
+        } else {
+          coreTarget = lastSeg;
+        }
+      }
+
+      const targetData = allWikilinkTargets.get(coreTarget.toLowerCase());
       if (targetData) {
         return {
           name: alias || targetData.name,

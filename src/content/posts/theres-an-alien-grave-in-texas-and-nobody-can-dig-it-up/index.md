@@ -23,7 +23,7 @@ author:
 
 So there I was, digging through old newspaper archives — as you do — and I stumbled across something rather peculiar.
 
-An [article](posts/theres-an-alien-grave-in-texas-and-nobody-can-dig-it-up/original-newspaper-article-describing-the-incident-by-s-e-haydon-a-windmill-demolishes-it-the-dallas-morning-news-april-19-1897.png) from the *Dallas Morning News*, [[vault/the-aurora-texas-incident|April 19, 1897]], reporting that a flying cigar had crashed into a judge's windmill and killed a Martian.
+An [article](posts/theres-an-alien-grave-in-texas-and-nobody-can-dig-it-up/original-newspaper-article-describing-the-incident-by-s-e-haydon-a-windmill-demolishes-it-the-dallas-morning-news-april-19-1897.png) from the *Dallas Morning News*, [[vault/the-aurora-texas-incident/index|April 19, 1897]], reporting that a flying cigar had crashed into a judge's windmill and killed a Martian.
 
 A Martian. In 1897. Six years before the Wright brothers got their contraption off the ground.
 

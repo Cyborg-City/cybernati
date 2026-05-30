@@ -1441,6 +1441,169 @@
       "issuesCount": 0,
       "warningsCount": 2,
       "noticesCount": 1
+    },
+    {
+      "file": "posts/theres-an-alien-grave-in-texas-and-nobody-can-dig-it-up/index.md",
+      "displayName": "There's an Alien Grave in Texas — and Nobody Can Dig It Up",
+      "checks": {
+        "titleLength": [
+          {
+            "passed": false,
+            "message": "Title too long: 74 characters (There's an Alien Grave in Texas — and Nobody Can Dig It Up + \" - Astro Modular\")",
+            "suggestion": "Aim for 30-60 characters",
+            "severity": "warning"
+          }
+        ],
+        "metaDescription": [
+          {
+            "passed": true,
+            "message": "Good description length: 147 characters",
+            "severity": "info"
+          }
+        ],
+        "titleH1Uniqueness": [
+          {
+            "passed": true,
+            "message": "Meta title and H1 are unique (prefix/suffix configured)",
+            "severity": "info"
+          }
+        ],
+        "keywordInTitle": [
+          {
+            "passed": false,
+            "message": "Keyword not found in title",
+            "suggestion": "Include your target keyword in the title",
+            "severity": "warning"
+          }
+        ],
+        "keywordInDescription": [
+          {
+            "passed": false,
+            "message": "Keyword not found in description",
+            "suggestion": "Include your target keyword in the description",
+            "severity": "warning"
+          }
+        ],
+        "keywordInHeadings": [
+          {
+            "passed": false,
+            "message": "Keyword not found in H1",
+            "suggestion": "Include your target keyword in the H1 heading for better SEO",
+            "severity": "warning"
+          }
+        ],
+        "keywordInSlug": [
+          {
+            "passed": false,
+            "message": "Target keyword \"Aurora Texas UFO crash\" not found in slug",
+            "suggestion": "Include your target keyword in the file name",
+            "severity": "warning"
+          }
+        ],
+        "slugFormat": [],
+        "keywordDensity": [
+          {
+            "passed": false,
+            "message": "Keyword density too low: 0.0%",
+            "suggestion": "Aim for at least 1% density",
+            "severity": "warning"
+          }
+        ],
+        "headingOrder": [
+          {
+            "passed": true,
+            "message": "Heading structure is correct",
+            "severity": "info"
+          }
+        ],
+        "contentLength": [
+          {
+            "passed": true,
+            "message": "Good content length: 808 words",
+            "severity": "info"
+          }
+        ],
+        "duplicateTitles": [],
+        "duplicateDescriptions": [],
+        "duplicateContent": [],
+        "altText": [
+          {
+            "passed": true,
+            "message": "All media elements have alt text",
+            "severity": "info"
+          }
+        ],
+        "imageFileNames": [
+          {
+            "passed": false,
+            "message": "Image 1 exceeds suggested file name length: original-newspaper-article-describing-the-incident-by-s-e-haydon-a-windmill-demolishes-it-the-dallas-morning-news-april-19-1897.png",
+            "suggestion": "Use descriptive file names between 5-50 characters",
+            "severity": "warning",
+            "position": {
+              "line": 60,
+              "searchText": "![Original newspaper article describing the incident, by S. E. Haydon, \"A Windmill Demolishes It,\" The Dallas Morning News, April 19, 1897](original-newspaper-article-describing-the-incident-by-s-e-haydon-a-windmill-demolishes-it-the-dallas-morning-news-april-19-1897.png)",
+              "context": "The story might have stayed forgotten if not for two men: Bill Case, an aviation writer for the *Dallas Times Herald*, and Jim Marrs, a reporter for the *Fort Worth Star-Telegram*. In 1973 they decided to have a proper look.\n\n![Original newspaper article describing the incident, by S. E. Haydon, \"A Windmill Demolishes It,\" The Dallas Morning News, April 19, 1897](original-newspaper-article-describing-the-incident-by-s-e-haydon-a-windmill-demolishes-it-the-dallas-morning-news-april-19-1897.png)\n![This site is also well known because of the legend that a spaceship crashed nearby in 1897 and the pilot, killed in the crash, was buried here.](this-site-is-also-well-known-because-of-the-legend-that-a-spaceship-crashed-nearby-in-1897-and-the-pilot-killed-in-the-crash-was-buried-here.png)\n"
+            }
+          },
+          {
+            "passed": false,
+            "message": "Image 2 exceeds suggested file name length: this-site-is-also-well-known-because-of-the-legend-that-a-spaceship-crashed-nearby-in-1897-and-the-pilot-killed-in-the-crash-was-buried-here.png",
+            "suggestion": "Use descriptive file names between 5-50 characters",
+            "severity": "warning",
+            "position": {
+              "line": 61,
+              "searchText": "![This site is also well known because of the legend that a spaceship crashed nearby in 1897 and the pilot, killed in the crash, was buried here.](this-site-is-also-well-known-because-of-the-legend-that-a-spaceship-crashed-nearby-in-1897-and-the-pilot-killed-in-the-crash-was-buried-here.png)",
+              "context": "\n![Original newspaper article describing the incident, by S. E. Haydon, \"A Windmill Demolishes It,\" The Dallas Morning News, April 19, 1897](original-newspaper-article-describing-the-incident-by-s-e-haydon-a-windmill-demolishes-it-the-dallas-morning-news-april-19-1897.png)\n![This site is also well known because of the legend that a spaceship crashed nearby in 1897 and the pilot, killed in the crash, was buried here.](this-site-is-also-well-known-because-of-the-legend-that-a-spaceship-crashed-nearby-in-1897-and-the-pilot-killed-in-the-crash-was-buried-here.png)\n\nThey found the grave. It was small — child-sized — with a crude stone marker etched with what looked like a flying saucer with three portholes. The metal detector screamed: three large pieces of metal, right there under the dirt."
+            }
+          }
+        ],
+        "nakedLinks": [
+          {
+            "passed": true,
+            "message": "No naked links found",
+            "severity": "info"
+          }
+        ],
+        "brokenLinks": [
+          {
+            "passed": false,
+            "message": "Broken internal link: April 19, 1897",
+            "suggestion": "Check if the file \"vault/the-aurora-texas-incident.md\" exists or update the link",
+            "severity": "error",
+            "position": {
+              "line": 26,
+              "searchText": "[[vault/the-aurora-texas-incident|April 19, 1897]]",
+              "context": "So there I was, digging through old newspaper archives — as you do — and I stumbled across something rather peculiar.\n\nAn [article](posts/theres-an-alien-grave-in-texas-and-nobody-can-dig-it-up/original-newspaper-article-describing-the-incident-by-s-e-haydon-a-windmill-demolishes-it-the-dallas-morning-news-april-19-1897.png) from the *Dallas Morning News*, [[vault/the-aurora-texas-incident|April 19, 1897]], reporting that a flying cigar had crashed into a judge's windmill and killed a Martian.\n\nA Martian. In 1897. Six years before the Wright brothers got their contraption off the ground."
+            }
+          }
+        ],
+        "potentiallyBrokenLinks": [
+          {
+            "passed": true,
+            "message": "No potentially broken links found",
+            "severity": "info"
+          }
+        ],
+        "potentiallyBrokenEmbeds": [],
+        "externalBrokenLinks": [
+          {
+            "passed": true,
+            "message": "No external links found",
+            "severity": "info"
+          }
+        ],
+        "readingLevel": [
+          {
+            "passed": true,
+            "message": "Good reading level: 7.4 (Easy to read)",
+            "severity": "info"
+          }
+        ]
+      },
+      "overallScore": 75,
+      "issuesCount": 1,
+      "warningsCount": 8,
+      "noticesCount": 0
     }
   ],
   "lastScanTimestamp": 1778733113377,

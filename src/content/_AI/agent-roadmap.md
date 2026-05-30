@@ -5,8 +5,8 @@ This note is the living record of completed tasks, active work, and future plans
 ---
 
 ## 📌 Active Focus
-* **Current Task**: Using the built-in `schedule` + `bash` tool pattern for async workflows. Issue 0004 (async command runner) is paused — we'll build it after we've lived with the manual pattern and know exactly what friction to solve.
-* **Experiment**: Fire off long commands, set timers, check back. No polling. Learn what a dedicated extension needs.
+* **Current Task**: Completed massive media player global refactoring, cross-collection graph connection fixes, and centralized cover image path resolution utility.
+* **Next**: Proceeding with the Chronos timeline integration or satellite dossiers (Kenneth Arnold, Roswell, Bob Lazar).
 
 ---
 
@@ -14,6 +14,7 @@ This note is the living record of completed tasks, active work, and future plans
 A historical record of architectural and workflow decisions to prevent backsliding:
 
 ### May 2026
+* **Blog Post Voice Options**: Nick Redfern-style (conversational, wry, campfire-storyteller) is available as a voice for oddity/weird-history pieces, but is not the default. Agents should ask before applying any specific voice.
 * **Blog Post + Dossier Split**: Decided that the historical 130-year arc (airships → PURSUE) lives in the blog post, while the dossier is strictly PURSUE-focused — a living reference that grows with each tranche. Satellite dossiers (Kenneth Arnold, Roswell, Lazar) planned for later.
 * **PURSUE Naming Confirmation**: Confirmed via war.gov that the official name is "Presidential Unsealing and Reporting System for UAP Encounters (PURSUE)" — a Presidential executive initiative, not an Act of Congress. Dossier titled "The Project PURSUE Reference Dossier."
 * **Vault-Root AGENTS.md**: Relocated `AGENTS.md` from the hidden `.agents/` folder to `src/content/AGENTS.md` to make it visible in the Obsidian sidebar.
@@ -26,6 +27,13 @@ A historical record of architectural and workflow decisions to prevent backslidi
   * **Wiki Pages (`wiki/`)**: Folder-based collection; supports colocated assets and multiple public files. Mapped to `wiki_category` database key in the backend, completely separated from frontend presentation labels.
   * **Atomic Notes (`atomic/`)**: File-based/Flat collection; standalone slips for evergreen, modular concepts.
 * **Zero-Maintenance Backlinks**: Backlinks and conceptual networks will be parsed programmatically at Astro build-time from inline markdown wikilinks, keeping frontmatter properties extremely clean and low-maintenance.
+* **Global Persistent DOM Player Architecture**: Shifted the media player from a sandboxed `<iframe>` to a top-level parent DOM component in `BaseLayout.astro`. Leveraged absolute positioning, GPU composite layers (`will-change`), and Swup transition event hooks to completely prevent audio duplicate overlaps and page loading freezes.
+* **Strict Opt-In PiP & Lazy-Loading**: Enforced strict opt-in Picture-in-Picture windowing to eliminate background ghost audio leaks, and lazily load the external YouTube Iframe Player API script only when a video slot is actively requested or restored.
+* **Proportional Multi-Edge Aspect-Locked Resizer**: Created an 8-boundary invisible resizing container for the PiP player that locks a `16:9` aspect ratio, caches customized dimensions in `localStorage`, and handles responsive docking seamlessly.
+* **Micro-Smooth Audio Fades via requestAnimationFrame**: Replaced standard `setInterval` fade loops with modern recursive `requestAnimationFrame` routines to sync audio adjustments precisely with display monitor Hz and pause CPU thread execution on inactive tabs.
+* **FOUC Swup Prevention**: Configured Astro Swup integration with `awaitAssets: true` and `persistAssets: true` to prevent unstyled text flashes and maintain active styling states during client-side transitions.
+* **Centralized Cover Image Resolution**: Refactored the custom YAML array extraction, double-bracket stripping, subfolder path falls, and WebP format matching into a single centralized `resolveCoverImage` utility in `src/utils/images.ts` covered by green TDD unit tests.
+* **Cross-Collection Graph Connections**: Fixed the graph generation script (`generate-graph-data.js`) to strip all collection-specific prefixes (`posts/`, `dossier/`, `vault/`), restoring cross-collection linkages between different content sections.
 
 ---
 
@@ -43,6 +51,12 @@ A historical record of architectural and workflow decisions to prevent backslidi
 * [x] Co-author the first deep-dive research timeline draft (`draft-secrets-to-unsealing.md`) using metadata-styled Mermaid timeline scales and phase-by-phase bullet points.
 * [x] Refine and establish the technical specification issue ticket for new Astro Content Collections (`_AI/issues/0001-add-astro-collections.md`).
 * [x] Establish the technical specification issue ticket for the Chronos timeline integration (`_AI/issues/0002-integrate-chronos-timeline.md`).
+* [x] Ingest 4 Aurora Texas clippings into `_writers-room/aurora-texas-1897/` and distill `common-ground.md`.
+* [x] Create 4MAT-structured vault entity `vault/the-aurora-texas-incident/` and conversational post `posts/theres-an-alien-grave-in-texas-and-nobody-can-dig-it-up/`.
+* [x] Build and integrate new Astro Content Collections (Vault, Dossier, Media) with full schemas, listing pages, and API routes.
+* [x] Architect and implement the Global Persistent DOM Media Player (`CybernatiPlayer.astro`) with aspect-locked multi-edge resizer, Related Notes slide-up menu, customized SVG pulse loaders, Giscus panel, keyboard hotkeys, and passive composite event listeners.
+* [x] Develop a centralized `resolveCoverImage` utility and refactor all listing cards and layouts under 100% green TDD specs.
+* [x] Refactor the graph generation pipeline (`generate-graph-data.js`) to support dynamic cross-collection mapping and restore 9 lost connections.
 
 ---
 
@@ -50,6 +64,13 @@ A historical record of architectural and workflow decisions to prevent backslidi
 
 ### Phase 2: In-Vault Writing & Synthesis (Nearing Completion)
 * [x] **Draft Synthesis Workflow**: Establish collaborative outlining and narrative deep-dives in the `_writers-room/uap-historical-timeline/` folder.
+* [x] **Aurora Texas Clippings Processed**: Ingested 4 clippings into `_writers-room/aurora-texas-1897/` — Ancient Aliens clip, Jim Marrs documentary, Wikipedia article, UFO Files episode. Full source-by-source analysis in `agent-report.md`.
+* [x] **Common Ground Distilled**: Created `common-ground.md` — all facts the four sources agree on, separated from disputed claims.
+* [x] **Vault Entity Written**: `vault/the-aurora-texas-incident/` — factual deep-dive reference, 4MAT-structured (Why → What → How → What If), evidence-focused.
+* [x] **Blog Post Drafted**: `posts/theres-an-alien-grave-in-texas-and-nobody-can-dig-it-up/` — short 3-min read in Redfern voice, campfire-story tone, images added by user.
+* [x] **Cross-Linked Both Articles**: Blog post links to vault entity on "April 19, 1897". Vault entity links to blog post on "unmarked grave". Natural existing-text anchors, no new sentences.
+* [x] **Schedule Tool Guide Expanded**: Added async strategies section to `_AI/guides/tools/schedule/how-to-use.md` with 6 patterns (fire-and-check, staggered timers, daisy chain, batched checkpoint, progressive polling, error pre-flight). Documented the 30s×3 → 1m×3 → 2m×3 → 5m ladder.
+* [x] **Schedule Tool Documented in AGENTS.md**: Added section 5 to `src/content/AGENTS.md` explaining the tool, marked as Pi-only. Updated `ai-portal.md` with built-in tools header.
 * [ ] **Automatic Backlinks Parser**: Develop local Obsidian Dataview templates or script helpers to display dynamic connections natively in Obsidian before building them in Astro.
 
 ### Phase 3: Astro Integration & Publishing
@@ -62,7 +83,8 @@ A historical record of architectural and workflow decisions to prevent backslidi
 
 ---
 
-## 🔜 Next Session (2026-05-28)
+## 🔜 Next Session (2026-05-30+)
 
-1. **Write & Publish 1 post + 1 dossier** — Actual writing and publishing to the live Astro site. Need to identify content and go through the publish workflow.
-2. **Async Command Runner** (Issue [[0004-async-command-runner]]) — Secondary priority; build the `run_async` extension.
+1. **Chronos Timeline Integration** — Design and implement a Remark parser plugin to translate Obsidian `chronos` timelines into responsive CSS elements.
+2. **Build-Time Backlink Engine** — Develop a markdown processor that extracts wikilinks from note bodies at build-time to dynamically render backlink portals in note footers.
+3. **Satellite UAP Dossiers** — Kenneth Arnold, Roswell, Bob Lazar — same pipeline: clippings → common-ground → vault entity → blog post.

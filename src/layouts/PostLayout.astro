@@ -2,7 +2,7 @@
 import type { Post, Heading } from '@/types';
 import { siteConfig } from '@/config';
 import { generatePostSEO } from '@/utils/seo';
-import { optimizePostImagePath, getOptimizedFormat } from '@/utils/images';
+import { resolveCoverImage, getOptimizedFormat } from '@/utils/images';
 import { processWikilinksInHTML } from '@/utils/internallinks';
 import { getCollection } from 'astro:content';
 import { shouldShowPost, processPost, calculateReadingTime, generateTOC, getAdjacentPosts, formatDate, formatDateMobile, getReadingTimeMobile } from '@/utils/markdown';
@@ -25,6 +25,9 @@ export interface Props {
 
 const { post } = Astro.props;
 const collection = post.collection || 'posts';
+
+// Process cover image using the centralized utility
+const { src: coverSrc, basePath: coverBasePath } = resolveCoverImage(post.data.image, collection, post.id);
 
 // Check if we're in development mode
 const isDev = import.meta.env.DEV;

@@ -2,7 +2,7 @@
 import type { CollectionEntry } from 'astro:content';
 import { formatDate, formatDateMobile, processMarkdown, calculateReadingTime, getReadingTimeMobile } from '../utils/markdown';
 import { siteConfig, getPostCardAspectRatio } from '../config';
-import { getOptimizedFormat } from '@/utils/images';
+import { resolveCoverImage } from '@/utils/images';
 import ImageWrapper from './ImageWrapper.astro';
 import { resolveUrl } from '../utils/url-helpers';
 
@@ -22,36 +22,13 @@ const readingTime = calculateReadingTime(post.body || '');
 
 const { title, description, date, tags, image: rawImage, imageAlt } = post.data;
 
-// Process Obsidian bracket syntax in image field
-const image = (() => {
-  if (!rawImage) return rawImage;
-  
-  // Handle case where rawImage is an array (unquoted YAML syntax)
-  let imageValue = rawImage;
-  if (Array.isArray(rawImage)) {
-    // If it's an array, take the first element
-    imageValue = rawImage[0];
-  }
-  
-  // Ensure imageValue is a string before calling string methods
-  if (typeof imageValue !== 'string') {
-    console.warn('PostCard: imageValue is not a string:', imageValue);
-    return imageValue;
-  }
-  
-  // Check if it's Obsidian double bracket syntax
-  if (imageValue.startsWith('[[') && imageValue.endsWith(']]')) {
-    // Extract the content inside the double brackets
-    return imageValue.slice(2, -2);
-  }
-  
-  return imageValue;
-})();
+// Process cover image using the centralized utility
+const { src: coverSrc, basePath: coverBasePath } = resolveCoverImage(rawImage, collection, post.id);
 
 // Determine if we should show the cover image based on configuration and context
 const shouldShowCoverImage = (() => {
   // Only check if image exists - hideCoverImage only affects post content, not cards
-  if (!image) {
+  if (!coverSrc) {
     return false;
   }
 
@@ -79,68 +56,11 @@ const shouldShowCoverImage = (() => {
 
 <article class={`group ${featured ? 'featured-post' : 'post-card'}`} role="article" aria-labelledby={`post-title-${post.id}`}>
   <a href={resolveUrl(`/${collection}/${post.id}`)} class="block" aria-label={`View post: ${title}`}>
-    {image && shouldShowCoverImage && (
+    {coverSrc && shouldShowCoverImage && (
       <div class="overflow-hidden rounded-t-lg bg-primary-100 dark:bg-primary-800" style={`aspect-ratio: ${getPostCardAspectRatio()};`}>
         <ImageWrapper
-          src={(() => {
-            // Clean the image path by removing Obsidian brackets
-            let cleanImagePath = image;
-            if (!cleanImagePath || typeof cleanImagePath !== 'string') return '';
-            if (cleanImagePath.startsWith('[[') && cleanImagePath.endsWith(']]')) {
-              cleanImagePath = cleanImagePath.slice(2, -2);
-            }
-            
-            // Handle external URLs
-            if (cleanImagePath.startsWith('http')) {
-              return cleanImagePath;
-            }
-            
-            // Detect folder-based vs file-based: if image path starts with 'attachments/',
-            // it's a single-file post (shared attachments folder)
-            const isFileBased = cleanImagePath.startsWith('attachments/');
-            
-            if (isFileBased) {
-              // Single-file post - remove attachments/ prefix
-              cleanImagePath = cleanImagePath.replace('attachments/', '');
-            } else {
-              // Folder-based post - sync script copies images to post folder root
-              // Remove 'images/' or 'attachments/' prefixes if present (sync script removes them)
-              if (cleanImagePath.startsWith('images/') || cleanImagePath.startsWith('attachments/')) {
-                cleanImagePath = cleanImagePath.replace(/^(images|attachments)\//, '');
-              }
-            }
-            
-            // Convert to WebP if applicable (sync-images.js creates WebP versions)
-            return getOptimizedFormat(cleanImagePath);
-          })()}
-          basePath={(() => {
-            // 1. External URLs - no basePath needed
-            if (typeof image === 'string' && image.startsWith('http')) {
-              return '';
-            }
-            
-            // 2. Clean the image path to check for attachments/ prefix
-            let cleanImagePath = image;
-            if (typeof cleanImagePath === 'string' && cleanImagePath.startsWith('[[') && cleanImagePath.endsWith(']]')) {
-              cleanImagePath = cleanImagePath.slice(2, -2);
-            }
-            
-            // 3. Detect folder-based vs file-based: if image path starts with 'attachments/',
-            // it's a single-file post (shared attachments folder)
-            if (typeof cleanImagePath === 'string' && cleanImagePath.startsWith('attachments/')) {
-              // Single-file post with image in attachments folder
-              return `/${collection}/attachments/`;
-            }
-            
-            // 4. Folder-based post - sync script copies images to post folder root
-            // Safety check: ensure post.id exists before using it
-            if (post.id) {
-              return `/${collection}/${post.id}/`;
-            } else {
-              // Fallback to attachments directory if post.id is undefined
-              return `/${collection}/attachments/`;
-            }
-          })()}
+          src={coverSrc}
+          basePath={coverBasePath}
           alt={imageAlt || `Featured image for post: ${title}`}
           class="w-full h-full group-hover:scale-102 dark:group-hover:brightness-100 transition-all duration-300"
           width={800}

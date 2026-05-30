@@ -10,11 +10,10 @@ tags:
   - clippings
 duration: 374
 related:
-  - "[[../../../posts/theres-an-alien-grave-in-texas-and-nobody-can-dig-it-up/index|index|Theres an Alien Grave in Texas and Nobody Can Dig it Up]]"
+  - "[[../../../posts/theres-an-alien-grave-in-texas-and-nobody-can-dig-it-up/index|Theres an Alien Grave in Texas and Nobody Can Dig it Up]]"
   - "[[../../../vault/the-aurora-texas-incident/index|The Aurora Texas Incident]]"
 draft: false
 modified: 2026-05-30T03:49:50.252Z
-
 ---
 ![](https://www.youtube.com/watch?v=7v7M7al8qxc)
 

@@ -1,5 +1,5 @@
-import type { ImageInfo, OpenGraphImage } from "@/types";
-import { siteConfig } from "@/config";
+import type { ImageInfo, OpenGraphImage } from "../types";
+import { siteConfig } from "../config";
 import { resolveUrl } from "./url-helpers.ts";
 
 // Process images for responsive layouts
@@ -473,4 +473,68 @@ export function canOptimizeImageFormat(imagePath: string): boolean {
   const extension = imagePath.toLowerCase().match(/\.([^.]+)$/)?.[1];
   // SVG and WebP don't need optimization, ICO is usually small
   return !["svg", "webp", "ico"].includes(extension || "");
+}
+
+/**
+ * Resolves a cover/featured image path to its optimized filename and appropriate basePath
+ * for `<ImageWrapper />` or generic HTML rendering.
+ * Strips Obsidian brackets, handles unquoted YAML array inputs, detects folder-based vs
+ * file-based collections, and handles subfolder prefixes gracefully.
+ *
+ * @param imagePath The raw cover image from the frontmatter
+ * @param collection The content collection name (e.g. 'posts', 'vault', 'dossier')
+ * @param contentId The entry/slug ID (e.g. 'the-aurora-incident')
+ */
+export function resolveCoverImage(
+  imagePath: string | any,
+  collection: string,
+  contentId?: string
+): { src: string; basePath: string } {
+  if (!imagePath) return { src: "", basePath: "" };
+  
+  // Handle case where rawImage is an array (unquoted YAML array syntax)
+  let rawImage = Array.isArray(imagePath) ? imagePath[0] : imagePath;
+  if (typeof rawImage !== "string") return { src: "", basePath: "" };
+
+  // Strip Obsidian double brackets
+  let cleanImagePath = stripObsidianBrackets(rawImage.trim());
+  if (!cleanImagePath) return { src: "", basePath: "" };
+
+  // Handle external or absolute URLs
+  if (
+    cleanImagePath.startsWith("http://") || 
+    cleanImagePath.startsWith("https://") || 
+    cleanImagePath.startsWith("/")
+  ) {
+    return { src: cleanImagePath, basePath: "" };
+  }
+
+  const coll = collection || "posts";
+  
+  // Detect folder-based vs file-based: if image path starts with 'attachments/',
+  // it's a single-file post (shared attachments folder)
+  const isFileBased = cleanImagePath.startsWith("attachments/");
+  let src = cleanImagePath;
+  let basePath = "";
+
+  if (isFileBased) {
+    // Single-file post - remove attachments/ prefix
+    src = cleanImagePath.replace("attachments/", "");
+    basePath = `/${coll}/attachments/`;
+  } else {
+    // Folder-based post - sync script copies images to post folder root
+    // Strip subfolder prefixes if present ('images/' or 'attachments/')
+    if (src.startsWith("images/") || src.startsWith("attachments/")) {
+      src = src.replace(/^(images|attachments)\//, "");
+    }
+    
+    // For folder-based posts, images are in /{coll}/{contentId}/
+    basePath = contentId ? `/${coll}/${contentId}/` : `/${coll}/attachments/`;
+  }
+
+  // Convert to WebP (via getOptimizedFormat) and ensure paths are clean
+  return {
+    src: getOptimizedFormat(src),
+    basePath
+  };
 }

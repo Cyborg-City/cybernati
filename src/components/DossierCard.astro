@@ -2,7 +2,7 @@
 import type { CollectionEntry } from 'astro:content';
 import { formatDate, processMarkdown, isValidDate } from '../utils/markdown';
 import { siteConfig } from '../config';
-import { getOptimizedFormat } from '../utils/images';
+import { resolveCoverImage } from '../utils/images';
 import ImageWrapper from './ImageWrapper.astro';
 import { resolveUrl } from '../utils/url-helpers';
 
@@ -21,31 +21,8 @@ const { excerpt } = processMarkdown(dossier.body || '');
 
 const { title, description: rawDescription, date, image: rawImage, imageAlt } = dossier.data;
 
-// Process Obsidian bracket syntax in image field
-const image = (() => {
-  if (!rawImage) return rawImage;
-
-  // Handle case where rawImage is an array (unquoted YAML syntax)
-  let imageValue = rawImage;
-  if (Array.isArray(rawImage)) {
-    // If it's an array, take the first element
-    imageValue = rawImage[0];
-  }
-
-  // Ensure imageValue is a string before calling string methods
-  if (typeof imageValue !== 'string') {
-    console.warn('DossierCard: imageValue is not a string:', imageValue);
-    return imageValue;
-  }
-
-  // Check if it's Obsidian double bracket syntax
-  if (imageValue.startsWith('[[') && imageValue.endsWith(']]')) {
-    // Extract the content inside the double brackets
-    return imageValue.slice(2, -2);
-  }
-
-  return imageValue;
-})();
+// Process cover image using the centralized utility
+const { src: coverSrc, basePath: coverBasePath } = resolveCoverImage(rawImage, 'dossier', dossier.id);
 
 const description = rawDescription || excerpt;
 const tags = dossier.data.tags || [];
@@ -61,50 +38,11 @@ const shouldShowCoverImage = true;
 <div class="group relative bg-white dark:bg-primary-800 rounded-xl border border-primary-200 dark:border-primary-700 overflow-hidden hover:shadow-xl transition-all duration-300 aspect-[4/3]" data-dossier-tags={tags.join(',')}>
   <a href={resolveUrl(`/dossier/${dossier.id}`)} class="block h-full" aria-label={`View dossier: ${title}`}>
     <!-- Background Image or Fallback -->
-    {image && shouldShowCoverImage && (
+    {coverSrc && shouldShowCoverImage && (
       <div class="absolute inset-0">
         <ImageWrapper
-          src={(() => {
-            // Clean the image path by removing Obsidian brackets
-            let cleanImagePath = image;
-            if (!cleanImagePath || typeof cleanImagePath !== 'string') return '';
-            if (cleanImagePath.startsWith('[[') && cleanImagePath.endsWith(']]')) {
-              cleanImagePath = cleanImagePath.slice(2, -2);
-            }
-
-            // Remove Obsidian subfolder prefixes (images/, attachments/)
-            if (typeof cleanImagePath === 'string') {
-              if (cleanImagePath.startsWith('images/')) {
-                cleanImagePath = cleanImagePath.replace('images/', '');
-              }
-              if (cleanImagePath.startsWith('attachments/')) {
-                cleanImagePath = cleanImagePath.replace('attachments/', '');
-              }
-            }
-
-            const finalSrc = cleanImagePath || '';
-            return getOptimizedFormat(finalSrc);
-          })()}
-          basePath={(() => {
-            if (typeof image === 'string' && image.startsWith('http')) {
-              return '';
-            }
-
-            let cleanImagePath = image;
-            if (typeof cleanImagePath === 'string' && cleanImagePath.startsWith('[[') && cleanImagePath.endsWith(']]')) {
-              cleanImagePath = cleanImagePath.slice(2, -2);
-            }
-
-            if (typeof cleanImagePath === 'string' && cleanImagePath.startsWith('attachments/')) {
-              return "/dossier/attachments/";
-            }
-
-            if (dossier.id) {
-              return `/dossier/${dossier.id}/`;
-            } else {
-              return '/dossier/attachments/';
-            }
-          })()}
+          src={coverSrc}
+          basePath={coverBasePath}
           alt={imageAlt || `Cover image for dossier: ${title}`}
           width={800}
           height={600}

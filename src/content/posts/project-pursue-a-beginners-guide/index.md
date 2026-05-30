@@ -17,7 +17,7 @@ imageOG: false
 hideCoverImage: false
 hideTOC: false
 targetKeyword: PURSUE
-draft: true
+draft: false
 ---
 
 So basically the government just launched a website where you can browse thousands of declassified UFO files. Like, real documents. Cold War memos. Apollo astronaut transcripts. Military footage. All just sitting there for anyone to download.

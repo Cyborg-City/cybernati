@@ -1,5 +1,5 @@
 {
-  "totalLoopDuration": 6533,
+  "totalLoopDuration": 12444,
   "schedule": [
     {
       "id": "cMLaJsSrZuQ",
@@ -151,6 +151,69 @@
       "playlist": "uap",
       "start": 6199,
       "end": 6503
+    },
+    {
+      "id": "CqwraLwLdro",
+      "title": "The Lost Alien of Aurora, Texas (S2, E11) | UFO Files | Full Episode | History",
+      "duration": 2657,
+      "related": [
+        {
+          "name": "index",
+          "slug": "/posts/../../posts/theres-an-alien-grave-in-texas-and-nobody-can-dig-it-up/index/"
+        },
+        {
+          "name": "The Aurora Texas Incident",
+          "slug": "/posts/../../vault/the-aurora-texas-incident/index/"
+        }
+      ],
+      "date": 1762819200000,
+      "modified": 1780112976140,
+      "type": "video",
+      "playlist": "uap",
+      "start": 6533,
+      "end": 9190
+    },
+    {
+      "id": "7v7M7al8qxc",
+      "title": "Ancient Aliens: An Alien is Buried in this Cemetery?! (Season 3) | History",
+      "duration": 374,
+      "related": [
+        {
+          "name": "index",
+          "slug": "/posts/../../../posts/theres-an-alien-grave-in-texas-and-nobody-can-dig-it-up/index/"
+        },
+        {
+          "name": "The Aurora Texas Incident",
+          "slug": "/posts/../../../vault/the-aurora-texas-incident/index/"
+        }
+      ],
+      "date": 1717200000000,
+      "modified": 1780112990252,
+      "type": "video",
+      "playlist": "uap",
+      "start": 9220,
+      "end": 9594
+    },
+    {
+      "id": "VDVU-1NpaNA",
+      "title": "Aurora: The UFO Crash of 1897 (Documentary with Jim Marrs)",
+      "duration": 2790,
+      "related": [
+        {
+          "name": "index",
+          "slug": "/posts/../../../posts/theres-an-alien-grave-in-texas-and-nobody-can-dig-it-up/index/"
+        },
+        {
+          "name": "The Aurora Texas Incident",
+          "slug": "/posts/../../../vault/the-aurora-texas-incident/index/"
+        }
+      ],
+      "date": 1464912000000,
+      "modified": 1780112995295,
+      "type": "video",
+      "playlist": "uap",
+      "start": 9624,
+      "end": 12414
     }
   ],
   "interstitials": [

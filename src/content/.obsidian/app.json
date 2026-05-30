@@ -10,7 +10,7 @@
   "mobilePullAction": "command-palette:open",
   "trashOption": "system",
   "alwaysUpdateLinks": true,
-  "useMarkdownLinks": false,
+  "useMarkdownLinks": true,
   "mobileToolbarCommands": [
     "editor:undo",
     "editor:redo",

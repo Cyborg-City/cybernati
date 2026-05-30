@@ -14,6 +14,8 @@ public/docs/
 public/projects/
 public/special/
 public/graph/
+public/dossier/
+public/vault/
 
 # Environment variables
 .env

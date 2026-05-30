@@ -24,6 +24,7 @@ export interface Props {
 }
 
 const { post } = Astro.props;
+const collection = post.collection || 'posts';
 
 // Check if we're in development mode
 const isDev = import.meta.env.DEV;
@@ -126,7 +127,7 @@ if (siteConfig.postOptions.graphView.enabled && siteConfig.postOptions.graphView
       <link
         rel="preload"
         as="image"
-        href={post.data.image?.startsWith('http') ? post.data.image : (post.data.image ? optimizePostImagePath(post.data.image, post.id, post.id) : '')}
+        href={post.data.image?.startsWith('http') ? post.data.image : (post.data.image ? optimizePostImagePath(post.data.image, post.id, post.id, collection) : '')}
         fetchpriority="high"
       />
     )}
@@ -171,7 +172,7 @@ if (siteConfig.postOptions.graphView.enabled && siteConfig.postOptions.graphView
             if (isFileBased) {
               // Single-file post - remove attachments/ prefix
               imageSrc = cleanImagePath.replace('attachments/', '');
-              imageBasePath = '/posts/attachments/';
+              imageBasePath = `/${collection}/attachments/`;
             } else {
               // Folder-based post - sync script copies images to post folder root
               // Remove 'images/' or 'attachments/' prefixes if present (sync script removes them)
@@ -182,10 +183,10 @@ if (siteConfig.postOptions.graphView.enabled && siteConfig.postOptions.graphView
               }
               // Safety check: ensure post.id exists before using it
               if (post.id) {
-                imageBasePath = `/posts/${post.id}/`;
+                imageBasePath = `/${collection}/${post.id}/`;
               } else {
                 // Fallback to attachments directory if post.id is undefined
-                imageBasePath = '/posts/attachments/';
+                imageBasePath = `/${collection}/attachments/`;
               }
             }
           }

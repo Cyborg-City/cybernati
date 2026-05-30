@@ -188,12 +188,14 @@ export function stripObsidianBrackets(imagePath: string): string {
 export function optimizePostImagePath(
   imagePath: string,
   postSlug?: string,
-  postId?: string
+  postId?: string,
+  collection?: string
 ): string {
   const result = (() => {
+    const coll = collection || "posts";
     // Handle null, undefined, or empty strings
     if (!imagePath || typeof imagePath !== "string") {
-      return "/posts/attachments/placeholder.jpg"; // Fallback to placeholder
+      return `/${coll}/attachments/placeholder.jpg`; // Fallback to placeholder
     }
 
     // Strip Obsidian brackets first
@@ -201,7 +203,7 @@ export function optimizePostImagePath(
 
     // Handle empty path after cleaning
     if (!cleanPath) {
-      return "/posts/attachments/placeholder.jpg";
+      return `/${coll}/attachments/placeholder.jpg`;
     }
 
     // Handle different image path formats
@@ -214,7 +216,7 @@ export function optimizePostImagePath(
     }
 
     // Prevent double processing - if already optimized, convert to WebP and return
-    if (cleanPath.startsWith("/posts/attachments/") || cleanPath.startsWith("/posts/")) {
+    if (cleanPath.startsWith(`/${coll}/attachments/`) || cleanPath.startsWith(`/${coll}/`)) {
       return getOptimizedFormat(cleanPath);
     }
 
@@ -225,7 +227,7 @@ export function optimizePostImagePath(
     if (isFileBased) {
       // Single-file post - remove attachments/ prefix
       const imageName = cleanPath.replace("attachments/", "");
-      const attachPath = `/posts/attachments/${imageName}`;
+      const attachPath = `/${coll}/attachments/${imageName}`;
       return getOptimizedFormat(attachPath);
     }
 
@@ -241,7 +243,7 @@ export function optimizePostImagePath(
       }
       
       // For folder-based posts, images are in /posts/{postId}/
-      const folderPath = `/posts/${postSlugOrId}/${imageName}`;
+      const folderPath = `/${coll}/${postSlugOrId}/${imageName}`;
       // Convert to WebP if applicable (sync-images.js creates WebP versions)
       return getOptimizedFormat(folderPath);
     }
@@ -249,12 +251,12 @@ export function optimizePostImagePath(
     // Fallback for edge cases (shouldn't happen if postId is provided)
     // Handle case where filename is provided without path
     if (!cleanPath.includes("/")) {
-      const attachPath = `/posts/attachments/${cleanPath}`;
+      const attachPath = `/${coll}/attachments/${cleanPath}`;
       return getOptimizedFormat(attachPath);
     }
 
     // Default - assume it's a relative path in the posts directory
-    const finalPath = `/posts/attachments/${cleanPath}`;
+    const finalPath = `/${coll}/attachments/${cleanPath}`;
     
     // Convert to WebP if applicable (sync-images.js creates WebP versions)
     return getOptimizedFormat(finalPath);

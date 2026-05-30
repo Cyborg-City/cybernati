@@ -219,6 +219,7 @@
   "interstitials": [
     "/static/interstitials/int-01.mp4",
     "/static/interstitials/int-02.mp4",
-    "/static/interstitials/int-03.mp4"
+    "/static/interstitials/int-03.mp4",
+    "/static/interstitials/int-04.mp4"
   ]
 }

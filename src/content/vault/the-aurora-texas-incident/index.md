@@ -7,6 +7,7 @@ tags:
   - UAP
   - event
   - alien/body
+  - crash
 image: "[](this-site-is-also-well-known-because-of-the-legend-that-a-spaceship-crashed-nearby-in-1897-and-the-pilot-killed-in-the-crash-was-buried-here.png)"
 imageAlt: This site is also well known because of the legend that a spaceship crashed nearby in 1897 and the pilot, killed in the crash, was buried here
 imageOG: false

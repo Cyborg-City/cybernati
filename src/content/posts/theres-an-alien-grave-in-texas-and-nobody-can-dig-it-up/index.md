@@ -10,7 +10,7 @@ tags:
   - aurora
   - alien/body
   - crash
-image: "[](depiction-arora-texas-incident.png)"
+image: depiction-arora-texas-incident.png
 imageAlt: Depiction of the space ship that crashed in Aurora Texas in 1897.
 imageOG: false
 hideCoverImage: false

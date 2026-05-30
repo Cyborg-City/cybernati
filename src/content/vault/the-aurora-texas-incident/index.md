@@ -1,7 +1,7 @@
 ---
 title: The Aurora Texas Incident
 date: 2026-05-29
-description: ""
+description: In 1897 a spaceship crash landed in Aurora Texas. This dossier is a collection of all the facts the Cybernati has gathered on this event.
 tags:
   - UFO
   - UAP

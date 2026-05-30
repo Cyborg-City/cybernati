@@ -14,7 +14,7 @@ interface Props {
   collection?: string;
 }
 
-const { post, featured = false, eager = false, context = 'posts', collection = 'posts' } = Astro.props;
+const { post, featured = false, eager = false, context = 'posts', collection = post.collection || 'posts' } = Astro.props;
 
 // Get reading time and word count from markdown processing
 const { excerpt, wordCount } = processMarkdown(post.body || '');
@@ -73,7 +73,7 @@ const shouldShowCoverImage = (() => {
       </div>
     )}
 
-    <div class={`p-4 ${image && shouldShowCoverImage ? 'rounded-b-lg' : 'rounded-lg'}`}>
+    <div class={`p-4 ${coverSrc && shouldShowCoverImage ? 'rounded-b-lg' : 'rounded-lg'}`}>
       <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-primary-500 dark:text-primary-400 mb-1">
         <time datetime={date.toISOString()}>
           <span class="hidden sm:inline">{formatDate(date)}</span>

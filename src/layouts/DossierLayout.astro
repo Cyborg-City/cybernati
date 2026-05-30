@@ -2,7 +2,7 @@
 import type { Post, Heading } from '@/types';
 import { siteConfig } from '@/config';
 import { generatePostSEO } from '@/utils/seo';
-import { optimizePostImagePath, getOptimizedFormat } from '@/utils/images';
+import { resolveCoverImage, getOptimizedFormat } from '@/utils/images';
 import { processWikilinksInHTML } from '@/utils/internallinks';
 import { getCollection } from 'astro:content';
 import { shouldShowContent, processPost, calculateReadingTime, generateTOC, getAdjacentPosts, formatDate, formatDateMobile, getReadingTimeMobile } from '@/utils/markdown';
@@ -24,6 +24,9 @@ export interface Props {
 }
 
 const { dossier } = Astro.props;
+
+// Process cover image using the centralized utility
+const { src: coverSrc, basePath: coverBasePath } = resolveCoverImage(dossier.data.image, 'dossier', dossier.id);
 
 // Check if we're in development mode
 const isDev = import.meta.env.DEV;
@@ -113,7 +116,7 @@ if (siteConfig.postOptions.graphView.enabled && siteConfig.postOptions.graphView
 
     <!-- Preload post cover image - only for posts that will definitely show the image immediately -->
     {(() => {
-      if (!dossier.data.image || dossier.data.hideCoverImage === true) return false;
+      if (!coverSrc || dossier.data.hideCoverImage === true) return false;
 
       const showCoverImages = 'featured-and-posts';
       // Only preload for posts that are likely to show the image immediately
@@ -126,7 +129,7 @@ if (siteConfig.postOptions.graphView.enabled && siteConfig.postOptions.graphView
       <link
         rel="preload"
         as="image"
-        href={dossier.data.image?.startsWith('http') ? dossier.data.image : (dossier.data.image ? optimizePostImagePath(dossier.data.image, dossier.id, dossier.id) : '')}
+        href={coverBasePath + coverSrc}
         fetchpriority="high"
       />
     )}
@@ -140,79 +143,27 @@ if (siteConfig.postOptions.graphView.enabled && siteConfig.postOptions.graphView
   <div class="py-8 relative">
     <div class="mx-auto px-4 sm:px-6 lg:px-8 relative" style={`max-width: ${siteConfig.layout.contentWidth}`}>
       <!-- Main content -->
-      <article class={`bg-primary-50 dark:bg-primary-900 rounded-lg border border-primary-200 dark:border-primary-700 shadow-sm ${'featured-and-posts' !== 'none' && dossier.data.image && dossier.data.hideCoverImage !== true ? 'overflow-hidden' : ''}`}>
+      <article class={`bg-primary-50 dark:bg-primary-900 rounded-lg border border-primary-200 dark:border-primary-700 shadow-sm ${'featured-and-posts' !== 'none' && coverSrc && dossier.data.hideCoverImage !== true ? 'overflow-hidden' : ''}`}>
         {/* Cover image - shown if global config allows and not hidden by frontmatter */}
-        {'featured-and-posts' !== 'none' && dossier.data.image && dossier.data.hideCoverImage !== true && (() => {
-          // Process image path similar to PostCard
-          let rawImage = dossier.data.image;
-          if (Array.isArray(rawImage)) {
-            rawImage = rawImage[0];
-          }
-          
-          // Clean Obsidian brackets
-          let cleanImagePath = typeof rawImage === 'string' ? rawImage : '';
-          if (cleanImagePath.startsWith('[[') && cleanImagePath.endsWith(']]')) {
-            cleanImagePath = cleanImagePath.slice(2, -2);
-          }
-          
-          // Determine src and basePath for ImageWrapper
-          let imageSrc = cleanImagePath;
-          let imageBasePath = '';
-          
-          if (typeof cleanImagePath === 'string' && (cleanImagePath.startsWith('http') || cleanImagePath.startsWith('/'))) {
-            // External or absolute public path - pass as-is
-            imageSrc = cleanImagePath;
-            imageBasePath = '';
-          } else {
-            // Detect folder-based vs file-based: if image path starts with 'attachments/',
-            // it's a single-file post (shared attachments folder)
-            const isFileBased = typeof cleanImagePath === 'string' && cleanImagePath.startsWith('attachments/');
-            
-            if (isFileBased) {
-              // Single-file post - remove attachments/ prefix
-              imageSrc = cleanImagePath.replace('attachments/', '');
-              imageBasePath = '/dossier/attachments/';
-            } else {
-              // Folder-based post - sync script copies images to post folder root
-              // Remove 'images/' or 'attachments/' prefixes if present (sync script removes them)
-              if (cleanImagePath.startsWith('images/') || cleanImagePath.startsWith('attachments/')) {
-                imageSrc = cleanImagePath.replace(/^(images|attachments)\//, '');
-              } else {
-                imageSrc = cleanImagePath;
-              }
-              // Safety check: ensure dossier.id exists before using it
-              if (dossier.id) {
-                imageBasePath = `/dossier/${dossier.id}/`;
-              } else {
-                // Fallback to attachments directory if dossier.id is undefined
-                imageBasePath = '/dossier/attachments/';
-              }
-            }
-          }
-          
-          // Convert to WebP if applicable (sync-images.js creates WebP versions)
-          imageSrc = getOptimizedFormat(imageSrc);
-          
-          return (
-            <div class="h-40 sm:h-48 md:h-56 lg:h-64 overflow-hidden rounded-t-lg bg-primary-100 dark:bg-primary-800">
-              <ImageWrapper
-                src={imageSrc}
-                basePath={imageBasePath}
-                alt={dossier.data.imageAlt || `Featured image for post: ${dossier.data.title}`}
-                class="w-full h-full"
-                width={800}
-                height={450}
-                format="webp"
-                quality={85}
-                loading="eager"
-                fetchpriority="high"
-              />
-            </div>
-          );
-        })()}
+        {'featured-and-posts' !== 'none' && coverSrc && dossier.data.hideCoverImage !== true && (
+          <div class="h-40 sm:h-48 md:h-56 lg:h-64 overflow-hidden rounded-t-lg bg-primary-100 dark:bg-primary-800">
+            <ImageWrapper
+              src={coverSrc}
+              basePath={coverBasePath}
+              alt={dossier.data.imageAlt || `Featured image for post: ${dossier.data.title}`}
+              class="w-full h-full"
+              width={800}
+              height={450}
+              format="webp"
+              quality={85}
+              loading="eager"
+              fetchpriority="high"
+            />
+          </div>
+        )}
 
         <!-- Post content wrapper -->
-        <div class={`p-6 ${'featured-and-posts' !== 'none' && dossier.data.image && dossier.data.hideCoverImage !== true ? 'rounded-b-lg' : 'rounded-lg'}`}>
+        <div class={`p-6 ${'featured-and-posts' !== 'none' && coverSrc && dossier.data.hideCoverImage !== true ? 'rounded-b-lg' : 'rounded-lg'}`}>
           <!-- Post header -->
           <header class="mb-4">
           <h1 class="text-xl font-bold text-primary-900 dark:text-primary-50 mb-6 leading-tight">
